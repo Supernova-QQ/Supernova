@@ -30,17 +30,19 @@ public class QuestionService {
      * 질문 등록
      */
     @Transactional
-    public QuestionSaveResponse createQuestion(Long cId, QuestionRequest request) {
+    public QuestionSaveResponse createQuestion(QuestionRequest request) {
 
         isTitleAndContentNeitherBlank(request);
 
         // TODO user 정보 받아오기
 
+        // TODO commId 유효성 검사
+
         Question question = Question.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
                 .questionerId(1L)   // TODO user id
-                .commId(cId)
+                .commId(request.getCommId())
                 .build();
 
         Question savedQuestion = questionRepository.save(question);
@@ -90,6 +92,7 @@ public class QuestionService {
                 findQuestion.getModifiedAt(),
                 findQuestion.getViewCnt(),
                 findQuestion.getRecommendationCnt(),
+                findQuestion.getCommId(),
                 hashtagNames);
     }
 
@@ -97,7 +100,7 @@ public class QuestionService {
      * 질문 수정
      */
     @Transactional
-    public QuestionSaveResponse editQuestion(Long cId, Long qId, QuestionRequest request) {
+    public QuestionSaveResponse editQuestion(Long qId, QuestionRequest request) {
 
         Question findQuestion = getQuestionById(qId);
 
@@ -105,8 +108,10 @@ public class QuestionService {
         Long user_id = 1L;
         validateSameUserById(findQuestion, user_id);
 
+        // TODO commId 유효성 검사
+
         isTitleAndContentNeitherBlank(request);
-        findQuestion.updateQuestion(request.getTitle(), request.getContent());
+        findQuestion.updateQuestion(request.getTitle(), request.getContent(), request.getCommId());
 
         // TODO hashtag update logic
 
@@ -122,7 +127,7 @@ public class QuestionService {
      * 질문 삭제
      */
     @Transactional
-    public SuccessResponse deleteQuestion(Long cId, Long qId) {
+    public SuccessResponse deleteQuestion(Long qId) {
 
         Question findQuestion = getQuestionById(qId);
 
@@ -138,26 +143,26 @@ public class QuestionService {
     /**
      * 질문 목록 제공
      */
-    public List<QuestionInfoResponse> getUnAnsweredQuestions(Long cId) {
-
-        // TODO community 정보 받아오기
-
-        List<Question> findUnAnsweredQuestions = questionRepository.findAllByCommIdAndIsResolved(
-                cId, false);
-
-        return getQuestionInfoResponses(
-                findUnAnsweredQuestions);
-    }
-
-    public List<QuestionInfoResponse> getAllQuestions(Long cId) {
-
-        // TODO community 정보 받아오기
-
-        List<Question> findAllQuestions = questionRepository.findAllByCommId(cId);
-
-        return getQuestionInfoResponses(
-                findAllQuestions);
-    }
+//    public List<QuestionInfoResponse> getUnAnsweredQuestions(Long cId) {
+//
+//        // TODO community 정보 받아오기
+//
+//        List<Question> findUnAnsweredQuestions = questionRepository.findAllByCommIdAndIsResolved(
+//                cId, false);
+//
+//        return getQuestionInfoResponses(
+//                findUnAnsweredQuestions);
+//    }
+//
+//    public List<QuestionInfoResponse> getAllQuestions(Long cId) {
+//
+//        // TODO community 정보 받아오기
+//
+//        List<Question> findAllQuestions = questionRepository.findAllByCommId(cId);
+//
+//        return getQuestionInfoResponses(
+//                findAllQuestions);
+//    }
 
 
     private static void validateSameUserById(Question findQuestion, Long user_id) {
@@ -178,17 +183,17 @@ public class QuestionService {
         );
     }
 
-    private static List<QuestionInfoResponse> getQuestionInfoResponses(
-            List<Question> findUnAnsweredQuestions) {
-        List<QuestionInfoResponse> questionInfoResponses = new LinkedList<>();
-        findUnAnsweredQuestions.forEach(question -> {
-            questionInfoResponses.add(QuestionInfoResponse.toResponse(
-                    question.getId(),
-                    question.getTitle(),
-                    question.getContent()
-            ));
-        });
-        return questionInfoResponses;
-    }
+//    private static List<QuestionInfoResponse> getQuestionInfoResponses(
+//            List<Question> findUnAnsweredQuestions) {
+//        List<QuestionInfoResponse> questionInfoResponses = new LinkedList<>();
+//        findUnAnsweredQuestions.forEach(question -> {
+//            questionInfoResponses.add(QuestionInfoResponse.toResponse(
+//                    question.getId(),
+//                    question.getTitle(),
+//                    question.getContent()
+//            ));
+//        });
+//        return questionInfoResponses;
+//    }
 
 }

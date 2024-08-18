@@ -40,9 +40,10 @@ public class Question extends BaseEntity {
     @Column(name = "comm_id")
     private Long commId;
 
-    public void updateQuestion(String title, String content) {
+    public void updateQuestion(String title, String content, Long commId) {
         this.title = title;
         this.content = content;
+        this.commId = commId;
     }
 
     public void updateStatus(boolean isResolved) {

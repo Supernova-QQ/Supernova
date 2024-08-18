@@ -1,14 +1,9 @@
 package com.hanshin.supernova.question.presentation;
 
-import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.question.application.QuestionService;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
-import com.hanshin.supernova.question.dto.response.QuestionInfoResponse;
-import com.hanshin.supernova.question.dto.response.QuestionResponse;
-import com.hanshin.supernova.question.dto.response.QuestionSaveResponse;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/api/communities/{c_id}")
+@RequestMapping(path = "/api")
 @RequiredArgsConstructor
 public class QuestionController {
 
@@ -29,15 +24,13 @@ public class QuestionController {
 
     @PostMapping(path = "/questions")
     public ResponseEntity<?> createQuestion(
-            @PathVariable("c_id") Long c_id,
             @RequestBody @Valid QuestionRequest request) {
-        var response = questionService.createQuestion(c_id, request);
+        var response = questionService.createQuestion(request);
         return ResponseDto.created(response);
     }
 
     @GetMapping(path = "/questions/{q_id}")
     public ResponseEntity<?> readQuestion(
-            @PathVariable("c_id") Long c_id,
             @PathVariable("q_id") Long q_id) {
         var response = questionService.getQuestion(q_id);
         return ResponseDto.ok(response);
@@ -45,36 +38,35 @@ public class QuestionController {
 
     @PutMapping(path = "/questions/{q_id}")
     public ResponseEntity<?> updateQuestion(
-            @PathVariable("c_id") Long c_id,
             @PathVariable("q_id") Long q_id,
             @RequestBody @Valid QuestionRequest request) {
-        var response = questionService.editQuestion(c_id, q_id, request);
+        var response = questionService.editQuestion(q_id, request);
         return ResponseDto.ok(response);
     }
 
     @DeleteMapping(path = "/questions/{q_id}")
     public ResponseEntity<?> deleteQuestion(
-            @PathVariable("c_id") Long c_id,
             @PathVariable("q_id") Long q_id
     ) {
-        var response = questionService.deleteQuestion(c_id, q_id);
+        var response = questionService.deleteQuestion(q_id);
         return ResponseDto.ok(response);
     }
 
-    @GetMapping(path = "/unanswered-questions")
-    public ResponseEntity<?> unansweredQuestionList(
-            @PathVariable("c_id") Long c_id
-    ) {
-        var response = questionService.getUnAnsweredQuestions(c_id);
-        return ResponseDto.ok(response);
-    }
+    // TODO 커뮤니티 목록 제공 api 추가
 
-    @GetMapping(path = "/questions")
-    public ResponseEntity<?> allQuestionList(
-            @PathVariable("c_id") Long c_id
-    ) {
-        var response = questionService.getAllQuestions(c_id);
-        return ResponseDto.ok(response);
-    }
+//    @GetMapping(path = "/communities/{c_id}/unanswered-questions")
+//    public ResponseEntity<?> unansweredQuestionList(
+//            @PathVariable("c_id") Long c_id) {
+//        var response = questionService.getUnAnsweredQuestions(c_id);
+//        return ResponseDto.ok(response);
+//    }
+//
+//    @GetMapping(path = "/communities/{c_id}/questions")
+//    public ResponseEntity<?> allQuestionList(
+//            @PathVariable("c_id") Long c_id
+//    ) {
+//        var response = questionService.getAllQuestions(c_id);
+//        return ResponseDto.ok(response);
+//    }
 
 }
