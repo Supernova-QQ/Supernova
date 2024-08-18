@@ -18,6 +18,7 @@ public class QuestionResponse {
     private int recCnt;
     private Long commId;
     private List<String> hashtagNames;
+//    private String questionerId;
 
     public static QuestionResponse toResponse(
             String title,
