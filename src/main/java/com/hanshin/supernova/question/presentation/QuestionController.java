@@ -4,9 +4,11 @@ import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.question.application.QuestionService;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
+import com.hanshin.supernova.question.dto.response.QuestionInfoResponse;
 import com.hanshin.supernova.question.dto.response.QuestionResponse;
 import com.hanshin.supernova.question.dto.response.QuestionSaveResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,13 +21,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/api/communities/{c_id}/questions")
+@RequestMapping(path = "/api/communities/{c_id}")
 @RequiredArgsConstructor
 public class QuestionController {
 
     private final QuestionService questionService;
 
-    @PostMapping
+    @PostMapping(path = "/questions")
     public ResponseEntity<?> createQuestion(
             @PathVariable("c_id") Long c_id,
             @RequestBody @Valid QuestionRequest request) {
@@ -33,7 +35,7 @@ public class QuestionController {
         return ResponseDto.created(response);
     }
 
-    @GetMapping(path = "/{q_id}")
+    @GetMapping(path = "/questions/{q_id}")
     public ResponseEntity<?> readQuestion(
             @PathVariable("c_id") Long c_id,
             @PathVariable("q_id") Long q_id) {
@@ -41,7 +43,7 @@ public class QuestionController {
         return ResponseDto.ok(response);
     }
 
-    @PutMapping(path = "/{q_id}")
+    @PutMapping(path = "/questions/{q_id}")
     public ResponseEntity<?> updateQuestion(
             @PathVariable("c_id") Long c_id,
             @PathVariable("q_id") Long q_id,
@@ -50,7 +52,7 @@ public class QuestionController {
         return ResponseDto.ok(response);
     }
 
-    @DeleteMapping(path = "/{q_id}")
+    @DeleteMapping(path = "/questions/{q_id}")
     public ResponseEntity<?> deleteQuestion(
             @PathVariable("c_id") Long c_id,
             @PathVariable("q_id") Long q_id
@@ -58,4 +60,21 @@ public class QuestionController {
         var response = questionService.deleteQuestion(c_id, q_id);
         return ResponseDto.ok(response);
     }
+
+    @GetMapping(path = "/unanswered-questions")
+    public ResponseEntity<?> unansweredQuestionList(
+            @PathVariable("c_id") Long c_id
+    ) {
+        var response = questionService.getUnAnsweredQuestions(c_id);
+        return ResponseDto.ok(response);
+    }
+
+    @GetMapping(path = "/questions")
+    public ResponseEntity<?> allQuestionList(
+            @PathVariable("c_id") Long c_id
+    ) {
+        var response = questionService.getAllQuestions(c_id);
+        return ResponseDto.ok(response);
+    }
+
 }

@@ -7,6 +7,7 @@ import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.domain.QuestionView;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
+import com.hanshin.supernova.question.dto.response.QuestionInfoResponse;
 import com.hanshin.supernova.question.dto.response.QuestionResponse;
 import com.hanshin.supernova.question.dto.response.QuestionSaveResponse;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
@@ -29,7 +30,7 @@ public class QuestionService {
      * 질문 등록
      */
     @Transactional
-    public QuestionSaveResponse createQuestion(Long c_id, QuestionRequest request) {
+    public QuestionSaveResponse createQuestion(Long cId, QuestionRequest request) {
 
         isTitleAndContentNeitherBlank(request);
 
@@ -39,7 +40,7 @@ public class QuestionService {
                 .title(request.getTitle())
                 .content(request.getContent())
                 .questionerId(1L)   // TODO user id
-                .commId(1L)         // TODO community id
+                .commId(cId)
                 .build();
 
         Question savedQuestion = questionRepository.save(question);
@@ -58,19 +59,19 @@ public class QuestionService {
      * 질문 조회
      */
     @Transactional(readOnly = true)
-    public QuestionResponse getQuestion(Long q_id) {
+    public QuestionResponse getQuestion(Long qId) {
 
         // 조회를 시도하는 회원의 중복 체크 및 조회수 증가
         // TODO add user, add @Transactional
 
-        Question findQuestion = getQuestionById(q_id);
+        Question findQuestion = getQuestionById(qId);
 
         Long viewer_id = 1L;
         if (!questionViewRepository.existsByViewerId(viewer_id)) {
             questionViewRepository.save(
                     QuestionView.builder()
                             .viewedAt(LocalDateTime.now())
-                            .questionId(q_id)
+                            .questionId(qId)
                             .viewerId(viewer_id)
                             .build());
             findQuestion.updateViewCnt();
@@ -96,9 +97,9 @@ public class QuestionService {
      * 질문 수정
      */
     @Transactional
-    public QuestionSaveResponse editQuestion(Long c_id, Long q_Id, QuestionRequest request) {
+    public QuestionSaveResponse editQuestion(Long cId, Long qId, QuestionRequest request) {
 
-        Question findQuestion = getQuestionById(q_Id);
+        Question findQuestion = getQuestionById(qId);
 
         // TODO user 정보 받아오기
         Long user_id = 1L;
@@ -121,18 +122,43 @@ public class QuestionService {
      * 질문 삭제
      */
     @Transactional
-    public SuccessResponse deleteQuestion(Long c_id, Long q_id) {
+    public SuccessResponse deleteQuestion(Long cId, Long qId) {
 
-        Question findQuestion = getQuestionById(q_id);
+        Question findQuestion = getQuestionById(qId);
 
         // TODO user 정보 받아오기
         Long user_id = 1L;
         validateSameUserById(findQuestion, user_id);
 
-        questionRepository.deleteById(q_id);
+        questionRepository.deleteById(qId);
 
         return new SuccessResponse("성공적으로 삭제되었습니다.");
     }
+
+    /**
+     * 질문 목록 제공
+     */
+    public List<QuestionInfoResponse> getUnAnsweredQuestions(Long cId) {
+
+        // TODO community 정보 받아오기
+
+        List<Question> findUnAnsweredQuestions = questionRepository.findAllByCommIdAndIsResolved(
+                cId, false);
+
+        return getQuestionInfoResponses(
+                findUnAnsweredQuestions);
+    }
+
+    public List<QuestionInfoResponse> getAllQuestions(Long cId) {
+
+        // TODO community 정보 받아오기
+
+        List<Question> findAllQuestions = questionRepository.findAllByCommId(cId);
+
+        return getQuestionInfoResponses(
+                findAllQuestions);
+    }
+
 
     private static void validateSameUserById(Question findQuestion, Long user_id) {
         if (!findQuestion.getQuestionerId().equals(user_id)) {
@@ -151,4 +177,18 @@ public class QuestionService {
                 () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
         );
     }
+
+    private static List<QuestionInfoResponse> getQuestionInfoResponses(
+            List<Question> findUnAnsweredQuestions) {
+        List<QuestionInfoResponse> questionInfoResponses = new LinkedList<>();
+        findUnAnsweredQuestions.forEach(question -> {
+            questionInfoResponses.add(QuestionInfoResponse.toResponse(
+                    question.getId(),
+                    question.getTitle(),
+                    question.getContent()
+            ));
+        });
+        return questionInfoResponses;
+    }
+
 }
