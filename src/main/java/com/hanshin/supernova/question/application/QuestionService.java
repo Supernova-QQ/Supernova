@@ -29,9 +29,7 @@ public class QuestionService {
     @Transactional
     public QuestionSaveResponse createQuestion(Long cId, QuestionRequest request) {
 
-        if (request.getTitle().isEmpty() || request.getContent().isEmpty()) {
-            throw new QuestionInvalidException(ErrorType.NEITHER_BLANK_ERROR);
-        }
+        isTitleAndContentNeitherBlank(request);
 
         // TODO user 정보 받아오기
 
@@ -98,9 +96,37 @@ public class QuestionService {
     /**
      * 질문 수정
      */
+    @Transactional
+    public QuestionSaveResponse editQuestion(Long c_id, Long qId, QuestionRequest request) {
+
+        // TODO 작성자와 수정자 동일성 확인
+
+        Question findQuestion = questionRepository.findById(qId).orElseThrow(
+                () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
+        );
+        isTitleAndContentNeitherBlank(request);
+        findQuestion.updateQuestion(request.getTitle(), request.getContent());
+
+        // TODO hashtag update logic
+
+        // TODO community update logic
+
+        // TODO ContentWord update logic
+
+        return QuestionSaveResponse.toResponse(findQuestion.getId());
+    }
 
 
     /**
      * 질문 삭제
      */
+
+
+
+
+    private static void isTitleAndContentNeitherBlank(QuestionRequest request) {
+        if (request.getTitle().isBlank() || request.getContent().isBlank()) {
+            throw new QuestionInvalidException(ErrorType.NEITHER_BLANK_ERROR);
+        }
+    }
 }
