@@ -8,4 +8,8 @@ import lombok.Data;
 public class QuestionSaveResponse {
 
     private Long questionId;
+
+    public static QuestionSaveResponse toResponse(Long questionId) {
+        return new QuestionSaveResponse(questionId);
+    }
 }

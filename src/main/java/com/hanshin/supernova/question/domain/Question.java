@@ -49,4 +49,12 @@ public class Question extends BaseEntity {
         this.isResolved = isResolved;
     }
 
+    public void updateViewCnt() {
+        this.viewCnt++;
+    }
+
+    public void updateRecommendationCnt() {
+        this.recommendationCnt++;
+    }
+
 }
