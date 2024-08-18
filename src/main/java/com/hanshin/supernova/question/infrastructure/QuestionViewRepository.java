@@ -10,5 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 public interface QuestionViewRepository extends JpaRepository<QuestionView, Long> {
 
     boolean existsByViewerId(Long viewerId);
+
     QuestionView findByViewerId(Long viewerId);
 }

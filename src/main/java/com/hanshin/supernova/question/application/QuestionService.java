@@ -1,5 +1,7 @@
 package com.hanshin.supernova.question.application;
 
+import com.hanshin.supernova.common.dto.SuccessResponse;
+import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.question.domain.Question;
@@ -27,7 +29,7 @@ public class QuestionService {
      * 질문 등록
      */
     @Transactional
-    public QuestionSaveResponse createQuestion(Long cId, QuestionRequest request) {
+    public QuestionSaveResponse createQuestion(Long c_id, QuestionRequest request) {
 
         isTitleAndContentNeitherBlank(request);
 
@@ -56,28 +58,25 @@ public class QuestionService {
      * 질문 조회
      */
     @Transactional(readOnly = true)
-    public QuestionResponse getQuestion(Long qId) {
+    public QuestionResponse getQuestion(Long q_id) {
 
         // 조회를 시도하는 회원의 중복 체크 및 조회수 증가
         // TODO add user, add @Transactional
+
+        Question findQuestion = getQuestionById(q_id);
+
         Long viewer_id = 1L;
         if (!questionViewRepository.existsByViewerId(viewer_id)) {
             questionViewRepository.save(
                     QuestionView.builder()
                             .viewedAt(LocalDateTime.now())
-                            .questionId(qId)
+                            .questionId(q_id)
                             .viewerId(viewer_id)
                             .build());
-            Question findQuestion = questionRepository.findById(qId).orElseThrow(
-                    () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
-            );
             findQuestion.updateViewCnt();
         } else {
             questionViewRepository.findByViewerId(viewer_id).updateViewedAt();
         }
-
-        Question findQuestion = questionRepository.findById(qId).orElseThrow(
-                () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR));
 
         // TODO get hashtag
         List<String> hashtagNames = new LinkedList<>();
@@ -97,13 +96,14 @@ public class QuestionService {
      * 질문 수정
      */
     @Transactional
-    public QuestionSaveResponse editQuestion(Long c_id, Long qId, QuestionRequest request) {
+    public QuestionSaveResponse editQuestion(Long c_id, Long q_Id, QuestionRequest request) {
 
-        // TODO 작성자와 수정자 동일성 확인
+        Question findQuestion = getQuestionById(q_Id);
 
-        Question findQuestion = questionRepository.findById(qId).orElseThrow(
-                () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
-        );
+        // TODO user 정보 받아오기
+        Long user_id = 1L;
+        validateSameUserById(findQuestion, user_id);
+
         isTitleAndContentNeitherBlank(request);
         findQuestion.updateQuestion(request.getTitle(), request.getContent());
 
@@ -120,13 +120,35 @@ public class QuestionService {
     /**
      * 질문 삭제
      */
+    @Transactional
+    public SuccessResponse deleteQuestion(Long c_id, Long q_id) {
 
+        Question findQuestion = getQuestionById(q_id);
 
+        // TODO user 정보 받아오기
+        Long user_id = 1L;
+        validateSameUserById(findQuestion, user_id);
 
+        questionRepository.deleteById(q_id);
+
+        return new SuccessResponse("성공적으로 삭제되었습니다.");
+    }
+
+    private static void validateSameUserById(Question findQuestion, Long user_id) {
+        if (!findQuestion.getQuestionerId().equals(user_id)) {
+            throw new AuthInvalidException(ErrorType.NON_IDENTICAL_USER_ERROR);
+        }
+    }
 
     private static void isTitleAndContentNeitherBlank(QuestionRequest request) {
         if (request.getTitle().isBlank() || request.getContent().isBlank()) {
             throw new QuestionInvalidException(ErrorType.NEITHER_BLANK_ERROR);
         }
+    }
+
+    private Question getQuestionById(Long q_Id) {
+        return questionRepository.findById(q_Id).orElseThrow(
+                () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
+        );
     }
 }
