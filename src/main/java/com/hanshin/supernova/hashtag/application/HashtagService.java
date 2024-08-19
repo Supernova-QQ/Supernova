@@ -24,9 +24,8 @@ public class HashtagService {
     private final QuestionHashtagRepository questionHashtagRepository;
 
     @Transactional
-    public HashtagSaveResponse saveQuestionHashtag(HashtagRequest request) {
+    public HashtagSaveResponse saveQuestionHashtag(Long qId, HashtagRequest request) {
 
-        Long qId = request.getQuestionId();
         List<String> hashtagNames = request.getHashtagNames();
         List<String> savedHashtagNames = new ArrayList<>();
 

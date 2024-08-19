@@ -47,8 +47,6 @@ public class QuestionService {
 
         Question savedQuestion = questionRepository.save(question);
 
-        // TODO hashtag save logic
-
         // TODO community save logic
 //        communityService.registerQuestion()
 
@@ -60,7 +58,7 @@ public class QuestionService {
     /**
      * 질문 조회
      */
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public QuestionResponse getQuestion(Long qId) {
 
         // 조회를 시도하는 회원의 중복 체크 및 조회수 증가
@@ -81,9 +79,6 @@ public class QuestionService {
             questionViewRepository.findByViewerId(viewer_id).updateViewedAt();
         }
 
-        // TODO get hashtag
-        List<String> hashtagNames = new LinkedList<>();
-
         return QuestionResponse.toResponse(
                 findQuestion.getTitle(),
                 findQuestion.getContent(),
@@ -92,8 +87,7 @@ public class QuestionService {
                 findQuestion.getModifiedAt(),
                 findQuestion.getViewCnt(),
                 findQuestion.getRecommendationCnt(),
-                findQuestion.getCommId(),
-                hashtagNames);
+                findQuestion.getCommId());
     }
 
     /**
@@ -112,8 +106,6 @@ public class QuestionService {
 
         isTitleAndContentNeitherBlank(request);
         findQuestion.updateQuestion(request.getTitle(), request.getContent(), request.getCommId());
-
-        // TODO hashtag update logic
 
         // TODO community update logic
 

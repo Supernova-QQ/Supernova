@@ -15,21 +15,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/api/hashtag")
+@RequestMapping(path = "/api/hashtags")
 @RequiredArgsConstructor
 public class HashtagController {
 
     private final HashtagService hashtagService;
 
-    @PostMapping
+    @PostMapping("/questions/{q_id}")
     public ResponseEntity<?> saveHashtag(
+            @PathVariable(name = "q_id") Long qId,
             @RequestBody @Valid HashtagRequest hashtagRequest
     ) {
-        var response = hashtagService.saveQuestionHashtag(hashtagRequest);
+        var response = hashtagService.saveQuestionHashtag(qId, hashtagRequest);
         return ResponseDto.created(response);
     }
 
-    @GetMapping("/{q_id}")
+    @GetMapping("/questions/{q_id}")
     public ResponseEntity<?> getAllHashtags(
             @PathVariable(name = "q_id") Long qId
     ) {
