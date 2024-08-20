@@ -43,7 +43,7 @@ public class CommunityService {
         Community savedCommunity = communityRepository.save(community);
 
         // 커뮤니티 생성자 멤버 추가
-        CommunityMember savedCommunityMember = buildCommunityMember(savedCommunity, Autority.CREATOR);
+        CommunityMember savedCommunityMember = buildCommunityMember(savedCommunity, Autority.CREATOR, savedCommunity.getCreatedBy());
         communityMemberRepository.save(savedCommunityMember);
         savedCommunity.getCommCounter().increaseMemberCnt();
 
@@ -139,7 +139,8 @@ public class CommunityService {
         Community findCommunity = getCommunity(cId);
 
         // TODO 관리자에게 요청을 보내고, 수락 후 마저 완료되는 비동기 처리 필요
-        CommunityMember savedCommunityMember = buildCommunityMember(findCommunity, Autority.USER);
+        Long userId = 2L;
+        CommunityMember savedCommunityMember = buildCommunityMember(findCommunity, Autority.USER, userId);
         communityMemberRepository.save(savedCommunityMember);
         findCommunity.getCommCounter().increaseMemberCnt();
 
@@ -185,11 +186,11 @@ public class CommunityService {
                 .build();
     }
 
-    private static CommunityMember buildCommunityMember(Community savedCommunity, Autority authority) {
+    private static CommunityMember buildCommunityMember(Community savedCommunity, Autority authority, Long userId) { // TODO User 를 이용한 파라미터 병합
         return CommunityMember.builder()
                 .autority(authority)
                 .communityId(savedCommunity.getId())
-                .userId(savedCommunity.getCreatedBy())
+                .userId(userId)
                 .build();
     }
 
