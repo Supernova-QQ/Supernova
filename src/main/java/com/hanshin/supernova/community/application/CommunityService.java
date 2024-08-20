@@ -1,0 +1,182 @@
+package com.hanshin.supernova.community.application;
+
+import static com.hanshin.supernova.exception.dto.ErrorType.NON_ADMIN_AUTH_ERROR;
+
+import com.hanshin.supernova.common.dto.SuccessResponse;
+import com.hanshin.supernova.community.domain.Autority;
+import com.hanshin.supernova.community.domain.Community;
+import com.hanshin.supernova.community.domain.CommunityMember;
+import com.hanshin.supernova.community.dto.request.CommunityRequest;
+import com.hanshin.supernova.community.dto.response.CommunityInfoResponse;
+import com.hanshin.supernova.community.dto.response.CommunityResponse;
+import com.hanshin.supernova.community.dto.response.CommunitySummaryResponse;
+import com.hanshin.supernova.community.infrastructure.CommunityMemberRepository;
+import com.hanshin.supernova.community.infrastructure.CommunityRepository;
+import com.hanshin.supernova.exception.community.CommunityInvalidException;
+import com.hanshin.supernova.exception.dto.ErrorType;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class CommunityService {
+
+    private final CommunityRepository communityRepository;
+    private final CommunityMemberRepository communityMemberRepository;
+
+    /**
+     * 커뮤니티 생성
+     */
+    @Transactional
+    public CommunityResponse createCommunity(CommunityRequest request) {
+
+        // 커뮤니티 이름 중복 체크
+        isCommunityNameDuplicated(request);
+
+        Long creatorId = 1L;   // TODO user 정보 추가
+
+        // 커뮤니티 저장
+        Community community = buildCommunity(request, creatorId);
+        Community savedCommunity = communityRepository.save(community);
+
+        // 커뮤니티 생성자 멤버 추가
+        CommunityMember savedCommunityMember = buildCommunityMember(savedCommunity);
+        communityMemberRepository.save(savedCommunityMember);
+
+        return CommunityResponse.toResponse(savedCommunity.getId());
+    }
+
+    /**
+     * 커뮤니티 info 수정 - 커뮤니티 생성자만 가능
+     */
+    @Transactional
+    public CommunityResponse updateCommunity(CommunityRequest request, Long cId) {
+
+        Community findCommunity = getCommunity(cId);
+
+        // 커뮤니티 생성자 검증
+        Long userId = 1L;   // TODO user 정보 추가
+        isCommunityCreator(findCommunity, userId);
+
+        communityInfoUpdate(request, findCommunity);
+
+        return CommunityResponse.toResponse(findCommunity.getId());
+    }
+
+    /**
+     * 커뮤니티 휴면 전환 - 커뮤니티 생성자만 가능
+     */
+    public SuccessResponse dormantCommunity(Long cId) {
+
+        Community findCommunity = getCommunity(cId);
+
+        Long userId = 1L;   // TODO user 정보 추가
+        isCommunityCreator(findCommunity, userId);
+
+        findCommunity.changeDormant();
+
+        return new SuccessResponse("휴면 전환에 성공하였습니다.");
+    }
+
+    /**
+     * 커뮤니티 정보 제공
+     */
+    public CommunityInfoResponse getCommunityInfo(Long cId) {
+        Community findCommunity = getCommunity(cId);
+
+        return CommunityInfoResponse.toResponse(
+                findCommunity.getName(),
+                findCommunity.getDescription(),
+                findCommunity.getCreatedAt(),
+                findCommunity.isVisible(),
+                findCommunity.isPublic(),
+                findCommunity.isDormant(),
+                findCommunity.getCommCounter()
+        );
+    }
+
+    /**
+     * 커뮤니티 리스트 정보 제공
+     */
+    public List<CommunitySummaryResponse> getAllCommunities() {
+        List<Community> communities = communityRepository.findAll();
+
+        return getCommunitySummaryResponseList(communities);
+    }
+
+
+    private void isCommunityNameDuplicated(CommunityRequest request) {
+        if (communityRepository.existsByName(request.getName())) {
+            throw new CommunityInvalidException(ErrorType.DUPLICATED_NAME_ERROR);
+        }
+    }
+
+    private static Community buildCommunity(CommunityRequest request, Long creatorId) {
+        return Community.builder()
+                .name(request.getName())
+                .description(request.getDescription())
+                .isVisible(request.isVisible())
+                .isPublic(request.isPublic())
+                .isDormant(false)
+                .createdBy(creatorId)
+                .build();
+    }
+
+    private static CommunityMember buildCommunityMember(Community savedCommunity) {
+        return CommunityMember.builder()
+                .autority(Autority.CREATOR)
+                .communityId(savedCommunity.getId())
+                .userId(savedCommunity.getCreatedBy())
+                .build();
+    }
+
+    private Community getCommunity(Long cId) {
+        return communityRepository.findById(cId).orElseThrow(
+                () -> new CommunityInvalidException(ErrorType.COMMUNITY_NOT_FOUND_ERROR)
+        );
+    }
+
+    private static void communityInfoUpdate(CommunityRequest request, Community findCommunity) {
+        findCommunity.update(
+                request.getName(),
+                request.getDescription(),
+                request.isVisible(),
+                request.isPublic());
+    }
+
+    private static void isCommunityCreator(Community findCommunity, Long userId) {
+        if (!findCommunity.getCreatedBy().equals(userId)) {
+            throw new CommunityInvalidException(NON_ADMIN_AUTH_ERROR);
+        }
+    }
+
+    private static List<CommunitySummaryResponse> getCommunitySummaryResponseList(
+            List<Community> communities
+    ) {
+        List<CommunitySummaryResponse> communitySummaryResponses = new ArrayList<>();
+
+        communities.forEach(community -> {
+            communitySummaryResponses.add(
+                    CommunitySummaryResponse.toResponse(
+                            community.getId(),
+                            community.getName(),
+                            community.getCommCounter().getMemberCnt()
+                    )
+            );
+        });
+        return communitySummaryResponses;
+    }
+
+    private void isAdminUser(Long userId) {
+        // 커뮤니티 관리자 검증
+        CommunityMember findUser = communityMemberRepository.findById(userId).orElseThrow(
+                () -> new RuntimeException("유저가 존재하지 않습니다.")    // TODO user 예외처리 변경
+        );
+        if (!findUser.getAutority().equals(Autority.ADMIN)) {
+            throw new CommunityInvalidException(NON_ADMIN_AUTH_ERROR);
+        }
+    }
+}
