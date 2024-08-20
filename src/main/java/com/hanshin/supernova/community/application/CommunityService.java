@@ -43,7 +43,7 @@ public class CommunityService {
         Community savedCommunity = communityRepository.save(community);
 
         // 커뮤니티 생성자 멤버 추가
-        CommunityMember savedCommunityMember = buildCommunityMember(savedCommunity);
+        CommunityMember savedCommunityMember = buildCommunityMember(savedCommunity, Autority.CREATOR);
         communityMemberRepository.save(savedCommunityMember);
         savedCommunity.getCommCounter().increaseMemberCnt();
 
@@ -88,6 +88,7 @@ public class CommunityService {
     /**
      * 커뮤니티 휴면 전환 - 커뮤니티 생성자만 가능
      */
+    @Transactional
     public SuccessResponse dormantCommunity(Long cId) {
 
         Community findCommunity = getCommunity(cId);
@@ -103,6 +104,7 @@ public class CommunityService {
     /**
      * 커뮤니티 정보 제공
      */
+    @Transactional(readOnly = true)
     public CommunityResponse getCommunityInfo(Long cId) {
         Community findCommunity = getCommunity(cId);
 
@@ -121,10 +123,41 @@ public class CommunityService {
     /**
      * 커뮤니티 리스트 정보 제공
      */
+    @Transactional(readOnly = true)
     public List<CommunityInfoResponse> getAllCommunities() {
         List<Community> communities = communityRepository.findAll();
 
         return getCommunitySummaryResponseList(communities);
+    }
+
+    /**
+     * 커뮤니티 가입 요청 처리
+     * - 회원에게 발송된 초대 알림에서 '수락' 버튼을 클릭 시 해당 api 로 요청이 들어온다.
+     */
+    @Transactional
+    public SuccessResponse joinCommunity(Long cId) {
+        Community findCommunity = getCommunity(cId);
+
+        // TODO 관리자에게 요청을 보내고, 수락 후 마저 완료되는 비동기 처리 필요
+        CommunityMember savedCommunityMember = buildCommunityMember(findCommunity, Autority.USER);
+        communityMemberRepository.save(savedCommunityMember);
+        findCommunity.getCommCounter().increaseMemberCnt();
+
+        return new SuccessResponse("가입 처리 완료");
+    }
+
+    /**
+     * 커뮤니티 탈퇴
+     */
+    @Transactional
+    public SuccessResponse leaveCommunity(Long cId) {
+        Community findCommunity = getCommunity(cId);
+
+        Long userId = 1L;
+        communityMemberRepository.deleteById(userId);
+        findCommunity.getCommCounter().decreaseMemberCnt();
+
+        return new SuccessResponse("탈퇴 성공");
     }
 
 
@@ -152,9 +185,9 @@ public class CommunityService {
                 .build();
     }
 
-    private static CommunityMember buildCommunityMember(Community savedCommunity) {
+    private static CommunityMember buildCommunityMember(Community savedCommunity, Autority authority) {
         return CommunityMember.builder()
-                .autority(Autority.CREATOR)
+                .autority(authority)
                 .communityId(savedCommunity.getId())
                 .userId(savedCommunity.getCreatedBy())
                 .build();
@@ -195,15 +228,5 @@ public class CommunityService {
             );
         });
         return communitySummaryResponses;
-    }
-
-    private void isAdminUser(Long userId) {
-        // 커뮤니티 관리자 검증
-        CommunityMember findUser = communityMemberRepository.findById(userId).orElseThrow(
-                () -> new RuntimeException("유저가 존재하지 않습니다.")    // TODO user 예외처리 변경
-        );
-        if (!findUser.getAutority().equals(Autority.ADMIN)) {
-            throw new CommunityInvalidException(NON_ADMIN_AUTH_ERROR);
-        }
     }
 }

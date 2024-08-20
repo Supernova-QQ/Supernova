@@ -26,6 +26,10 @@ public class CommCounter {
     public void increaseMemberCnt() {
         this.memberCnt++;
     }
+    public void decreaseMemberCnt() {
+        this.memberCnt--;
+        // TODO memberCnt 가 0 이하로 됐을 때의 예외처리
+    }
 
 //    public void increaseQuestionCnt() {
 //        this.questionCnt++;
