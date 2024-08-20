@@ -18,7 +18,4 @@ public class QuestionRequest {
     @NotNull(message = "커뮤니티 선택은 필수입니다.")
     private Long commId;
 
-    @Size(max = 5, message = "해시태그는 최대 5개까지 등록 가능합니다.")
-    private LinkedHashSet<String> hashtags = new LinkedHashSet<>();
-
 }

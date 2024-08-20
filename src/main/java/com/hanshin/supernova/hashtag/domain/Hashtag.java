@@ -1,4 +1,4 @@
-package com.hanshin.supernova.question.domain;
+package com.hanshin.supernova.hashtag.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -6,34 +6,39 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Builder
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "question_view")
-public class QuestionView {
+@Table(name = "hashtag")
+public class Hashtag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "viewed_at")
-    private LocalDateTime viewedAt;
+    @Column(name = "name", unique = true, nullable = false)
+    private String name;
 
-    @Column(name = "question_id")
-    private Long questionId;
+    @Column(name = "total_cnt")
+    private int totalCnt;
 
-    @Column(name = "viewer_id")
-    private Long viewerId;
+    @Column(name = "daily_cnt")
+    private int dailyCnt;
 
-    public void updateViewedAt() {
-        this.viewedAt = LocalDateTime.now();
-    }
+//    private int cnt;
+//
+//    public void addCnt() {
+//        this.cnt++;
+//    }
+//
+//    public void removeCnt() {
+//        this.cnt--;
+//    }
 }
