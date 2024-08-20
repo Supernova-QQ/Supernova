@@ -4,12 +4,12 @@ import static com.hanshin.supernova.exception.dto.ErrorType.NON_ADMIN_AUTH_ERROR
 
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.community.domain.Autority;
+import com.hanshin.supernova.community.domain.CommCounter;
 import com.hanshin.supernova.community.domain.Community;
 import com.hanshin.supernova.community.domain.CommunityMember;
 import com.hanshin.supernova.community.dto.request.CommunityRequest;
-import com.hanshin.supernova.community.dto.response.CommunityInfoResponse;
 import com.hanshin.supernova.community.dto.response.CommunityResponse;
-import com.hanshin.supernova.community.dto.response.CommunitySummaryResponse;
+import com.hanshin.supernova.community.dto.response.CommunityInfoResponse;
 import com.hanshin.supernova.community.infrastructure.CommunityMemberRepository;
 import com.hanshin.supernova.community.infrastructure.CommunityRepository;
 import com.hanshin.supernova.exception.community.CommunityInvalidException;
@@ -45,8 +45,18 @@ public class CommunityService {
         // 커뮤니티 생성자 멤버 추가
         CommunityMember savedCommunityMember = buildCommunityMember(savedCommunity);
         communityMemberRepository.save(savedCommunityMember);
+        savedCommunity.getCommCounter().increaseMemberCnt();
 
-        return CommunityResponse.toResponse(savedCommunity.getId());
+        return CommunityResponse.toResponse(
+                savedCommunity.getId(),
+                savedCommunity.getName(),
+                savedCommunity.getDescription(),
+                savedCommunity.getCreatedAt(),
+                savedCommunity.isVisible(),
+                savedCommunity.isPublic(),
+                savedCommunity.isDormant(),
+                savedCommunity.getCommCounter()
+        );
     }
 
     /**
@@ -63,7 +73,16 @@ public class CommunityService {
 
         communityInfoUpdate(request, findCommunity);
 
-        return CommunityResponse.toResponse(findCommunity.getId());
+        return CommunityResponse.toResponse(
+                findCommunity.getId(),
+                findCommunity.getName(),
+                findCommunity.getDescription(),
+                findCommunity.getCreatedAt(),
+                findCommunity.isVisible(),
+                findCommunity.isPublic(),
+                findCommunity.isDormant(),
+                findCommunity.getCommCounter()
+        );
     }
 
     /**
@@ -84,10 +103,11 @@ public class CommunityService {
     /**
      * 커뮤니티 정보 제공
      */
-    public CommunityInfoResponse getCommunityInfo(Long cId) {
+    public CommunityResponse getCommunityInfo(Long cId) {
         Community findCommunity = getCommunity(cId);
 
-        return CommunityInfoResponse.toResponse(
+        return CommunityResponse.toResponse(
+                findCommunity.getId(),
                 findCommunity.getName(),
                 findCommunity.getDescription(),
                 findCommunity.getCreatedAt(),
@@ -101,7 +121,7 @@ public class CommunityService {
     /**
      * 커뮤니티 리스트 정보 제공
      */
-    public List<CommunitySummaryResponse> getAllCommunities() {
+    public List<CommunityInfoResponse> getAllCommunities() {
         List<Community> communities = communityRepository.findAll();
 
         return getCommunitySummaryResponseList(communities);
@@ -115,6 +135,12 @@ public class CommunityService {
     }
 
     private static Community buildCommunity(CommunityRequest request, Long creatorId) {
+        CommCounter commCounter = CommCounter.builder()
+                .memberCnt(0)
+                .questionCnt(0)
+                .visitorCnt(0)
+                .build();
+
         return Community.builder()
                 .name(request.getName())
                 .description(request.getDescription())
@@ -122,6 +148,7 @@ public class CommunityService {
                 .isPublic(request.isPublic())
                 .isDormant(false)
                 .createdBy(creatorId)
+                .commCounter(commCounter)
                 .build();
     }
 
@@ -153,14 +180,14 @@ public class CommunityService {
         }
     }
 
-    private static List<CommunitySummaryResponse> getCommunitySummaryResponseList(
+    private static List<CommunityInfoResponse> getCommunitySummaryResponseList(
             List<Community> communities
     ) {
-        List<CommunitySummaryResponse> communitySummaryResponses = new ArrayList<>();
+        List<CommunityInfoResponse> communitySummaryResponses = new ArrayList<>();
 
         communities.forEach(community -> {
             communitySummaryResponses.add(
-                    CommunitySummaryResponse.toResponse(
+                    CommunityInfoResponse.toResponse(
                             community.getId(),
                             community.getName(),
                             community.getCommCounter().getMemberCnt()

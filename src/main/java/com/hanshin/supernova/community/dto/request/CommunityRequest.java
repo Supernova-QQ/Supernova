@@ -1,5 +1,6 @@
 package com.hanshin.supernova.community.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -15,7 +16,9 @@ public class CommunityRequest {
 
     //    private String imageUrl;
 
+    @JsonProperty("isVisible")
     private boolean isVisible;
 
+    @JsonProperty("isPublic")
     private boolean isPublic;
 }
