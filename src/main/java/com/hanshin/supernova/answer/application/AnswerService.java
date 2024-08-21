@@ -9,6 +9,7 @@ import com.hanshin.supernova.exception.answer.AnswerInvalidException;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
+import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -165,6 +166,9 @@ public class AnswerService {
         Answer findAnswer = getAnswerById(aId);
         findAnswer.changeStatus();
 
+        Question findQuestion = getQuestionById(findAnswer.getQuestionId());
+        findQuestion.changeStatus();
+
         return AnswerResponse.toResponse(
                 findAnswer.getAnswererId(),
                 nickname,
@@ -175,6 +179,12 @@ public class AnswerService {
                 findAnswer.getSource(),
                 findAnswer.isAi(),
                 findAnswer.isAccepted()
+        );
+    }
+
+    private Question getQuestionById(Long qId) {
+        return questionRepository.findById(qId).orElseThrow(
+                () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
         );
     }
 

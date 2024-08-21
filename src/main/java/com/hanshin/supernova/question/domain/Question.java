@@ -47,8 +47,8 @@ public class Question extends BaseEntity {
         this.commId = commId;
     }
 
-    public void updateStatus(boolean isResolved) {
-        this.isResolved = isResolved;
+    public void changeStatus() {
+        this.isResolved = !isResolved;
     }
 
     public void updateViewCnt() {
