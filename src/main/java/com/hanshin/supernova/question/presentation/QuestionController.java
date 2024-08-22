@@ -1,5 +1,6 @@
 package com.hanshin.supernova.question.presentation;
 
+import com.hanshin.supernova.answer.application.AnswerService;
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.question.application.QuestionService;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
@@ -16,27 +17,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/api")
+@RequestMapping(path = "/api/questions")
 @RequiredArgsConstructor
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final AnswerService answerService;
 
-    @PostMapping(path = "/questions")
+    @PostMapping
     public ResponseEntity<?> createQuestion(
             @RequestBody @Valid QuestionRequest request) {
         var response = questionService.createQuestion(request);
         return ResponseDto.created(response);
     }
 
-    @GetMapping(path = "/questions/{q_id}")
+    @GetMapping(path = "/{q_id}")
     public ResponseEntity<?> readQuestion(
             @PathVariable("q_id") Long q_id) {
         var response = questionService.getQuestion(q_id);
         return ResponseDto.ok(response);
     }
 
-    @PutMapping(path = "/questions/{q_id}")
+    @PutMapping(path = "/{q_id}")
     public ResponseEntity<?> updateQuestion(
             @PathVariable("q_id") Long q_id,
             @RequestBody @Valid QuestionRequest request) {
@@ -44,13 +46,21 @@ public class QuestionController {
         return ResponseDto.ok(response);
     }
 
-    @DeleteMapping(path = "/questions/{q_id}")
+    @DeleteMapping(path = "/{q_id}")
     public ResponseEntity<?> deleteQuestion(
             @PathVariable("q_id") Long q_id
     ) {
         var response = questionService.deleteQuestion(q_id);
         return ResponseDto.ok(response);
     }
+
+//    @GetMapping(path = "/{q_id}/number-of-answers")
+//    public ResponseEntity<?> getNumberOfAnswers(
+//            @PathVariable("q_id") Long qId
+//    ) {
+//        var response = answerService.getAnswerCnt(qId);
+//        return ResponseDto.ok(response);
+//    }
 
     // TODO 커뮤니티 목록 제공 api 추가
 

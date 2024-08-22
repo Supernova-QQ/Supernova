@@ -10,6 +10,7 @@ import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.question.domain.Question;
+import com.hanshin.supernova.question.dto.response.QuestionInfoResponse;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +30,15 @@ public class AnswerService {
      */
     @Transactional
     public AnswerResponse createAnswer(Long qId, AnswerRequest request) {
-        isQuestionExistsById(qId);
+        Question findQuestion = getQuestionById(qId);
 
         Long userId = 1L;    // TODO user 정보 등록
         String nickname = "tester";
 
         Answer answer = buildAnswer(qId, request, userId);
         Answer savedAnswer = answerRepository.save(answer);
+
+//        findQuestion.increaseAnswerCnt();
 
         return AnswerResponse.toResponse(
                 savedAnswer.getAnswererId(),
@@ -55,7 +58,7 @@ public class AnswerService {
      */
     @Transactional(readOnly = true)
     public AnswerResponse getAnswer(Long qId, Long aId) {
-        isQuestionExistsById(qId);
+        getQuestionById(qId);
 
         Answer findAnswer = getAnswerById(aId);
 
@@ -79,7 +82,7 @@ public class AnswerService {
      */
     @Transactional
     public AnswerResponse editAnswer(Long qId, Long aId, AnswerRequest request) {
-        isQuestionExistsById(qId);
+        getQuestionById(qId);
 
         Long answererId = 1L;   // TODO user 정보
         String nickname = "tester";
@@ -112,7 +115,7 @@ public class AnswerService {
      */
     @Transactional
     public SuccessResponse deleteAnswer(Long qId, Long aId) {
-        isQuestionExistsById(qId);
+        Question findQuestion = getQuestionById(qId);
 
         Long answererId = 1L;   // TODO user 정보
 
@@ -121,6 +124,7 @@ public class AnswerService {
         validateSameUser(findAnswer, answererId);
 
         answerRepository.deleteById(findAnswer.getId());
+//        findQuestion.decreaseAnswerCnt();
 
         return new SuccessResponse("답변 삭제를 성공했습니다.");
     }
@@ -129,7 +133,7 @@ public class AnswerService {
      * 답변 전체 목록
      */
     public List<AnswerResponse> getAnswerList(Long qId) {
-        isQuestionExistsById(qId);
+        getQuestionById(qId);
 
         List<AnswerResponse> answerResponses = new ArrayList<>();
         List<Answer> findAnswers = answerRepository.findAllByQuestionId(qId);
@@ -159,14 +163,12 @@ public class AnswerService {
      */
     @Transactional
     public AnswerResponse acceptAnswer(Long qId, Long aId) {
-        isQuestionExistsById(qId);
+        Question findQuestion = getQuestionById(qId);
 
         String nickname = "tester"; // TODO user 정보 등록
 
         Answer findAnswer = getAnswerById(aId);
         findAnswer.changeStatus();
-
-        Question findQuestion = getQuestionById(findAnswer.getQuestionId());
         findQuestion.changeStatus();
 
         return AnswerResponse.toResponse(
@@ -182,17 +184,26 @@ public class AnswerService {
         );
     }
 
+//    /**
+//     * 답변 개수
+//     */
+//    @Transactional(readOnly = true)
+//    public QuestionInfoResponse getAnswerCnt(Long qId) {
+//        Question findQuestion = getQuestionById(qId);
+//
+//        return QuestionInfoResponse.toResponse(
+//                findQuestion.getId(),
+//                findQuestion.getTitle(),
+//                findQuestion.getContent(),
+//                findQuestion.getAnswerCnt()
+//        );
+//    }
+
+
     private Question getQuestionById(Long qId) {
         return questionRepository.findById(qId).orElseThrow(
                 () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
         );
-    }
-
-
-    private void isQuestionExistsById(Long qId) {
-        if (!questionRepository.existsById(qId)) {
-            throw new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR);
-        }
     }
 
     private static Answer buildAnswer(Long qId, AnswerRequest request, Long userId) {
