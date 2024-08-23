@@ -4,7 +4,9 @@ import com.hanshin.supernova.answer.application.AnswerService;
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.question.application.QuestionService;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
+import com.hanshin.supernova.question.dto.response.CommunityInfoResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -54,29 +56,12 @@ public class QuestionController {
         return ResponseDto.ok(response);
     }
 
-//    @GetMapping(path = "/{q_id}/number-of-answers")
-//    public ResponseEntity<?> getNumberOfAnswers(
-//            @PathVariable("q_id") Long qId
-//    ) {
-//        var response = answerService.getAnswerCnt(qId);
-//        return ResponseDto.ok(response);
-//    }
-
-    // TODO 커뮤니티 목록 제공 api 추가
-
-//    @GetMapping(path = "/communities/{c_id}/unanswered-questions")
-//    public ResponseEntity<?> unansweredQuestionList(
-//            @PathVariable("c_id") Long c_id) {
-//        var response = questionService.getUnAnsweredQuestions(c_id);
-//        return ResponseDto.ok(response);
-//    }
-//
-//    @GetMapping(path = "/communities/{c_id}/questions")
-//    public ResponseEntity<?> allQuestionList(
-//            @PathVariable("c_id") Long c_id
-//    ) {
-//        var response = questionService.getAllQuestions(c_id);
-//        return ResponseDto.ok(response);
-//    }
+    @GetMapping(path = "/{q_id}/my-communities")
+    public ResponseEntity<?> getMyCommunities(
+            @PathVariable("q_id") Long q_id
+    ) {
+        List<CommunityInfoResponse> responses = questionService.getMyCommunities(q_id);
+        return ResponseDto.ok(responses);
+    }
 
 }
