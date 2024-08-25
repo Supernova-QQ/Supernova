@@ -17,7 +17,6 @@ public class QuestionResponse {
     private int viewCnt;
     private int recCnt;
     private Long commId;
-    private List<String> hashtagNames;
 //    private String questionerId;
 
     public static QuestionResponse toResponse(
@@ -28,10 +27,9 @@ public class QuestionResponse {
             LocalDateTime modifiedAt,
             int viewCnt,
             int recCnt,
-            Long commId,
-            List<String> hashtagNames
+            Long commId
     ) {
         return new QuestionResponse(title, content, isResolved, createdAt, modifiedAt, viewCnt,
-                recCnt, commId, hashtagNames);
+                recCnt, commId);
     }
 }

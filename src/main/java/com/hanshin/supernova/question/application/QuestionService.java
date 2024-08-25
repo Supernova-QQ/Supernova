@@ -1,19 +1,23 @@
 package com.hanshin.supernova.question.application;
 
 import com.hanshin.supernova.common.dto.SuccessResponse;
+import com.hanshin.supernova.community.domain.CommunityMember;
+import com.hanshin.supernova.community.infrastructure.CommunityMemberRepository;
+import com.hanshin.supernova.community.infrastructure.CommunityRepository;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
+import com.hanshin.supernova.exception.community.CommunityInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.domain.QuestionView;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
-import com.hanshin.supernova.question.dto.response.QuestionInfoResponse;
+import com.hanshin.supernova.question.dto.response.CommunityInfoResponse;
 import com.hanshin.supernova.question.dto.response.QuestionResponse;
 import com.hanshin.supernova.question.dto.response.QuestionSaveResponse;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.question.infrastructure.QuestionViewRepository;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,32 +29,25 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final QuestionViewRepository questionViewRepository;
+    private final CommunityRepository communityRepository;
+    private final CommunityMemberRepository communityMemberRepository;
 
     /**
      * 질문 등록
      */
     @Transactional
     public QuestionSaveResponse createQuestion(QuestionRequest request) {
+        isCommunityExistsById(request.getCommId());
 
-        isTitleAndContentNeitherBlank(request);
-
-        // TODO user 정보 받아오기
-
-        // TODO commId 유효성 검사
-
+        Long user_id = 1L;  // TODO user 정보 받아오기
         Question question = Question.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
-                .questionerId(1L)   // TODO user id
+                .questionerId(user_id)
                 .commId(request.getCommId())
                 .build();
 
         Question savedQuestion = questionRepository.save(question);
-
-        // TODO hashtag save logic
-
-        // TODO community save logic
-//        communityService.registerQuestion()
 
         // TODO ContentWord save logic
 
@@ -60,7 +57,7 @@ public class QuestionService {
     /**
      * 질문 조회
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public QuestionResponse getQuestion(Long qId) {
 
         // 조회를 시도하는 회원의 중복 체크 및 조회수 증가
@@ -81,9 +78,6 @@ public class QuestionService {
             questionViewRepository.findByViewerId(viewer_id).updateViewedAt();
         }
 
-        // TODO get hashtag
-        List<String> hashtagNames = new LinkedList<>();
-
         return QuestionResponse.toResponse(
                 findQuestion.getTitle(),
                 findQuestion.getContent(),
@@ -92,8 +86,7 @@ public class QuestionService {
                 findQuestion.getModifiedAt(),
                 findQuestion.getViewCnt(),
                 findQuestion.getRecommendationCnt(),
-                findQuestion.getCommId(),
-                hashtagNames);
+                findQuestion.getCommId());
     }
 
     /**
@@ -101,27 +94,19 @@ public class QuestionService {
      */
     @Transactional
     public QuestionSaveResponse editQuestion(Long qId, QuestionRequest request) {
+        isCommunityExistsById(request.getCommId());
 
         Question findQuestion = getQuestionById(qId);
 
-        // TODO user 정보 받아오기
-        Long user_id = 1L;
+        Long user_id = 1L;  // TODO user 정보 받아오기
         validateSameUserById(findQuestion, user_id);
 
-        // TODO commId 유효성 검사
-
-        isTitleAndContentNeitherBlank(request);
         findQuestion.updateQuestion(request.getTitle(), request.getContent(), request.getCommId());
-
-        // TODO hashtag update logic
-
-        // TODO community update logic
 
         // TODO ContentWord update logic
 
         return QuestionSaveResponse.toResponse(findQuestion.getId());
     }
-
 
     /**
      * 질문 삭제
@@ -131,8 +116,7 @@ public class QuestionService {
 
         Question findQuestion = getQuestionById(qId);
 
-        // TODO user 정보 받아오기
-        Long user_id = 1L;
+        Long user_id = 1L;  // TODO user 정보 받아오기
         validateSameUserById(findQuestion, user_id);
 
         questionRepository.deleteById(qId);
@@ -141,39 +125,34 @@ public class QuestionService {
     }
 
     /**
-     * 질문 목록 제공
+     * 사용자가 등록된 커뮤니티 목록 제공
      */
-//    public List<QuestionInfoResponse> getUnAnsweredQuestions(Long cId) {
-//
-//        // TODO community 정보 받아오기
-//
-//        List<Question> findUnAnsweredQuestions = questionRepository.findAllByCommIdAndIsResolved(
-//                cId, false);
-//
-//        return getQuestionInfoResponses(
-//                findUnAnsweredQuestions);
-//    }
-//
-//    public List<QuestionInfoResponse> getAllQuestions(Long cId) {
-//
-//        // TODO community 정보 받아오기
-//
-//        List<Question> findAllQuestions = questionRepository.findAllByCommId(cId);
-//
-//        return getQuestionInfoResponses(
-//                findAllQuestions);
-//    }
+    @Transactional(readOnly = true)
+    public List<CommunityInfoResponse> getMyCommunities(Long qId) {
+        Long user_id = 1L;  // TODO user 정보 받아오기
+        List<CommunityInfoResponse> communityInfoResponses = new ArrayList<>();
 
+        List<CommunityMember> findCMembers = communityMemberRepository.findAllByUserId(user_id);
+        findCMembers.forEach(findMember -> {
+            communityInfoResponses.add(CommunityInfoResponse.toResponse(
+                    findMember.getCommunityId(),
+                    findMember.getCommunityName()
+            ));
+        });
+
+        return communityInfoResponses;
+    }
+
+
+    private void isCommunityExistsById(Long commId) {
+        if (!communityRepository.existsById(commId)) {
+            throw new CommunityInvalidException(ErrorType.COMMUNITY_NOT_FOUND_ERROR);
+        }
+    }
 
     private static void validateSameUserById(Question findQuestion, Long user_id) {
         if (!findQuestion.getQuestionerId().equals(user_id)) {
             throw new AuthInvalidException(ErrorType.NON_IDENTICAL_USER_ERROR);
-        }
-    }
-
-    private static void isTitleAndContentNeitherBlank(QuestionRequest request) {
-        if (request.getTitle().isBlank() || request.getContent().isBlank()) {
-            throw new QuestionInvalidException(ErrorType.NEITHER_BLANK_ERROR);
         }
     }
 
@@ -182,18 +161,5 @@ public class QuestionService {
                 () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
         );
     }
-
-//    private static List<QuestionInfoResponse> getQuestionInfoResponses(
-//            List<Question> findUnAnsweredQuestions) {
-//        List<QuestionInfoResponse> questionInfoResponses = new LinkedList<>();
-//        findUnAnsweredQuestions.forEach(question -> {
-//            questionInfoResponses.add(QuestionInfoResponse.toResponse(
-//                    question.getId(),
-//                    question.getTitle(),
-//                    question.getContent()
-//            ));
-//        });
-//        return questionInfoResponses;
-//    }
 
 }
