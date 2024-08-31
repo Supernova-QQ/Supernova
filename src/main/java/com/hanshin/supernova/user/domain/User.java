@@ -28,6 +28,9 @@ public class User extends BaseEntity {
     @Column(name = "nickname", unique = true)
     private String nickname;
 
+    @Enumerated
+    private Authority authority;
+
     @Embedded
     private Activity activity;
 

@@ -21,10 +21,13 @@ public enum ErrorType {
     NON_IDENTICAL_COMMUNITY_CREATOR_ERROR(HttpStatus.FORBIDDEN, "커뮤니티의 생성자가 아닙니다."),
 
     // admin 예외
-    NON_ADMIN_AUTH_ERROR(HttpStatus.FORBIDDEN, "관리자 권한이 필요한 서비스 입니다."),
+    ONLY_ADMIN_AUTHORITY_ERROR(HttpStatus.BAD_REQUEST, "관리자 권한이 필요한 기능입니다."),
 
     // auth 예외
     NON_IDENTICAL_USER_ERROR(HttpStatus.FORBIDDEN, "작성자와 접근자가 일치하지 않습니다."),
+
+    // user 예외
+    SYSTEM_USER_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "시스템 유저를 찾을 수 없습니다."),
 
     // 토큰 오류
     AUTHORIZATION_ERROR(HttpStatus.UNAUTHORIZED, "인증, 인가 오류"),
@@ -46,7 +49,11 @@ public enum ErrorType {
 
     // 해시태그 예외
     HASHTAG_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id 에 해당하는 해시태그가 존재하지 않습니다."),
-    HASHTAG_MAX_SIZE_5_ERROR(HttpStatus.BAD_REQUEST, "해시태그는 최대 5개까지 등록 가능합니다.");
+    HASHTAG_MAX_SIZE_5_ERROR(HttpStatus.BAD_REQUEST, "해시태그는 최대 5개까지 등록 가능합니다."),
+
+    // 알림 예외
+    NOT_RECEIVER_ERROR(HttpStatus.BAD_REQUEST, "알림을 수신하는 당사자가 아닙니다."),
+    NEWS_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id 에 맞는 알림이 존재하지 않습니다.");
 
     private final HttpStatus status;
     private final String message;
