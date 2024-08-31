@@ -1,5 +1,6 @@
 package com.hanshin.supernova.question.presentation;
 
+import com.hanshin.supernova.answer.application.AnswerService;
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.question.application.QuestionService;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final AnswerService answerService;
 
     @PostMapping
     public ResponseEntity<?> createQuestion(

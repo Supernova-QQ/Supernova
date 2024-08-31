@@ -43,6 +43,7 @@ public class QuestionListService {
         List<Question> findUnAnsweredQuestions = questionRepository.findByIsResolvedOrderByCreatedAtDesc(false, pageable);
 
         return getQuestionInfoResponses(findUnAnsweredQuestions);
+
     }
 
     /**
