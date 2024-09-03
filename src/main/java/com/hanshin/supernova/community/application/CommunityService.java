@@ -1,6 +1,6 @@
 package com.hanshin.supernova.community.application;
 
-import static com.hanshin.supernova.exception.dto.ErrorType.NON_ADMIN_AUTH_ERROR;
+import static com.hanshin.supernova.exception.dto.ErrorType.ONLY_ADMIN_AUTHORITY_ERROR;
 
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.community.domain.Autority;
@@ -210,7 +210,7 @@ public class CommunityService {
 
     private static void isCommunityCreator(Community findCommunity, Long userId) {
         if (!findCommunity.getCreatedBy().equals(userId)) {
-            throw new CommunityInvalidException(NON_ADMIN_AUTH_ERROR);
+            throw new CommunityInvalidException(ONLY_ADMIN_AUTHORITY_ERROR);
         }
     }
 

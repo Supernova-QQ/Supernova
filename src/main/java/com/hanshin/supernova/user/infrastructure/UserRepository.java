@@ -1,5 +1,6 @@
 package com.hanshin.supernova.user.infrastructure;
 
+import com.hanshin.supernova.user.domain.Authority;
 import com.hanshin.supernova.user.domain.User;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -18,4 +19,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByNickname(String nickname);
 
     Optional<User> findByEmail(String email);
+
+    Optional<User> findByAuthority(Authority authority);
 }
