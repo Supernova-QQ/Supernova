@@ -6,7 +6,7 @@ import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.dto.response.QuestionInfoResponse;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
-import java.awt.print.Pageable;
+import org.springframework.data.domain.Pageable;
 import java.util.LinkedList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -39,12 +39,11 @@ public class QuestionListService {
     public List<QuestionInfoResponse> getUnAnswered4QuestionsByDesc(Long cId, int n) {
         isCommunityExistsById(cId);
 
-        List<Question> findUnAnsweredQuestions = questionRepository.findTopNByIsResolvedOrderByCreatedAtDesc(
-                false,
-                (Pageable) PageRequest.of(0, n));
+        Pageable pageable = PageRequest.of(0, n);
+        List<Question> findUnAnsweredQuestions = questionRepository.findByIsResolvedOrderByCreatedAtDesc(false, pageable);
 
-        return getQuestionInfoResponses(
-                findUnAnsweredQuestions);
+        return getQuestionInfoResponses(findUnAnsweredQuestions);
+
     }
 
     /**
