@@ -12,6 +12,8 @@ import com.hanshin.supernova.notice.infrastructure.NoticeRepository;
 import com.hanshin.supernova.user.domain.Authority;
 import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.user.infrastructure.UserRepository;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -68,6 +70,30 @@ public class NoticeService {
         return new SuccessResponse("공지사항 삭제를 성공했습니다.");
     }
 
+    /**
+     * 공지사항 목록 최신순
+     */
+    public List<NoticeResponse> getAllNotices() {
+        List<Notice> notices = noticeRepository.findAllByOrderByCreatedAtDesc();
+        List<NoticeResponse> responses = new ArrayList<>();
+        notices.forEach(notice -> {
+            responses.add(getNoticeResponse(notice));
+        });
+        return responses;
+    }
+
+    /**
+     * 고정된 공지사항 목록
+     */
+    public List<NoticeResponse> getPinnedNotices() {
+        List<Notice> notices = noticeRepository.findPinnedNotices();
+        List<NoticeResponse> responses = new ArrayList<>();
+        notices.forEach(notice -> {
+            responses.add(getNoticeResponse(notice));
+        });
+        return responses;
+    }
+
 
     private static Notice buildNotice(NoticeRequest request) {
         return Notice.builder()
@@ -102,5 +128,4 @@ public class NoticeService {
                 savedNotice.isPinned()
         );
     }
-
 }

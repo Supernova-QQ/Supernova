@@ -4,7 +4,9 @@ import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.notice.application.NoticeService;
 import com.hanshin.supernova.notice.dto.request.NoticeRequest;
+import com.hanshin.supernova.notice.dto.response.NoticeResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -58,5 +60,19 @@ public class NoticeController {
     ) {
         var response = noticeService.deleteNotice(user.getId(), noticeId);
         return ResponseDto.ok(response);
+    }
+
+    // 공지사항 목록 최신순
+    @GetMapping
+    public ResponseEntity<?> getAllNotices() {
+        List<NoticeResponse> responses = noticeService.getAllNotices();
+        return ResponseDto.ok(responses);
+    }
+
+    // 고정된 공지사항 목록
+    @GetMapping("/pinned-list")
+    public ResponseEntity<?> getPinnedNotices() {
+        List<NoticeResponse> responses = noticeService.getPinnedNotices();
+        return ResponseDto.ok(responses);
     }
 }
