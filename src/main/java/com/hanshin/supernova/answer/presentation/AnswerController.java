@@ -3,6 +3,7 @@ package com.hanshin.supernova.answer.presentation;
 import com.hanshin.supernova.answer.application.AnswerService;
 import com.hanshin.supernova.answer.dto.request.AnswerRequest;
 import com.hanshin.supernova.answer.dto.response.AnswerResponse;
+import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.model.ResponseDto;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -27,39 +28,43 @@ public class AnswerController {
 
     @PostMapping
     public ResponseEntity<?> createAnswer(
+            AuthUser user,
             @PathVariable("q_id") Long qId,
             @RequestBody @Valid AnswerRequest request
     ) {
-        var response = answerService.createAnswer(qId, request);
+        var response = answerService.createAnswer(user, qId, request);
         return ResponseDto.created(response);
     }
 
     @GetMapping(path = "/{a_id}")
     public ResponseEntity<?> getAnswer(
+            AuthUser user,
             @PathVariable("q_id") Long qId,
             @PathVariable("a_id") Long aId
     ) {
-        var response = answerService.getAnswer(qId, aId);
+        var response = answerService.getAnswer(user, qId, aId);
         return ResponseDto.ok(response);
     }
 
     @PutMapping(path = "/{a_id}")
     public ResponseEntity<?> updateAnswer(
+            AuthUser user,
             @PathVariable("q_id") Long qId,
             @PathVariable("a_id") Long aId,
             @RequestBody @Valid AnswerRequest request
     ) {
-        var response = answerService.editAnswer(qId, aId, request);
+        var response = answerService.editAnswer(user, qId, aId, request);
         return ResponseDto.ok(response);
 
     }
 
     @DeleteMapping(path = "/{a_id}")
     public ResponseEntity<?> deleteAnswer(
+            AuthUser user,
             @PathVariable("q_id") Long qId,
             @PathVariable("a_id") Long aId
     ) {
-        var response = answerService.deleteAnswer(qId, aId);
+        var response = answerService.deleteAnswer(user, qId, aId);
         return ResponseDto.ok(response);
 
     }
@@ -74,10 +79,11 @@ public class AnswerController {
 
     @PatchMapping(path = "/{a_id}")
     public ResponseEntity<?> acceptAnswer(
+            AuthUser user,
             @PathVariable("q_id") Long qId,
             @PathVariable("a_id") Long aId
     ) {
-        var response = answerService.acceptAnswer(qId, aId);
+        var response = answerService.acceptAnswer(user, qId, aId);
         return ResponseDto.ok(response);
 
     }
