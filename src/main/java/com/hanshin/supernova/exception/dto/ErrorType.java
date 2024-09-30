@@ -54,7 +54,13 @@ public enum ErrorType {
 
     // 알림 예외
     NOT_RECEIVER_ERROR(HttpStatus.BAD_REQUEST, "알림을 수신하는 당사자가 아닙니다."),
-    NEWS_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id 에 맞는 알림이 존재하지 않습니다.");
+    NEWS_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id 에 맞는 알림이 존재하지 않습니다."),
+
+    // gpt 예외
+    JSON_PARSE_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "파싱 과정에서 문제가 생겼습니다."),
+    GPT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인가되지 않은 요청입니다."),
+    GPT_RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "요청이 너무 많습니다."),
+    GPT_REQUEST_FAILED(HttpStatus.BAD_REQUEST, "요청이 실패하였습니다.");
 
     private final HttpStatus status;
     private final String message;
