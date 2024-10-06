@@ -38,7 +38,7 @@ public class AnswerService {
         Answer answer = buildAnswer(qId, request, userId);
         Answer savedAnswer = answerRepository.save(answer);
 
-//        findQuestion.increaseAnswerCnt();
+        findQuestion.increaseAnswerCnt();
 
         return AnswerResponse.toResponse(
                 savedAnswer.getAnswererId(),
@@ -124,7 +124,7 @@ public class AnswerService {
         validateSameUser(findAnswer, answererId);
 
         answerRepository.deleteById(findAnswer.getId());
-//        findQuestion.decreaseAnswerCnt();
+        findQuestion.decreaseAnswerCnt();
 
         return new SuccessResponse("답변 삭제를 성공했습니다.");
     }

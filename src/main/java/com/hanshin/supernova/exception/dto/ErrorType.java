@@ -47,6 +47,7 @@ public enum ErrorType {
 
     // 답변 예외
     ANSWER_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id에 해당하는 답변이 존재하지 않습니다."),
+    ANSWER_CNT_NEGATIVE_ERROR(HttpStatus.BAD_REQUEST, "답변 수는 0보다 작을 수 없습니다."),
 
     // 해시태그 예외
     HASHTAG_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id 에 해당하는 해시태그가 존재하지 않습니다."),
