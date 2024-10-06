@@ -1,7 +1,8 @@
 package com.hanshin.supernova.question.presentation;
 
-import com.hanshin.supernova.answer.application.AnswerService;
+import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.model.ResponseDto;
+import com.hanshin.supernova.orchestration.application.QuestionOrchestrator;
 import com.hanshin.supernova.question.application.QuestionService;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
 import com.hanshin.supernova.question.dto.response.CommunityInfoResponse;
@@ -23,44 +24,49 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class QuestionController {
 
+    private final QuestionOrchestrator questionOrchestrator;
     private final QuestionService questionService;
-    private final AnswerService answerService;
 
     @PostMapping
     public ResponseEntity<?> createQuestion(
+            AuthUser user,
             @RequestBody @Valid QuestionRequest request) {
-        var response = questionService.createQuestion(request);
+        var response = questionOrchestrator.createQuestionWithAiAnswer(user, request);
         return ResponseDto.created(response);
     }
 
     @GetMapping(path = "/{q_id}")
     public ResponseEntity<?> readQuestion(
+            AuthUser user,
             @PathVariable("q_id") Long q_id) {
-        var response = questionService.getQuestion(q_id);
+        var response = questionService.getQuestion(user, q_id);
         return ResponseDto.ok(response);
     }
 
     @PutMapping(path = "/{q_id}")
     public ResponseEntity<?> updateQuestion(
+            AuthUser user,
             @PathVariable("q_id") Long q_id,
             @RequestBody @Valid QuestionRequest request) {
-        var response = questionService.editQuestion(q_id, request);
+        var response = questionService.editQuestion(user, q_id, request);
         return ResponseDto.ok(response);
     }
 
     @DeleteMapping(path = "/{q_id}")
     public ResponseEntity<?> deleteQuestion(
+            AuthUser user,
             @PathVariable("q_id") Long q_id
     ) {
-        var response = questionService.deleteQuestion(q_id);
+        var response = questionService.deleteQuestion(user, q_id);
         return ResponseDto.ok(response);
     }
 
     @GetMapping(path = "/{q_id}/my-communities")
     public ResponseEntity<?> getMyCommunities(
+            AuthUser user,
             @PathVariable("q_id") Long q_id
     ) {
-        List<CommunityInfoResponse> responses = questionService.getMyCommunities(q_id);
+        List<CommunityInfoResponse> responses = questionService.getMyCommunities(user, q_id);
         return ResponseDto.ok(responses);
     }
 
