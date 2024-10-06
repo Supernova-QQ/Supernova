@@ -1,13 +1,18 @@
 package com.hanshin.supernova.user.v2.application;
 
+import com.hanshin.supernova.auth.v2.application.SecurityTokenService;
 import com.hanshin.supernova.exception.dto.ErrorType;
+import com.hanshin.supernova.exception.user.UserInvalidException;
 import com.hanshin.supernova.exception.user.UserRegisterInvalidException;
 import com.hanshin.supernova.user.v2.domain.SecurityUser;
 import com.hanshin.supernova.user.v2.domain.Authority;
 import com.hanshin.supernova.user.v2.dto.request.SecurityUserRegisterRequest;
 import com.hanshin.supernova.user.v2.dto.response.SecurityUserRegisterResponse;
+import com.hanshin.supernova.user.v2.dto.response.SecurityUserUpdatePasswordResponse;
 import com.hanshin.supernova.user.v2.infrastructure.SecurityUserRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +24,36 @@ public class SecurityUserService implements SecurityUserServiceInterface {
 
     private final SecurityUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SecurityTokenService tokenService;
+
+
+    @Transactional
+    public SecurityUserUpdatePasswordResponse updatePassword(String email, @NotNull String currentPassword, @NotNull String newPassword, @NotNull String confirmPassword) {
+        // 현재 비밀번호 일치 검사
+        SecurityUser user = validatePassword(email, currentPassword);
+
+        // 변경할 비밀번호 일치 검사
+        if (!newPassword.equals(confirmPassword)) {
+            throw new UserInvalidException(ErrorType.PASSWORD_NOT_MATCH_ERROR);
+        }
+
+        // 비밀번호 업데이트
+        user.updatePassword(passwordEncoder.encode(newPassword));
+
+        // JWT 토큰 생성
+        String token = tokenService.jwtBuilder(user.getId(), user.getNickname());
+
+        return new SecurityUserUpdatePasswordResponse(user.getId(), token);
+    }
+
+    private SecurityUser validatePassword(String email, @NotNull String currentPassword) {
+        SecurityUser user = loadUserByEmail(email);
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new UserInvalidException(ErrorType.INVALID_PASSWORD);
+        }
+        return user;
+    }
+
 
     @Override
     public SecurityUserRegisterResponse registerUser(@Valid SecurityUserRegisterRequest request) {

@@ -35,4 +35,8 @@ public class SecurityUser {
 
     @Embedded
     private Activity activity;
+
+    public void updatePassword(String newPassword){
+        this.password = newPassword;
+    }
 }

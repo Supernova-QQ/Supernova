@@ -19,7 +19,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/api/security/auth/login", "/api/security/auth/logout", "/api/security/users").permitAll() // 공개 URL
+                        .requestMatchers("/", "/api/security/auth/login", "/api/security/auth/logout", "/api/security/auth/register", "/api/security/my/password_reset").permitAll() // 공개 URL
                         .anyRequest().authenticated()) // 인증이 필요한 주소
                 .formLogin(login -> login
                         .loginPage("/loginForm") // 로그인 페이지 설정
