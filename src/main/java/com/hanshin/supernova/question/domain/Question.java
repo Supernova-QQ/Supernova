@@ -1,6 +1,8 @@
 package com.hanshin.supernova.question.domain;
 
 import com.hanshin.supernova.common.entity.BaseEntity;
+import com.hanshin.supernova.exception.answer.AnswerInvalidException;
+import com.hanshin.supernova.exception.dto.ErrorType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,8 +36,8 @@ public class Question extends BaseEntity {
     private int viewCnt;
     @Column(name = "recommendation_cnt")
     private int recommendationCnt;
-//    @Column(name = "answer_cnt")
-//    private Long answerCnt;
+    @Column(name = "answer_cnt")
+    private int answerCnt;
 
     // 참조 정보
     @Column(name = "questioner_id")
@@ -61,12 +63,16 @@ public class Question extends BaseEntity {
         this.recommendationCnt++;
     }
 
-//    public void increaseAnswerCnt() {
-//        this.answerCnt++;
-//    }
-//
-//    public void decreaseAnswerCnt() {
-//        this.answerCnt--;
-//    }   // TODO 답변 수가 0 아래로 내려갈 때 예외
+    public void increaseAnswerCnt() {
+        this.answerCnt++;
+    }
+
+    public void decreaseAnswerCnt() {
+        if(this.answerCnt > 0) {
+            this.answerCnt--;
+        } else {
+            throw new AnswerInvalidException(ErrorType.ANSWER_CNT_NEGATIVE_ERROR);
+        }
+    }
 
 }
