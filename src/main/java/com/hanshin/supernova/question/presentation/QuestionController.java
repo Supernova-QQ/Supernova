@@ -61,6 +61,18 @@ public class QuestionController {
         return ResponseDto.ok(response);
     }
 
+    /**
+     * 기존 추천 이력 유무에 따라 추천수 증감
+     */
+    @PostMapping(path = "/{q_id}/recommendation")
+    public ResponseEntity<?> recommendQuestion(
+            AuthUser user,
+            @PathVariable("q_id") Long qId
+    ) {
+        var response = questionService.updateQuestionRecommendation(user, qId);
+        return ResponseDto.ok(response);
+    }
+
     @GetMapping(path = "/{q_id}/my-communities")
     public ResponseEntity<?> getMyCommunities(
             AuthUser user,

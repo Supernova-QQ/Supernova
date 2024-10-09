@@ -1,6 +1,9 @@
 package com.hanshin.supernova.answer.domain;
 
 import com.hanshin.supernova.common.entity.BaseEntity;
+import com.hanshin.supernova.exception.answer.AnswerInvalidException;
+import com.hanshin.supernova.exception.dto.ErrorType;
+import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -58,8 +61,11 @@ public class Answer extends BaseEntity {
     public void increaseRecommendationCnt() {
         this.recommendationCnt++;
     }
-
     public void decreaseRecommendationCnt() {
-        this.recommendationCnt--;
+        if (this.recommendationCnt > 0) {
+            this.recommendationCnt--;
+        } else {
+            throw new AnswerInvalidException(ErrorType.CNT_NEGATIVE_ERROR);
+        }
     }
 }

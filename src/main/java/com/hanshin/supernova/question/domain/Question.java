@@ -3,6 +3,7 @@ package com.hanshin.supernova.question.domain;
 import com.hanshin.supernova.common.entity.BaseEntity;
 import com.hanshin.supernova.exception.answer.AnswerInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
+import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -59,8 +60,15 @@ public class Question extends BaseEntity {
         this.viewCnt++;
     }
 
-    public void updateRecommendationCnt() {
+    public void increaseRecommendationCnt() {
         this.recommendationCnt++;
+    }
+    public void decreaseRecommendationCnt() {
+        if (this.recommendationCnt > 0) {
+            this.recommendationCnt--;
+        } else {
+            throw new QuestionInvalidException(ErrorType.CNT_NEGATIVE_ERROR);
+        }
     }
 
     public void increaseAnswerCnt() {
