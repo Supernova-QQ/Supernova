@@ -15,6 +15,7 @@ public enum ErrorType {
 
     // common
     DUPLICATED_NAME_ERROR(HttpStatus.BAD_REQUEST, "중복된 이름입니다."),
+    CNT_NEGATIVE_ERROR(HttpStatus.BAD_REQUEST, "계수는 0보다 작을 수 없습니다."),
 
     // community
     COMMUNITY_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id에 해당하는 커뮤니티가 존재하지 않습니다."),
