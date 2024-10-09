@@ -1,5 +1,8 @@
 package com.hanshin.supernova.popularity.application;
 
+import com.hanshin.supernova.answer.domain.Answer;
+import com.hanshin.supernova.answer.infrastructure.AnswerRecommendationRepository;
+import com.hanshin.supernova.answer.infrastructure.AnswerRepository;
 import com.hanshin.supernova.community.domain.Community;
 import com.hanshin.supernova.community.infrastructure.CommunityRepository;
 import com.hanshin.supernova.exception.dto.ErrorType;
@@ -7,6 +10,7 @@ import com.hanshin.supernova.exception.hashtag.HashtagInvalidException;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.hashtag.domain.Hashtag;
 import com.hanshin.supernova.hashtag.infrastructure.HashtagRepository;
+import com.hanshin.supernova.popularity.dto.response.PopularAnswerResponse;
 import com.hanshin.supernova.popularity.dto.response.PopularCommunityResponse;
 import com.hanshin.supernova.popularity.dto.response.PopularHashtagResponse;
 import com.hanshin.supernova.popularity.dto.response.PopularQuestionResponse;
@@ -17,6 +21,7 @@ import com.hanshin.supernova.redis.community_stat.infrastructure.CommunityStatsR
 import com.hanshin.supernova.redis.hashtag_stat.infrastructure.HashtagStatsRepository;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +36,8 @@ public class MainPopularListService {
     private final QuestionRepository questionRepository;
     private final HashtagStatsRepository hashtagStatsRepository;
     private final HashtagRepository hashtagRepository;
+    private final AnswerRecommendationRepository answerRecommendationRepository;
+    private final AnswerRepository answerRepository;
 
     public List<PopularCommunityResponse> getTop3Communities() {
         LocalDate endDate = LocalDate.now();
@@ -55,15 +62,24 @@ public class MainPopularListService {
         return getPopularHashtagResponses(results);
     }
 
-    public PopularQuestionResponse getMostViewedQuestion() {
+    public Optional<PopularQuestionResponse> getMostViewedQuestion() {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(1);
         List<Object[]> results = questionViewRepository.findTopNQuestionsByViewCntInDateRange(
                 startDate, endDate, 1);
-        return getPopularQuestionResponses(results).get(0);
+        List<PopularQuestionResponse> responses = getPopularQuestionResponses(results);
+        return responses.isEmpty() ? Optional.empty() : Optional.of(responses.get(0));
     }
 
-//    public PopularAnswerResponse getMostLikedAnswer() {}
+    public Optional<PopularAnswerResponse> getMostLikedAnswer() {
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(1);
+        List<Object[]> results = answerRecommendationRepository.findTopNAnswersByRecommendationCntInDateRange(
+                startDate,
+                endDate, 1);
+        List<PopularAnswerResponse> responses = getPopularAnswerResponses(results);
+        return responses.isEmpty() ? Optional.empty() : Optional.of(responses.get(0));
+    }
 
 
     private List<PopularCommunityResponse> getPopularCommunityResponses(
@@ -120,5 +136,22 @@ public class MainPopularListService {
                 .collect(Collectors.toList());
     }
 
-//    public List<PopularCommunityResponse> getPopularCommunities() {}
+    private List<PopularAnswerResponse> getPopularAnswerResponses(
+            List<Object[]> results) {
+        return results.stream()
+                .map(result -> {
+                    Long answerId = (Long) result[0];
+                    Long recommendCnt = (Long) result[1];
+                    Answer findAnswer = answerRepository.findById(answerId)
+                            .orElseThrow(() -> new QuestionInvalidException(
+                                    ErrorType.QUESTION_NOT_FOUND_ERROR));
+                    return PopularAnswerResponse.builder()
+                            .questionId(findAnswer.getId())
+                            .answerId(answerId)
+                            .recommendCnt(recommendCnt)
+                            .answer(findAnswer.getAnswer())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
 }

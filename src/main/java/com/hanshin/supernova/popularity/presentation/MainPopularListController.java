@@ -2,6 +2,7 @@ package com.hanshin.supernova.popularity.presentation;
 
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.popularity.application.MainPopularListService;
+import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,17 +48,19 @@ public class MainPopularListController {
      */
     @GetMapping("/preday-most-viewed-question")
     public ResponseEntity<?> preDayMostViewedQuestion() {
-        var responses = mainPopularListService.getMostViewedQuestion();
-        return ResponseDto.ok(responses);
+        return mainPopularListService.getMostViewedQuestion()
+                .map(ResponseDto::ok)
+                .orElseGet(ResponseDto::notFound);
     }
 
     /**
      * 전날 최다 추천수 답변 1개
      */
-//    @GetMapping("/preday-most-viewed-answer")
-//    public ResponseEntity<?> preDayMostViewedAnswer() {
-//        var response = mainPopularListService.getMostLikedAnswer();
-//        return ResponseDto.ok(response);
-//    }
+    @GetMapping("/preday-most-recommended-answer")
+    public ResponseEntity<?> preDayMostRecommendedAnswer() {
+        return mainPopularListService.getMostLikedAnswer()
+                .map(ResponseDto::ok)
+                .orElseGet(ResponseDto::notFound);
+    }
 
 }

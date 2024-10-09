@@ -13,6 +13,6 @@ public class PopularAnswerResponse {
 
     private Long questionId;
     private Long answerId;
+    private Long recommendCnt;
     private String answer;
-
 }
