@@ -69,7 +69,7 @@ public class AnswerController {
 
     }
 
-    @GetMapping(path = "/list")
+    @GetMapping
     public ResponseEntity<?> getAnswerList(
             @PathVariable("q_id") Long qId
     ) {
@@ -86,5 +86,18 @@ public class AnswerController {
         var response = answerService.acceptAnswer(user, qId, aId);
         return ResponseDto.ok(response);
 
+    }
+
+    /**
+     * 기존 추천 이력 유무에 따라 추천수 증감
+     */
+    @PostMapping(path = "/{a_id}/recommendation")
+    public ResponseEntity<?> recommendAnswer(
+            AuthUser user,
+            @PathVariable("q_id") Long qId,
+            @PathVariable("a_id") Long aId
+    ) {
+        var response = answerService.updateAnswerRecommendation(user, aId);
+        return ResponseDto.ok(response);
     }
 }

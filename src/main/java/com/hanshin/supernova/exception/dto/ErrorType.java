@@ -26,6 +26,10 @@ public enum ErrorType {
 
     // auth 예외
     NON_IDENTICAL_USER_ERROR(HttpStatus.FORBIDDEN, "작성자와 접근자가 일치하지 않습니다."),
+    WRITER_CANNOT_RECOMMEND_ERROR(HttpStatus.FORBIDDEN, "자신의 게시물은 추천할 수 없습니다."),
+
+    // notice 예외
+    NOTICE_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "공지사항을 찾을 수 없습니다."),
 
     // user 예외
     SYSTEM_USER_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "시스템 유저를 찾을 수 없습니다."),
@@ -48,6 +52,7 @@ public enum ErrorType {
 
     // 답변 예외
     ANSWER_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id에 해당하는 답변이 존재하지 않습니다."),
+    ANSWER_CNT_NEGATIVE_ERROR(HttpStatus.BAD_REQUEST, "답변 수는 0보다 작을 수 없습니다."),
 
     // 해시태그 예외
     HASHTAG_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id 에 해당하는 해시태그가 존재하지 않습니다."),

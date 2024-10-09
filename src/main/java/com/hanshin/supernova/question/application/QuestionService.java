@@ -12,16 +12,20 @@ import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.exception.user.UserInvalidException;
 import com.hanshin.supernova.question.domain.Question;
+import com.hanshin.supernova.question.domain.QuestionRecommendation;
 import com.hanshin.supernova.question.domain.QuestionView;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
 import com.hanshin.supernova.question.dto.response.CommunityInfoResponse;
 import com.hanshin.supernova.question.dto.response.QuestionResponse;
 import com.hanshin.supernova.question.dto.response.QuestionSaveResponse;
+import com.hanshin.supernova.question.infrastructure.QuestionRecommendationRepository;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.question.infrastructure.QuestionViewRepository;
 import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.user.infrastructure.UserRepository;
 import java.time.LocalDate;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +43,7 @@ public class QuestionService {
     private final CommunityRepository communityRepository;
     private final CommunityMemberRepository communityMemberRepository;
     private final UserRepository userRepository;
+    private final QuestionRecommendationRepository questionRecommendationRepository;
 
     /**
      * 질문 등록
@@ -153,6 +158,41 @@ public class QuestionService {
         return new SuccessResponse("성공적으로 삭제되었습니다.");
     }
 
+    @Transactional
+    public QuestionResponse updateQuestionRecommendation(AuthUser user, Long qId) {
+        Question findQuestion = getQuestionById(qId);
+        User findUser = getUserOrThrowIfNotExist(user.getId());
+        // 자신의 질문은 추천하지 못하도록 예외처리
+        if(findQuestion.getQuestionerId().equals(findUser.getId())) {
+            throw new AuthInvalidException(ErrorType.WRITER_CANNOT_RECOMMEND_ERROR);
+        }
+        // 기존 추천한 이력 유무에 따른 추천수 증감
+        QuestionRecommendation questionRecommendation = questionRecommendationRepository.findByQuestionIdAndRecommenderId(
+                findQuestion.getId(), findUser.getId());
+        if (questionRecommendation == null) {
+            questionRecommendationRepository.save(QuestionRecommendation.builder()
+                    .recommendedAt(LocalDate.now())
+                    .questionId(findQuestion.getId())
+                    .recommenderId(findUser.getId())
+                    .build());
+
+            findQuestion.increaseRecommendationCnt();
+        } else {
+            questionRecommendationRepository.deleteById(questionRecommendation.getId());
+            findQuestion.decreaseRecommendationCnt();
+        }
+
+        return QuestionResponse.toResponse(
+                findQuestion.getTitle(),
+                findQuestion.getContent(),
+                findQuestion.isResolved(),
+                findQuestion.getCreatedAt(),
+                findQuestion.getModifiedAt(),
+                findQuestion.getViewCnt(),
+                findQuestion.getRecommendationCnt(),
+                findQuestion.getCommId());
+    }
+
     /**
      * 사용자가 등록된 커뮤니티 목록 제공
      */
@@ -162,7 +202,8 @@ public class QuestionService {
 
         List<CommunityInfoResponse> communityInfoResponses = new ArrayList<>();
 
-        List<CommunityMember> findCMembers = communityMemberRepository.findAllByUserId(findUser.getId());
+        List<CommunityMember> findCMembers = communityMemberRepository.findAllByUserId(
+                findUser.getId());
         findCMembers.forEach(findMember -> {
             communityInfoResponses.add(CommunityInfoResponse.toResponse(
                     findMember.getCommunityId(),

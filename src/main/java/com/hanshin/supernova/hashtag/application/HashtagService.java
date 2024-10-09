@@ -5,16 +5,20 @@ import static com.hanshin.supernova.hashtag.HashtagConstants.QUESTION_HASHTAG_MA
 import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.hashtag.HashtagInvalidException;
+import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.hashtag.domain.Hashtag;
 import com.hanshin.supernova.hashtag.domain.QuestionHashtag;
 import com.hanshin.supernova.hashtag.dto.request.HashtagRequest;
 import com.hanshin.supernova.hashtag.dto.response.HashtagSaveResponse;
 import com.hanshin.supernova.hashtag.infrastructure.HashtagRepository;
 import com.hanshin.supernova.hashtag.infrastructure.QuestionHashtagRepository;
+import com.hanshin.supernova.question.domain.Question;
+import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,6 +35,7 @@ public class HashtagService {
     private final QuestionHashtagRepository questionHashtagRepository;
     private final HttpServletRequest request;
     private final RedisTemplate<String, String> redisTemplate;
+    private final QuestionRepository questionRepository;
 
     @Transactional
     public HashtagSaveResponse saveQuestionHashtag(Long qId, HashtagRequest request,
@@ -103,5 +108,27 @@ public class HashtagService {
         valueOperations.set(key, userAgent);
         log.info("New Tagging data for hashtag recorded: hashtagId={}, taggerIdentifier={}",
                 hashtagId, taggerIdentifier);
+    }
+
+    // 해시태그 검색을 위한 메소드
+    @Transactional(readOnly = true)
+    public List<Question> getQuestionsByHashtagName(String hashtagName) {
+        Hashtag hashtagByName = hashtagRepository.findByName(hashtagName);
+
+        if(hashtagByName == null) {
+            return null;
+        }
+
+        List<QuestionHashtag> questionHashtags = questionHashtagRepository.findByHashtagId(
+                hashtagByName.getId());
+
+        List<Question> questions = new ArrayList<>();
+        questionHashtags.forEach(questionHashtag -> {
+            questions.add(questionRepository.findById(questionHashtag.getQuestionId()).orElseThrow(
+                    () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
+            ));
+        });
+
+        return questions;
     }
 }
