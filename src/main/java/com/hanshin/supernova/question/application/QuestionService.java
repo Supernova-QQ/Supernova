@@ -25,9 +25,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
@@ -70,6 +72,7 @@ public class QuestionService {
     @Transactional
     public QuestionResponse getQuestion(AuthUser user, Long qId) {
 
+        log.info("AuthUer.id = {}", user.getId());
         // 조회를 시도하는 회원의 중복 체크 및 조회수 증가
 
         Question findQuestion = getQuestionById(qId);
@@ -77,7 +80,7 @@ public class QuestionService {
         User findUser = getUserOrThrowIfNotExist(user.getId());
         Long viewer_id = findUser.getId();
 
-        if (!questionViewRepository.existsByViewerId(viewer_id)) {
+        if (!questionViewRepository.existsByViewerIdAndQuestionId(viewer_id, qId)) {
             questionViewRepository.save(
                     QuestionView.builder()
                             .viewedAt(LocalDate.now())
