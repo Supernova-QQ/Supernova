@@ -89,7 +89,7 @@ public class QuestionService {
                             .build());
             findQuestion.updateViewCnt();
         } else {
-            questionViewRepository.findByViewerId(viewer_id).updateViewedAt();
+            questionViewRepository.findByViewerIdAndQuestionId(viewer_id, qId).updateViewedAt();
         }
 
         return QuestionResponse.toResponse(

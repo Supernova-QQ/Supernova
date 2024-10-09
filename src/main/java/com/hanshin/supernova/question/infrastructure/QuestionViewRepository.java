@@ -15,7 +15,7 @@ public interface QuestionViewRepository extends JpaRepository<QuestionView, Long
 
     boolean existsByViewerIdAndQuestionId(Long viewerId, Long questionId);
 
-    QuestionView findByViewerId(Long viewerId);
+    QuestionView findByViewerIdAndQuestionId(Long viewerId, Long questionId);
 
     @Query("SELECT qv.questionId, COUNT(DISTINCT qv.viewerId) AS viewCnt "
             + "FROM QuestionView qv "
