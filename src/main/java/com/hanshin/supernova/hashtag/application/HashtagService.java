@@ -95,13 +95,13 @@ public class HashtagService {
                 (authUser != null) ? authUser.getId().toString() : request.getRemoteAddr();
         String userAgent = request.getHeader("User-Agent");
         String today = LocalDate.now().toString();
-        String key = "hashtag:" + hashtagId + ":visit:" + taggerIdentifier + ":" + today;
+        String key = "hashtag:" + hashtagId + ":tagging:" + taggerIdentifier + ":" + today;
 
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 
         // redis 에 해시태그 사용 정보 저장
         valueOperations.set(key, userAgent);
-        log.info("New Tagging data for hashtag recorded: hashtagId={}, viewerIdentifier={}",
+        log.info("New Tagging data for hashtag recorded: hashtagId={}, taggerIdentifier={}",
                 hashtagId, taggerIdentifier);
     }
 }
