@@ -1,5 +1,6 @@
 package com.hanshin.supernova.hashtag.presentaion;
 
+import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.hashtag.application.HashtagService;
 import com.hanshin.supernova.hashtag.dto.request.HashtagRequest;
@@ -24,9 +25,10 @@ public class HashtagController {
     @PostMapping("/questions/{q_id}")
     public ResponseEntity<?> saveHashtag(
             @PathVariable(name = "q_id") Long qId,
-            @RequestBody @Valid HashtagRequest hashtagRequest
+            @RequestBody @Valid HashtagRequest hashtagRequest,
+            AuthUser authUser
     ) {
-        var response = hashtagService.saveQuestionHashtag(qId, hashtagRequest);
+        var response = hashtagService.saveQuestionHashtag(qId, hashtagRequest, authUser);
         return ResponseDto.created(response);
     }
 
