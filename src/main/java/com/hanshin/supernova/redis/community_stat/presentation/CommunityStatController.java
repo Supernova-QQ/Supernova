@@ -1,7 +1,7 @@
-package com.hanshin.supernova.redis.visit.presentation;
+package com.hanshin.supernova.redis.community_stat.presentation;
 
 import com.hanshin.supernova.popularity.dto.response.DailyVisitorCntResponse;
-import com.hanshin.supernova.redis.visit.application.VisitService;
+import com.hanshin.supernova.redis.community_stat.application.CommunityStatService;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "/api/communities")
 @RequiredArgsConstructor
-public class VisitController {
+public class CommunityStatController {
 
-    private final VisitService visitService;
+    private final CommunityStatService communityStatService;
 
     @GetMapping("/{communityId}/visitors/daily")
     public ResponseEntity<DailyVisitorCntResponse> getDailyVisitorCount(
             @PathVariable(name = "communityId") Long communityId) {
         LocalDate targetDate = LocalDate.now();
-        var response = visitService.getDailyVisitorCount(communityId, targetDate);
+        var response = communityStatService.getDailyVisitorCount(communityId, targetDate);
         return ResponseEntity.ok(response);
     }
 }

@@ -1,7 +1,7 @@
-package com.hanshin.supernova.redis.visit.scheduler;
+package com.hanshin.supernova.redis.community_stat.scheduler;
 
-import com.hanshin.supernova.redis.visit.domain.Visitor;
-import com.hanshin.supernova.redis.visit.infrastructure.VisitorRepository;
+import com.hanshin.supernova.redis.community_stat.domain.CommunityStats;
+import com.hanshin.supernova.redis.community_stat.infrastructure.CommunityStatsRepository;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Set;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 public class VisitorScheduler {
 
     private final RedisTemplate<String, String> redisTemplate;
-    private final VisitorRepository visitorRepository;
+    private final CommunityStatsRepository communityStatsRepository;
 
     @Scheduled(initialDelay = 3600000, fixedDelay = 3600000)
     public void updateVisitorData() {
@@ -53,17 +53,17 @@ public class VisitorScheduler {
                 ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
                 String userAgent = valueOperations.get(key);
 
-                if (!visitorRepository.existsByVisitorIdentifierAndDateAndCommunityId(
+                if (!communityStatsRepository.existsByVisitorIdentifierAndDateAndCommunityId(
                         visitorIdentifier, date, communityId)
                 ) {
-                    Visitor visitor = Visitor.builder()
+                    CommunityStats visitor = CommunityStats.builder()
                             .userAgent(userAgent)
                             .visitorIdentifier(visitorIdentifier)
                             .date(date)
                             .communityId(communityId)
                             .build();
 
-                    visitorRepository.save(visitor);
+                    communityStatsRepository.save(visitor);
                     log.info("Saved new visitor: communityId={}, visitorIdentifier={}, date={}",
                             communityId, visitorIdentifier, date);
                 }

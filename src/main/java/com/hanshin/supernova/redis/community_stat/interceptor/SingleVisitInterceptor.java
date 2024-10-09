@@ -1,4 +1,4 @@
-package com.hanshin.supernova.redis.visit.interceptor;
+package com.hanshin.supernova.redis.community_stat.interceptor;
 
 import static com.hanshin.supernova.auth.AuthCostants.AUTH_TOKEN_HEADER_KEY;
 

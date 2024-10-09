@@ -1,4 +1,4 @@
-package com.hanshin.supernova.redis.visit.domain;
+package com.hanshin.supernova.redis.community_stat.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,8 +17,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "visitor")
-public class Visitor {
+@Table(name = "community_stats")
+public class CommunityStats {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
