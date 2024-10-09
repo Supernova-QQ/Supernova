@@ -63,7 +63,11 @@ public class QuestionService {
 
         // TODO ContentWord save logic
 
-        return QuestionSaveResponse.toResponse(savedQuestion.getId());
+        return QuestionSaveResponse.toResponse(
+                savedQuestion.getId(),
+                savedQuestion.getTitle(),
+                savedQuestion.getContent(),
+                savedQuestion.getCommId());
     }
 
     /**
@@ -120,7 +124,11 @@ public class QuestionService {
 
         // TODO ContentWord update logic
 
-        return QuestionSaveResponse.toResponse(findQuestion.getId());
+        return QuestionSaveResponse.toResponse(
+                findQuestion.getId(),
+                findQuestion.getTitle(),
+                findQuestion.getContent(),
+                findQuestion.getCommId());
     }
 
     /**

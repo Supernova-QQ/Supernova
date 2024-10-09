@@ -5,6 +5,9 @@ import static com.hanshin.supernova.auth.AuthCostants.AUTH_TOKEN_HEADER_KEY;
 import com.hanshin.supernova.auth.application.TokenService;
 import com.hanshin.supernova.auth.model.AuthToken;
 import com.hanshin.supernova.auth.model.AuthUser;
+import com.hanshin.supernova.community.infrastructure.CommunityRepository;
+import com.hanshin.supernova.exception.community.CommunityInvalidException;
+import com.hanshin.supernova.exception.dto.ErrorType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
@@ -28,6 +31,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class SingleVisitInterceptor implements HandlerInterceptor {
 
     private final RedisTemplate<String, String> redisTemplate;
+    private final CommunityRepository communityRepository;
 
     // TODO 만약 예원이가 한 내용 병합될 경우, TokenService -> SecurityTokenService
     private final TokenService tokenService;
@@ -39,6 +43,8 @@ public class SingleVisitInterceptor implements HandlerInterceptor {
         String communityId = extractCommunityId(request);
         if (communityId == null) {
             return true; // 커뮤니티 ID를 찾지 못한 경우 그냥 통과
+        } else if (!communityRepository.existsById(Long.parseLong(communityId))) {
+            throw new CommunityInvalidException(ErrorType.COMMUNITY_NOT_FOUND_ERROR);
         }
 
         // 토큰에서 AuthUser 정보 추출
