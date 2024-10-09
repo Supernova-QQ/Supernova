@@ -1,6 +1,6 @@
 package com.hanshin.supernova.config.web;
 
-import com.hanshin.supernova.redis.visit.interceptor.SingleVisitInterceptor;
+import com.hanshin.supernova.redis.community_stat.interceptor.SingleVisitInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;

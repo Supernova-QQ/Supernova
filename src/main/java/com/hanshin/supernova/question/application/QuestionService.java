@@ -2,6 +2,7 @@ package com.hanshin.supernova.question.application;
 
 import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.dto.SuccessResponse;
+import com.hanshin.supernova.community.domain.Community;
 import com.hanshin.supernova.community.domain.CommunityMember;
 import com.hanshin.supernova.community.infrastructure.CommunityMemberRepository;
 import com.hanshin.supernova.community.infrastructure.CommunityRepository;
@@ -20,7 +21,7 @@ import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.question.infrastructure.QuestionViewRepository;
 import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.user.infrastructure.UserRepository;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class QuestionService {
      */
     @Transactional
     public QuestionSaveResponse createQuestion(AuthUser user, QuestionRequest request) {
-        isCommunityExistsById(request.getCommId());
+        Community findCommunity = getCommunityOrThrowIfNotExist(request.getCommId());
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
@@ -54,6 +55,9 @@ public class QuestionService {
                 .build();
 
         Question savedQuestion = questionRepository.save(question);
+
+        // 커뮤니티에 등록된 질문 개수 증가
+        findCommunity.getCommCounter().increaseQuestionCnt();
 
         // TODO ContentWord save logic
 
@@ -76,7 +80,7 @@ public class QuestionService {
         if (!questionViewRepository.existsByViewerId(viewer_id)) {
             questionViewRepository.save(
                     QuestionView.builder()
-                            .viewedAt(LocalDateTime.now())
+                            .viewedAt(LocalDate.now())
                             .questionId(qId)
                             .viewerId(viewer_id)
                             .build());
@@ -101,7 +105,7 @@ public class QuestionService {
      */
     @Transactional
     public QuestionSaveResponse editQuestion(AuthUser user, Long qId, QuestionRequest request) {
-        isCommunityExistsById(request.getCommId());
+        getCommunityOrThrowIfNotExist(request.getCommId());
 
         Question findQuestion = getQuestionById(qId);
 
@@ -128,7 +132,12 @@ public class QuestionService {
 
         validateSameUserById(findQuestion, findUser.getId());
 
+        Community findCommunity = getCommunityOrThrowIfNotExist(
+                findQuestion.getCommId());
+
         questionRepository.deleteById(qId);
+
+        findCommunity.getCommCounter().decreaseQuestionCnt();
 
         return new SuccessResponse("성공적으로 삭제되었습니다.");
     }
@@ -160,10 +169,10 @@ public class QuestionService {
         );
     }
 
-    private void isCommunityExistsById(Long commId) {
-        if (!communityRepository.existsById(commId)) {
-            throw new CommunityInvalidException(ErrorType.COMMUNITY_NOT_FOUND_ERROR);
-        }
+    private Community getCommunityOrThrowIfNotExist(Long commId) {
+        return communityRepository.findById(commId).orElseThrow(
+                () -> new CommunityInvalidException(ErrorType.COMMUNITY_NOT_FOUND_ERROR)
+        );
     }
 
     private static void validateSameUserById(Question findQuestion, Long user_id) {
