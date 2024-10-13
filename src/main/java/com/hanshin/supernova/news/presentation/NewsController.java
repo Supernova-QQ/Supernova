@@ -1,6 +1,6 @@
 package com.hanshin.supernova.news.presentation;
 
-import com.hanshin.supernova.auth.model.AuthUser;
+import com.hanshin.supernova.auth.v2.model.SecurityAuthUser;
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.news.application.NewsService;
 import com.hanshin.supernova.news.dto.request.NewsRequest;
@@ -38,7 +38,7 @@ public class NewsController {
      */
     @GetMapping(path = "/{newsId}")
     public ResponseEntity<?> getNews(
-            AuthUser user,
+            SecurityAuthUser user,
             @PathVariable(name = "newsId") Long newsId
     ) {
         var response = newsService.getNews(user, newsId);
@@ -50,7 +50,7 @@ public class NewsController {
      */
     @PutMapping(path = "/{newsId}")
     public ResponseEntity<?> updateNews(
-            AuthUser user,
+            SecurityAuthUser user,
             @PathVariable(name = "newsId") Long newsId,
             @RequestBody @Valid NewsRequest request
     ) {
@@ -63,7 +63,7 @@ public class NewsController {
      */
     @DeleteMapping(path = "/{newsId}")
     public ResponseEntity<?> deleteNews(
-            AuthUser user,
+            SecurityAuthUser user,
             @PathVariable(name = "newsId") Long newsId
     ) {
         var response = newsService.deleteNews(user, newsId);
@@ -75,7 +75,7 @@ public class NewsController {
      */
     @GetMapping(path = "/unviewed-list")
     public ResponseEntity<?> getUnViewedNews(
-            AuthUser user
+            SecurityAuthUser user
     ) {
         var responses = newsService.getUnViewedNews(user);
         return ResponseDto.ok(responses);
@@ -86,7 +86,7 @@ public class NewsController {
      */
     @GetMapping(path = "/viewed-list")
     public ResponseEntity<?> getViewedNews(
-            AuthUser user
+            SecurityAuthUser user
     ) {
         var responses = newsService.getViewedNews(user);
         return ResponseDto.ok(responses);
