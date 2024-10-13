@@ -1,5 +1,6 @@
 package com.hanshin.supernova.security.config;
 
+import com.hanshin.supernova.auth.application.TokenServiceV3;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,9 +18,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
+                .csrf(csrf -> csrf.disable()) // JWT는 무상태(stateless)이므로 CSRF 보호 비활성화
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/api/security/auth/login", "/api/security/auth/logout", "/api/security/users").permitAll() // 공개 URL
+                        .requestMatchers("/", "/api/users/register", "/api/auth/login", "/api/auth/logout").permitAll() // 공개 URL
                         .anyRequest().authenticated()) // 인증이 필요한 주소
                 .formLogin(login -> login
                         .loginPage("/loginForm") // 로그인 페이지 설정
@@ -35,7 +36,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); // 패스워드 암호화
     }
+
 }

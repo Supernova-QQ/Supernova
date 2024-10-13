@@ -1,8 +1,8 @@
 package com.hanshin.supernova.config.resolver;
 
-import com.hanshin.supernova.auth.v2.application.SecurityTokenService;
-import com.hanshin.supernova.auth.v2.model.SecurityAuthToken;
-import com.hanshin.supernova.auth.v2.model.SecurityAuthUser;
+import com.hanshin.supernova.auth.application.TokenServiceV1;
+import com.hanshin.supernova.auth.model.AuthToken;
+import com.hanshin.supernova.auth.model.AuthUser;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +20,13 @@ import static com.hanshin.supernova.auth.AuthCostants.AUTH_TOKEN_HEADER_KEY;
 @RequiredArgsConstructor
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final SecurityTokenService tokenService;
+//    private final TokenServiceV1 tokenService;
 
     @Override
     public boolean supportsParameter(
             MethodParameter parameter) {
         return parameter.getParameterType()
-                .equals(SecurityAuthUser.class);
+                .equals(AuthUser.class);
     }
 
     @Override
@@ -49,9 +49,9 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
             accessToken = "";
         }
 
-        var token = new SecurityAuthToken(accessToken);
+        var token = new AuthToken(accessToken);
 
-        return tokenService.getAuthUser(
-                token);
+//        return tokenService.getAuthUser(token);
+        return null;
     }
 }

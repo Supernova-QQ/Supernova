@@ -1,7 +1,7 @@
 package com.hanshin.supernova.news.application;
 
 
-import com.hanshin.supernova.auth.v2.model.SecurityAuthUser;
+import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
@@ -11,9 +11,9 @@ import com.hanshin.supernova.news.domain.News;
 import com.hanshin.supernova.news.dto.request.NewsRequest;
 import com.hanshin.supernova.news.dto.response.NewsResponse;
 import com.hanshin.supernova.news.infrastructure.NewsRepository;
-import com.hanshin.supernova.user.v2.domain.Authority;
-import com.hanshin.supernova.user.v1.domain.User;
-import com.hanshin.supernova.user.v1.infrasturcture.UserRepository;
+import com.hanshin.supernova.user.domain.Authority;
+import com.hanshin.supernova.user.domain.User;
+import com.hanshin.supernova.user.infrastructure.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class NewsService {
                 savedNews.isHasRelatedContent(), savedNews.getRelatedContentId());
     }
 
-    public NewsResponse getNews(SecurityAuthUser user, Long newsId) {
+    public NewsResponse getNews(AuthUser user, Long newsId) {
         News findNews = getNewsOrThrowIfNotExist(newsId);
 
         // 알림에 접근하는 사용자와 알림 수신자가 일치하는지 검증
@@ -55,7 +55,7 @@ public class NewsService {
         );
     }
 
-    public NewsResponse updateNews(SecurityAuthUser user, Long newsId, NewsRequest request) {
+    public NewsResponse updateNews(AuthUser user, Long newsId, NewsRequest request) {
         News findNews = getNewsOrThrowIfNotExist(newsId);
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
@@ -73,7 +73,7 @@ public class NewsService {
         );
     }
 
-    public SuccessResponse deleteNews(SecurityAuthUser user, Long newsId) {
+    public SuccessResponse deleteNews(AuthUser user, Long newsId) {
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
         verifyAdmin(findUser);
@@ -83,14 +83,14 @@ public class NewsService {
         return new SuccessResponse("알림 삭제 완료");
     }
 
-    public List<NewsResponse> getUnViewedNews(SecurityAuthUser user) {
+    public List<NewsResponse> getUnViewedNews(AuthUser user) {
         List<News> findNewsList = newsRepository.findAllByReceiverIdAndIsViewedFalseOrderByCreatedAtDesc(
                 user.getId());
 
         return getNewsResponses(findNewsList);
     }
 
-    public List<NewsResponse> getViewedNews(SecurityAuthUser user) {
+    public List<NewsResponse> getViewedNews(AuthUser user) {
         List<News> findNewsList = newsRepository.findAllByReceiverIdAndIsViewedTrueOrderByCreatedAtDesc(
                 user.getId());
 
