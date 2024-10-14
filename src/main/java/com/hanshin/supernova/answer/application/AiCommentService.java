@@ -5,6 +5,7 @@ import com.hanshin.supernova.answer.dto.request.AiCommentRequest;
 import com.hanshin.supernova.answer.dto.response.AiCommentResponse;
 import com.hanshin.supernova.answer.infrastructure.AiCommentRepository;
 import com.hanshin.supernova.auth.model.AuthUser;
+import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
@@ -20,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class AiCommentService {
+public class AiCommentService extends AbstractValidateService {
 
     private final AiCommentRepository aiCommentRepository;
     private final UserRepository userRepository;
@@ -70,12 +71,6 @@ public class AiCommentService {
     private Question getQuestionOrThrowIfNotExist(Long questionId) {
         return questionRepository.findById(questionId).orElseThrow(
                 () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
-        );
-    }
-
-    private User getUserOrThrowIfNotExist(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
-                () -> new UserInvalidException(ErrorType.USER_NOT_FOUND_ERROR)
         );
     }
 

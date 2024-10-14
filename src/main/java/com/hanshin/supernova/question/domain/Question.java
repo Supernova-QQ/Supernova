@@ -74,5 +74,4 @@ public class Question extends BaseEntity {
             throw new AnswerInvalidException(ErrorType.ANSWER_CNT_NEGATIVE_ERROR);
         }
     }
-
 }

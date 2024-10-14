@@ -1,9 +1,8 @@
 package com.hanshin.supernova.news.application;
 
-
 import com.hanshin.supernova.auth.model.AuthUser;
+import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.common.dto.SuccessResponse;
-import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.news.NewsInvalidException;
 import com.hanshin.supernova.exception.user.UserInvalidException;
@@ -21,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class NewsService {
+public class NewsService extends AbstractValidateService {
 
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
@@ -98,12 +97,6 @@ public class NewsService {
     }
 
 
-    private User getUserOrThrowIfNotExist(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
-                () -> new UserInvalidException(ErrorType.USER_NOT_FOUND_ERROR)
-        );
-    }
-
     private News getNewsOrThrowIfNotExist(Long newsId) {
         return newsRepository.findById(newsId).orElseThrow(
                 () -> new NewsInvalidException(ErrorType.NEWS_NOT_FOUND_ERROR));
@@ -112,12 +105,6 @@ public class NewsService {
     private static void verifyReceiver(Long userId, News findNews) {
         if (!findNews.getReceiverId().equals(userId)) {
             throw new UserInvalidException(ErrorType.NOT_RECEIVER_ERROR);
-        }
-    }
-
-    private static void verifyAdmin(User user) {
-        if (!user.getAuthority().equals(Authority.ADMIN)) {
-            throw new AuthInvalidException(ErrorType.ONLY_ADMIN_AUTHORITY_ERROR);
         }
     }
 

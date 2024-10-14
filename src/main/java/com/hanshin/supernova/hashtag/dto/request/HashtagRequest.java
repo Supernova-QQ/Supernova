@@ -2,7 +2,6 @@ package com.hanshin.supernova.hashtag.dto.request;
 
 import static com.hanshin.supernova.hashtag.HashtagConstants.QUESTION_HASHTAG_MAX_SIZE;
 
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import lombok.Data;

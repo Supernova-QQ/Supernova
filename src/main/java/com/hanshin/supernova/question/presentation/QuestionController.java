@@ -69,5 +69,4 @@ public class QuestionController {
         List<CommunityInfoResponse> responses = questionService.getMyCommunities(user, q_id);
         return ResponseDto.ok(responses);
     }
-
 }

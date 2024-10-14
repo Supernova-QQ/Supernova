@@ -23,6 +23,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     List<Question> findAllByCommIdOrderByCreatedAtAsc(Long c_id);
 
+    // TODO CommIdAnd 추가?
     List<Question> findByIsResolvedOrderByCreatedAtDesc(boolean isResolved, Pageable pageable);
 
     @Query("SELECT q FROM Question q WHERE q.title LIKE %:keyword% OR q.content LIKE %:keyword% ORDER BY q.answerCnt DESC")
