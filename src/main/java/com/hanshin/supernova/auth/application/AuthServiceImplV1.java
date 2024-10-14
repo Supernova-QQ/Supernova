@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Profile("v1")
 @RequiredArgsConstructor
-public class AuthServiceImplV1{
+public class AuthServiceImplV1 implements AuthServiceV2{
 
     private final UserRepository userRepository;
     private final TokenServiceV1 tokenService;

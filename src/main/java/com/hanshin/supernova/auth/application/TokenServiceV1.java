@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+@Service
 @Slf4j
 @Profile("v1")
 @RequiredArgsConstructor

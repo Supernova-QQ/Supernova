@@ -2,10 +2,8 @@ package com.hanshin.supernova.auth.application;
 
 
 import com.hanshin.supernova.auth.infrastructure.RefreshTokenRepository;
-import com.hanshin.supernova.auth.model.RefreshToken;
 import com.hanshin.supernova.exception.auth.AuthorizationException;
 import com.hanshin.supernova.exception.dto.ErrorType;
-import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.user.infrastructure.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
