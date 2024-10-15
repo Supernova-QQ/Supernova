@@ -91,5 +91,4 @@ public class NewsController {
         var responses = newsService.getViewedNews(user);
         return ResponseDto.ok(responses);
     }
-
 }

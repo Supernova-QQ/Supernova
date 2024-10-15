@@ -17,5 +17,4 @@ public class AiCommentResponse {
             LocalDateTime createdAt) {
         return new AiCommentResponse(id, nickname, answer, createdAt);
     }
-
 }

@@ -30,7 +30,7 @@ public class NoticeController {
     public ResponseEntity<?> createNotice(
             AuthUser user, @RequestBody @Valid NoticeRequest request
     ) {
-        var response = noticeService.createNotice(user.getId(), request);
+        var response = noticeService.createNotice(user, request);
         return ResponseDto.created(response);
     }
 
@@ -49,7 +49,7 @@ public class NoticeController {
             AuthUser user, @PathVariable("noticeId") Long noticeId,
             @RequestBody @Valid NoticeRequest request
     ) {
-        var response = noticeService.updateNotice(user.getId(), noticeId, request);
+        var response = noticeService.updateNotice(user, noticeId, request);
         return ResponseDto.ok(response);
     }
 
@@ -58,7 +58,7 @@ public class NoticeController {
     public ResponseEntity<?> deleteNotice(
             AuthUser user, @PathVariable("noticeId") Long noticeId
     ) {
-        var response = noticeService.deleteNotice(user.getId(), noticeId);
+        var response = noticeService.deleteNotice(user, noticeId);
         return ResponseDto.ok(response);
     }
 

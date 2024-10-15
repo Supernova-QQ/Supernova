@@ -80,9 +80,10 @@ public class CommunityController {
 
     @DeleteMapping(path = "/{c_id}")
     public ResponseEntity<?> LeaveCommunity(
+            AuthUser user,
             @PathVariable(name = "c_id") Long cId
     ) {
-        SuccessResponse response = communityService.leaveCommunity(cId);
+        SuccessResponse response = communityService.leaveCommunity(user, cId);
         return ResponseDto.ok(response);
     }
 

@@ -3,6 +3,7 @@ package com.hanshin.supernova.community.application;
 import static com.hanshin.supernova.exception.dto.ErrorType.ONLY_ADMIN_AUTHORITY_ERROR;
 
 import com.hanshin.supernova.auth.model.AuthUser;
+import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.community.domain.Autority;
 import com.hanshin.supernova.community.domain.CommCounter;
@@ -23,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class CommunityService {
+public class CommunityService extends AbstractValidateService {
 
     private final CommunityRepository communityRepository;
     private final CommunityMemberRepository communityMemberRepository;
@@ -38,11 +39,13 @@ public class CommunityService {
         isCommunityNameDuplicated(request);
 
         // 커뮤니티 저장
-        Community community = buildCommunity(request, user.getId());
+        Community community = buildCommunity(
+                request, getUserOrThrowIfNotExist(user.getId()).getId());
         Community savedCommunity = communityRepository.save(community);
 
         // 커뮤니티 생성자 멤버 추가
-        CommunityMember savedCommunityMember = buildCommunityMember(savedCommunity, Autority.CREATOR, savedCommunity.getCreatedBy());
+        CommunityMember savedCommunityMember = buildCommunityMember(savedCommunity,
+                Autority.CREATOR, savedCommunity.getCreatedBy());
         communityMemberRepository.save(savedCommunityMember);
         savedCommunity.getCommCounter().increaseMemberCnt();
 
@@ -64,10 +67,10 @@ public class CommunityService {
     @Transactional
     public CommunityResponse updateCommunity(AuthUser user, CommunityRequest request, Long cId) {
 
-        Community findCommunity = getCommunity(cId);
+        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
 
         // 커뮤니티 생성자 검증
-        isCommunityCreator(findCommunity, user.getId());
+        isCommunityCreator(findCommunity, getUserOrThrowIfNotExist(user.getId()).getId());
 
         communityInfoUpdate(request, findCommunity);
 
@@ -89,9 +92,9 @@ public class CommunityService {
     @Transactional
     public SuccessResponse dormantCommunity(AuthUser user, Long cId) {
 
-        Community findCommunity = getCommunity(cId);
+        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
 
-        isCommunityCreator(findCommunity, user.getId());
+        isCommunityCreator(findCommunity, getUserOrThrowIfNotExist(user.getId()).getId());
 
         findCommunity.changeDormant();
 
@@ -102,8 +105,8 @@ public class CommunityService {
      * 커뮤니티 정보 제공
      */
     @Transactional(readOnly = true)
-    public CommunityResponse getCommunityInfo(AuthUser user, Long cId) {
-        Community findCommunity = getCommunity(cId);
+    public CommunityResponse getCommunityInfo(Long cId) {
+        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
 
         return CommunityResponse.toResponse(
                 findCommunity.getId(),
@@ -128,15 +131,14 @@ public class CommunityService {
     }
 
     /**
-     * 커뮤니티 가입 요청 처리
-     * - 회원에게 발송된 초대 알림에서 '수락' 버튼을 클릭 시 해당 api 로 요청이 들어온다.
+     * 커뮤니티 가입 요청 처리 - 회원에게 발송된 초대 알림에서 '수락' 버튼을 클릭 시 해당 api 로 요청이 들어온다.
      */
     @Transactional
     public SuccessResponse joinCommunity(AuthUser user, Long cId) {
-        Community findCommunity = getCommunity(cId);
-
+        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
         // TODO 관리자에게 요청을 보내고, 수락 후 마저 완료되는 비동기 처리 필요
-        CommunityMember savedCommunityMember = buildCommunityMember(findCommunity, Autority.USER, user.getId());
+        CommunityMember savedCommunityMember = buildCommunityMember(
+                findCommunity, Autority.USER, getUserOrThrowIfNotExist(user.getId()).getId());
         communityMemberRepository.save(savedCommunityMember);
         findCommunity.getCommCounter().increaseMemberCnt();
 
@@ -147,11 +149,10 @@ public class CommunityService {
      * 커뮤니티 탈퇴
      */
     @Transactional
-    public SuccessResponse leaveCommunity(Long cId) {
-        Community findCommunity = getCommunity(cId);
-
-        Long userId = 1L;
-        communityMemberRepository.deleteById(userId);
+    public SuccessResponse leaveCommunity(AuthUser user, Long cId) {
+        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
+        communityMemberRepository.deleteById(
+                getUserOrThrowIfNotExist(user.getId()).getId());
         findCommunity.getCommCounter().decreaseMemberCnt();
 
         return new SuccessResponse("탈퇴 성공");
@@ -181,18 +182,13 @@ public class CommunityService {
                 .build();
     }
 
-    private static CommunityMember buildCommunityMember(Community savedCommunity, Autority authority, Long userId) { // TODO User 를 이용한 파라미터 병합
+    private static CommunityMember buildCommunityMember(Community savedCommunity,
+            Autority authority, Long userId) {
         return CommunityMember.builder()
                 .autority(authority)
                 .communityId(savedCommunity.getId())
                 .userId(userId)
                 .build();
-    }
-
-    private Community getCommunity(Long cId) {
-        return communityRepository.findById(cId).orElseThrow(
-                () -> new CommunityInvalidException(ErrorType.COMMUNITY_NOT_FOUND_ERROR)
-        );
     }
 
     private static void communityInfoUpdate(CommunityRequest request, Community findCommunity) {

@@ -13,5 +13,4 @@ public class HashtagSaveResponse {
     public static HashtagSaveResponse toResponse(List<String> savedHashtagNames) {
         return new HashtagSaveResponse(savedHashtagNames);
     }
-
 }

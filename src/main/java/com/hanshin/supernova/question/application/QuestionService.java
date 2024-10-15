@@ -1,16 +1,14 @@
 package com.hanshin.supernova.question.application;
 
 import com.hanshin.supernova.auth.model.AuthUser;
+import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.community.domain.Community;
 import com.hanshin.supernova.community.domain.CommunityMember;
 import com.hanshin.supernova.community.infrastructure.CommunityMemberRepository;
-import com.hanshin.supernova.community.infrastructure.CommunityRepository;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
-import com.hanshin.supernova.exception.community.CommunityInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
-import com.hanshin.supernova.exception.user.UserInvalidException;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.domain.QuestionRecommendation;
 import com.hanshin.supernova.question.domain.QuestionView;
@@ -22,8 +20,6 @@ import com.hanshin.supernova.question.infrastructure.QuestionRecommendationRepos
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.question.infrastructure.QuestionViewRepository;
 import com.hanshin.supernova.user.domain.User;
-import com.hanshin.supernova.user.infrastructure.UserRepository;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,14 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class QuestionService {
+public class QuestionService extends AbstractValidateService {
 
     private final QuestionRepository questionRepository;
     private final QuestionViewRepository questionViewRepository;
-    private final CommunityRepository communityRepository;
     private final CommunityMemberRepository communityMemberRepository;
-    private final UserRepository userRepository;
-    private final QuestionRecommendationRepository questionRecommendationRepository;
 
     /**
      * 질문 등록
@@ -50,14 +43,13 @@ public class QuestionService {
     @Transactional
     public QuestionSaveResponse createQuestion(AuthUser user, QuestionRequest request) {
         Community findCommunity = getCommunityOrThrowIfNotExist(request.getCommId());
-
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
         Question question = Question.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
                 .questionerId(findUser.getId())
-                .commId(request.getCommId())
+                .commId(findCommunity.getId())
                 .build();
 
         Question savedQuestion = questionRepository.save(question);
@@ -116,15 +108,15 @@ public class QuestionService {
      */
     @Transactional
     public QuestionSaveResponse editQuestion(AuthUser user, Long qId, QuestionRequest request) {
-        getCommunityOrThrowIfNotExist(request.getCommId());
+        Community findCommunity = getCommunityOrThrowIfNotExist(request.getCommId());
 
         Question findQuestion = getQuestionById(qId);
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
-        validateSameUserById(findQuestion, findUser.getId());
+        validateSameQuestionerById(findQuestion, findUser.getId());
 
-        findQuestion.updateQuestion(request.getTitle(), request.getContent(), request.getCommId());
+        findQuestion.updateQuestion(request.getTitle(), request.getContent(), findCommunity.getId());
 
         // TODO ContentWord update logic
 
@@ -145,7 +137,7 @@ public class QuestionService {
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
-        validateSameUserById(findQuestion, findUser.getId());
+        validateSameQuestionerById(findQuestion, findUser.getId());
 
         Community findCommunity = getCommunityOrThrowIfNotExist(
                 findQuestion.getCommId());
@@ -213,20 +205,8 @@ public class QuestionService {
         return communityInfoResponses;
     }
 
-
-    private User getUserOrThrowIfNotExist(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
-                () -> new UserInvalidException(ErrorType.USER_NOT_FOUND_ERROR)
-        );
-    }
-
-    private Community getCommunityOrThrowIfNotExist(Long commId) {
-        return communityRepository.findById(commId).orElseThrow(
-                () -> new CommunityInvalidException(ErrorType.COMMUNITY_NOT_FOUND_ERROR)
-        );
-    }
-
-    private static void validateSameUserById(Question findQuestion, Long user_id) {
+  
+    private static void validateSameQuestionerById(Question findQuestion, Long user_id) {
         if (!findQuestion.getQuestionerId().equals(user_id)) {
             throw new AuthInvalidException(ErrorType.NON_IDENTICAL_USER_ERROR);
         }
@@ -237,5 +217,4 @@ public class QuestionService {
                 () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
         );
     }
-
 }

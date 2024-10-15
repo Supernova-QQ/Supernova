@@ -7,19 +7,17 @@ import com.hanshin.supernova.answer.dto.response.AnswerResponse;
 import com.hanshin.supernova.answer.infrastructure.AnswerRecommendationRepository;
 import com.hanshin.supernova.answer.infrastructure.AnswerRepository;
 import com.hanshin.supernova.auth.model.AuthUser;
+import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.exception.answer.AnswerInvalidException;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
-import com.hanshin.supernova.exception.user.UserInvalidException;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.domain.QuestionRecommendation;
 import com.hanshin.supernova.question.dto.response.QuestionResponse;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.user.domain.User;
-import com.hanshin.supernova.user.infrastructure.UserRepository;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class AnswerService {
+public class AnswerService extends AbstractValidateService {
 
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
-    private final UserRepository userRepository;
-    private final AnswerRecommendationRepository answerRecommendationRepository;
 
     /**
      * 답변 생성
@@ -77,7 +73,7 @@ public class AnswerService {
 
         Answer findAnswer = getAnswerById(aId);
 
-        validateSameUser(findAnswer, findUser.getId());
+        validateSameAnswerer(findAnswer, findUser.getId());
 
         findAnswer.updateAnswer(
                 request.getAnswer(),
@@ -99,7 +95,7 @@ public class AnswerService {
 
         Answer findAnswer = getAnswerById(aId);
 
-        validateSameUser(findAnswer, findUser.getId());
+        validateSameAnswerer(findAnswer, findUser.getId());
 
         answerRepository.deleteById(findAnswer.getId());
         findQuestion.decreaseAnswerCnt();
@@ -194,12 +190,6 @@ public class AnswerService {
 //    }
 
 
-    private User getUserOrThrowIfNotExist(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
-                () -> new UserInvalidException(ErrorType.USER_NOT_FOUND_ERROR)
-        );
-    }
-
     private static AnswerResponse getAnswerResponse(Answer answer, User user) {
         return AnswerResponse.toResponse(
                 answer.getAnswererId(),
@@ -239,7 +229,7 @@ public class AnswerService {
         );
     }
 
-    private static void validateSameUser(Answer findAnswer, Long userId) {
+    private static void validateSameAnswerer(Answer findAnswer, Long userId) {
         if (!findAnswer.getAnswererId().equals(userId)) {
             throw new AuthInvalidException(ErrorType.NON_IDENTICAL_USER_ERROR);
         }
