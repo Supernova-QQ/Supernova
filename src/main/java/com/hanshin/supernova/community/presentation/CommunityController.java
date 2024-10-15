@@ -56,9 +56,10 @@ public class CommunityController {
 
     @GetMapping(path = "/{c_id}")
     public ResponseEntity<?> getCommunityInfo(
+            AuthUser user,
             @PathVariable(name = "c_id") Long cId
     ) {
-        var response = communityService.getCommunityInfo(cId);
+        var response = communityService.getCommunityInfo(user, cId);
         return ResponseDto.ok(response);
     }
 

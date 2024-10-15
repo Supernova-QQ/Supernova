@@ -5,8 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AuthLoginResponse {
+public class AuthLoginResponseV2 {
     private String nickname;      // 사용자 닉네임
-    private String accessToken;   // 액세스 토큰
-    private String refreshToken;  // 리프레시 토큰
+    private String token;   // 토큰
 }

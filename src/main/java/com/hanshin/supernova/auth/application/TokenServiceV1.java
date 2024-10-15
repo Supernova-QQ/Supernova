@@ -10,23 +10,24 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.hanshin.supernova.auth.AuthCostants.AUTH_TOKEN_HEADER_KEY;
-
+@Service
 @Slf4j
-@Component
+@Profile("v1")
 @RequiredArgsConstructor
+public class TokenServiceV1 {
 
-public class TokenService {
     // private final long accessTokenValidMillisecond = 1000L * 60 * 100000; // AccessToken 30초 토큰
     // 유효
     private final UserRepository userRepository;
@@ -95,10 +96,14 @@ public class TokenService {
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
-
+        // 토큰이 이미 블랙리스트에 있는지 먼저 확인
+        if (isTokenBlacklisted(token)) {
+            log.error("해당 토큰은 이미 로그아웃되었습니다: {}", token);
+            throw new AuthorizationException(ErrorType.TOKEN_BLACKLISTED);
+        }
         try {
-            verifyToken(token);
-            blacklistedTokens.add(token);
+            verifyToken(token); // 토큰이 유효한지 검증
+            blacklistedTokens.add(token); // 유효한 경우 블랙리스트에 추가
             log.info("Token blacklisted: {}", token);
         } catch (Exception e) {
             log.error("Error during logout", e);
