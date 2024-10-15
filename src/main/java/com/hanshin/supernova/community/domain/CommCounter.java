@@ -1,5 +1,7 @@
 package com.hanshin.supernova.community.domain;
 
+import com.hanshin.supernova.exception.community.CommunityInvalidException;
+import com.hanshin.supernova.exception.dto.ErrorType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -20,22 +22,25 @@ public class CommCounter {
     @Column(name = "question_cnt")
     private int questionCnt;
 
-    @Column(name = "visitor_cnt")
-    private int visitorCnt;
-
     public void increaseMemberCnt() {
         this.memberCnt++;
     }
     public void decreaseMemberCnt() {
-        this.memberCnt--;
-        // TODO memberCnt 가 0 이하로 됐을 때의 예외처리
+        if (this.memberCnt > 0) {
+            this.memberCnt--;
+        } else {
+            throw new CommunityInvalidException(ErrorType.CNT_NEGATIVE_ERROR);
+        }
     }
 
-//    public void increaseQuestionCnt() {
-//        this.questionCnt++;
-//    }
-//
-//    public void increaseVisitorCnt() {
-//        this.visitorCnt++;
-//    }
+    public void increaseQuestionCnt() {
+        this.questionCnt++;
+    }
+    public void decreaseQuestionCnt() {
+        if (this.questionCnt > 0) {
+            this.questionCnt--;
+        } else {
+            throw new CommunityInvalidException(ErrorType.CNT_NEGATIVE_ERROR);
+        }
+    }
 }

@@ -1,7 +1,6 @@
 package com.hanshin.supernova.user.domain;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 
 public class Activity {
     @Column(name = "marked_q_cnt")

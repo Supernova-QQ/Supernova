@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class QuestionView {
     private Long id;
 
     @Column(name = "viewed_at")
-    private LocalDateTime viewedAt;
+    private LocalDate viewedAt;
 
     @Column(name = "question_id")
     private Long questionId;
@@ -34,6 +34,6 @@ public class QuestionView {
     private Long viewerId;
 
     public void updateViewedAt() {
-        this.viewedAt = LocalDateTime.now();
+        this.viewedAt = LocalDate.now();
     }
 }

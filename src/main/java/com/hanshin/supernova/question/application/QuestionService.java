@@ -10,11 +10,13 @@ import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.question.domain.Question;
+import com.hanshin.supernova.question.domain.QuestionRecommendation;
 import com.hanshin.supernova.question.domain.QuestionView;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
 import com.hanshin.supernova.question.dto.response.CommunityInfoResponse;
 import com.hanshin.supernova.question.dto.response.QuestionResponse;
 import com.hanshin.supernova.question.dto.response.QuestionSaveResponse;
+import com.hanshin.supernova.question.infrastructure.QuestionRecommendationRepository;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.question.infrastructure.QuestionViewRepository;
 import com.hanshin.supernova.user.domain.User;
@@ -22,9 +24,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class QuestionService extends AbstractValidateService {
@@ -50,9 +54,16 @@ public class QuestionService extends AbstractValidateService {
 
         Question savedQuestion = questionRepository.save(question);
 
+        // 커뮤니티에 등록된 질문 개수 증가
+        findCommunity.getCommCounter().increaseQuestionCnt();
+
         // TODO ContentWord save logic
 
-        return QuestionSaveResponse.toResponse(savedQuestion.getId());
+        return QuestionSaveResponse.toResponse(
+                savedQuestion.getId(),
+                savedQuestion.getTitle(),
+                savedQuestion.getContent(),
+                savedQuestion.getCommId());
     }
 
     /**
@@ -61,6 +72,7 @@ public class QuestionService extends AbstractValidateService {
     @Transactional
     public QuestionResponse getQuestion(AuthUser user, Long qId) {
 
+        log.info("AuthUer.id = {}", user.getId());
         // 조회를 시도하는 회원의 중복 체크 및 조회수 증가
 
         Question findQuestion = getQuestionById(qId);
@@ -68,16 +80,16 @@ public class QuestionService extends AbstractValidateService {
         User findUser = getUserOrThrowIfNotExist(user.getId());
         Long viewer_id = findUser.getId();
 
-        if (!questionViewRepository.existsByViewerId(viewer_id)) {
+        if (!questionViewRepository.existsByViewerIdAndQuestionId(viewer_id, qId)) {
             questionViewRepository.save(
                     QuestionView.builder()
-                            .viewedAt(LocalDateTime.now())
+                            .viewedAt(LocalDate.now())
                             .questionId(qId)
                             .viewerId(viewer_id)
                             .build());
             findQuestion.updateViewCnt();
         } else {
-            questionViewRepository.findByViewerId(viewer_id).updateViewedAt();
+            questionViewRepository.findByViewerIdAndQuestionId(viewer_id, qId).updateViewedAt();
         }
 
         return QuestionResponse.toResponse(
@@ -108,7 +120,11 @@ public class QuestionService extends AbstractValidateService {
 
         // TODO ContentWord update logic
 
-        return QuestionSaveResponse.toResponse(findQuestion.getId());
+        return QuestionSaveResponse.toResponse(
+                findQuestion.getId(),
+                findQuestion.getTitle(),
+                findQuestion.getContent(),
+                findQuestion.getCommId());
     }
 
     /**
@@ -123,9 +139,49 @@ public class QuestionService extends AbstractValidateService {
 
         validateSameQuestionerById(findQuestion, findUser.getId());
 
+        Community findCommunity = getCommunityOrThrowIfNotExist(
+                findQuestion.getCommId());
+
         questionRepository.deleteById(qId);
 
+        findCommunity.getCommCounter().decreaseQuestionCnt();
+
         return new SuccessResponse("성공적으로 삭제되었습니다.");
+    }
+
+    @Transactional
+    public QuestionResponse updateQuestionRecommendation(AuthUser user, Long qId) {
+        Question findQuestion = getQuestionById(qId);
+        User findUser = getUserOrThrowIfNotExist(user.getId());
+        // 자신의 질문은 추천하지 못하도록 예외처리
+        if(findQuestion.getQuestionerId().equals(findUser.getId())) {
+            throw new AuthInvalidException(ErrorType.WRITER_CANNOT_RECOMMEND_ERROR);
+        }
+        // 기존 추천한 이력 유무에 따른 추천수 증감
+        QuestionRecommendation questionRecommendation = questionRecommendationRepository.findByQuestionIdAndRecommenderId(
+                findQuestion.getId(), findUser.getId());
+        if (questionRecommendation == null) {
+            questionRecommendationRepository.save(QuestionRecommendation.builder()
+                    .recommendedAt(LocalDate.now())
+                    .questionId(findQuestion.getId())
+                    .recommenderId(findUser.getId())
+                    .build());
+
+            findQuestion.increaseRecommendationCnt();
+        } else {
+            questionRecommendationRepository.deleteById(questionRecommendation.getId());
+            findQuestion.decreaseRecommendationCnt();
+        }
+
+        return QuestionResponse.toResponse(
+                findQuestion.getTitle(),
+                findQuestion.getContent(),
+                findQuestion.isResolved(),
+                findQuestion.getCreatedAt(),
+                findQuestion.getModifiedAt(),
+                findQuestion.getViewCnt(),
+                findQuestion.getRecommendationCnt(),
+                findQuestion.getCommId());
     }
 
     /**
@@ -149,7 +205,7 @@ public class QuestionService extends AbstractValidateService {
         return communityInfoResponses;
     }
 
-
+  
     private static void validateSameQuestionerById(Question findQuestion, Long user_id) {
         if (!findQuestion.getQuestionerId().equals(user_id)) {
             throw new AuthInvalidException(ErrorType.NON_IDENTICAL_USER_ERROR);
