@@ -1,6 +1,7 @@
 package com.hanshin.supernova.question.infrastructure;
 
 import com.hanshin.supernova.question.domain.Question;
+import java.time.LocalDate;
 import java.util.Collection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,4 +38,32 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     @Query("SELECT q FROM Question q WHERE q.title LIKE %:keyword% OR q.content LIKE %:keyword% ORDER BY q.createdAt DESC")
     Page<Question> searchByKeywordOrderByCreatedAt(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT q.id as questionId, COUNT(qv) as viewCount " +
+            "FROM Question q " +
+            "LEFT JOIN QuestionView qv ON q.id = qv.questionId " +
+            "WHERE q.commId = :communityId " +
+            "AND qv.viewedAt BETWEEN :startDate AND :endDate " +
+            "GROUP BY q.id " +
+            "ORDER BY viewCount DESC " +
+            "LIMIT :N")
+    List<Object[]> findTopNPopularQuestionsByCommunityAndDate(
+            @Param("communityId") Long communityId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("N") Integer limitNumber
+    );
+
+    @Query("SELECT q.id as questionId, COUNT(qv) as viewCount " +
+            "FROM Question q " +
+            "LEFT JOIN QuestionView qv ON q.id = qv.questionId " +
+            "WHERE q.commId = :communityId " +
+            "AND qv.viewedAt BETWEEN :startDate AND :endDate " +
+            "GROUP BY q.id " +
+            "ORDER BY viewCount DESC")
+    List<Object[]> findAllPopularQuestionsByCommunityAndDate(
+            @Param("communityId") Long communityId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }

@@ -169,7 +169,6 @@ public class CommunityService extends AbstractValidateService {
         CommCounter commCounter = CommCounter.builder()
                 .memberCnt(0)
                 .questionCnt(0)
-                .visitorCnt(0)
                 .build();
 
         return Community.builder()

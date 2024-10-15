@@ -56,9 +56,16 @@ public class QuestionService extends AbstractValidateService {
 
         Question savedQuestion = questionRepository.save(question);
 
+        // 커뮤니티에 등록된 질문 개수 증가
+        findCommunity.getCommCounter().increaseQuestionCnt();
+
         // TODO ContentWord save logic
 
-        return QuestionSaveResponse.toResponse(savedQuestion.getId());
+        return QuestionSaveResponse.toResponse(
+                savedQuestion.getId(),
+                savedQuestion.getTitle(),
+                savedQuestion.getContent(),
+                savedQuestion.getCommId());
     }
 
     /**
@@ -74,16 +81,16 @@ public class QuestionService extends AbstractValidateService {
         User findUser = getUserOrThrowIfNotExist(user.getId());
         Long viewer_id = findUser.getId();
 
-        if (!questionViewRepository.existsByViewerId(viewer_id)) {
+        if (!questionViewRepository.existsByViewerIdAndQuestionId(viewer_id, qId)) {
             questionViewRepository.save(
                     QuestionView.builder()
-                            .viewedAt(LocalDateTime.now())
+                            .viewedAt(LocalDate.now())
                             .questionId(qId)
                             .viewerId(viewer_id)
                             .build());
             findQuestion.updateViewCnt();
         } else {
-            questionViewRepository.findByViewerId(viewer_id).updateViewedAt();
+            questionViewRepository.findByViewerIdAndQuestionId(viewer_id, qId).updateViewedAt();
         }
 
         return QuestionResponse.toResponse(
@@ -114,7 +121,11 @@ public class QuestionService extends AbstractValidateService {
 
         // TODO ContentWord update logic
 
-        return QuestionSaveResponse.toResponse(findQuestion.getId());
+        return QuestionSaveResponse.toResponse(
+                findQuestion.getId(),
+                findQuestion.getTitle(),
+                findQuestion.getContent(),
+                findQuestion.getCommId());
     }
 
     /**
@@ -129,7 +140,12 @@ public class QuestionService extends AbstractValidateService {
 
         validateSameQuestionerById(findQuestion, findUser.getId());
 
+        Community findCommunity = getCommunityOrThrowIfNotExist(
+                findQuestion.getCommId());
+
         questionRepository.deleteById(qId);
+
+        findCommunity.getCommCounter().decreaseQuestionCnt();
 
         return new SuccessResponse("성공적으로 삭제되었습니다.");
     }
@@ -202,4 +218,5 @@ public class QuestionService extends AbstractValidateService {
                 () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
         );
     }
+
 }

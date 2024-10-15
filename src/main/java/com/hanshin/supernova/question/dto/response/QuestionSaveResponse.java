@@ -1,5 +1,6 @@
 package com.hanshin.supernova.question.dto.response;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -8,8 +9,11 @@ import lombok.Data;
 public class QuestionSaveResponse {
 
     private Long questionId;
+    private String title;
+    private String content;
+    private Long commId;
 
-    public static QuestionSaveResponse toResponse(Long questionId) {
-        return new QuestionSaveResponse(questionId);
+    public static QuestionSaveResponse toResponse(Long questionId, String title, String content, Long commId) {
+        return new QuestionSaveResponse(questionId, title, content, commId);
     }
 }
