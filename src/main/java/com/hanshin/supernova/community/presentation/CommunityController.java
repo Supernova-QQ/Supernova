@@ -1,5 +1,6 @@
 package com.hanshin.supernova.community.presentation;
 
+import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.community.application.CommunityService;
@@ -28,33 +29,37 @@ public class CommunityController {
 
     @PostMapping
     public ResponseEntity<?> createCommunity(
+            AuthUser user,
             @RequestBody @Valid CommunityRequest request) {
-        var response = communityService.createCommunity(request);
+        var response = communityService.createCommunity(user, request);
         return ResponseDto.created(response);
     }
 
     @PutMapping(path = "/{c_id}")
     public ResponseEntity<?> updateCommunity(
+            AuthUser user,
             @RequestBody @Valid CommunityRequest request,
             @PathVariable(name = "c_id") Long cId
     ) {
-        var response = communityService.updateCommunity(request, cId);
+        var response = communityService.updateCommunity(user, request, cId);
         return ResponseDto.ok(response);
     }
 
     @PatchMapping(path = "/{c_id}")
     public ResponseEntity<?> dormantCommunity(
+            AuthUser user,
             @PathVariable(name = "c_id") Long cId
     ) {
-        var response = communityService.dormantCommunity(cId);
+        var response = communityService.dormantCommunity(user, cId);
         return ResponseDto.ok(response);
     }
 
     @GetMapping(path = "/{c_id}")
     public ResponseEntity<?> getCommunityInfo(
+            AuthUser user,
             @PathVariable(name = "c_id") Long cId
     ) {
-        var response = communityService.getCommunityInfo(cId);
+        var response = communityService.getCommunityInfo(user, cId);
         return ResponseDto.ok(response);
     }
 
@@ -66,9 +71,10 @@ public class CommunityController {
 
     @PostMapping(path = "/{c_id}")
     public ResponseEntity<?> joinCommunity(
+            AuthUser user,
             @PathVariable(name = "c_id") Long cId
     ) {
-        SuccessResponse response = communityService.joinCommunity(cId);
+        SuccessResponse response = communityService.joinCommunity(user, cId);
         return ResponseDto.created(response);
     }
 

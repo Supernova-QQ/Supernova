@@ -11,6 +11,8 @@ import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
+import com.hanshin.supernova.hashtag.application.HashtagService;
+import com.hanshin.supernova.hashtag.dto.request.HashtagRequest;
 import com.hanshin.supernova.news.application.NewsService;
 import com.hanshin.supernova.news.domain.Type;
 import com.hanshin.supernova.news.dto.request.NewsRequest;
@@ -28,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class QuestionOrchestrator {
 
     private final QuestionService questionService;
+    private final HashtagService hashtagService;
     private final QuestionRepository questionRepository;
     private final AiAnswerService aiAnswerService;
     private final AiCommentService aiCommentService;
@@ -43,6 +46,11 @@ public class QuestionOrchestrator {
         // 질문 등록
         QuestionSaveResponse questionSaveResponse = questionService.createQuestion(user, request);
         Question savedQuestion = getQuestionOrThrowIfNotExist(questionSaveResponse.getQuestionId());
+
+        // 해시태그 등록
+        HashtagRequest hashtagRequest = new HashtagRequest();
+        hashtagRequest.setHashtagNames(request.getHashtags());
+        hashtagService.saveQuestionHashtag(savedQuestion.getId(), hashtagRequest, user);
 
         // AI 답변 요청
         AiAnswerResponse aiAnswerResponse = aiAnswerService.generateAiAnswer(

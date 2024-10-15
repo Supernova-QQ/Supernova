@@ -1,4 +1,4 @@
-package com.hanshin.supernova.question.domain;
+package com.hanshin.supernova.redis.community_stat.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,27 +13,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Builder
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "question_view")
-public class QuestionView {
+@Table(name = "community_stats")
+public class CommunityStats {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "viewed_at")
-    private LocalDate viewedAt;
+    @Column(name = "user_agent")
+    private String userAgent;
 
-    @Column(name = "question_id")
-    private Long questionId;
+    @Column(name = "visitor_identifier")
+    private String visitorIdentifier;
 
-    @Column(name = "viewer_id")
-    private Long viewerId;
+    private LocalDate date;
 
-    public void updateViewedAt() {
-        this.viewedAt = LocalDate.now();
-    }
+    @Column(name = "community_id")
+    private Long communityId;
 }
