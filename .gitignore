@@ -127,5 +127,4 @@ local.properties
 *.env
 
 ### application
-application.yml
-application-prod.yml
+#application.yml

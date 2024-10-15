@@ -5,9 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-@Data   // getter +  setter
+@Data
 public class UserRegisterRequest {
-
     @NotNull(message = "이메일은 필수입니다.")
     private String email;
 
