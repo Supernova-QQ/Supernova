@@ -1,8 +1,10 @@
 package com.hanshin.supernova.answer.application;
 
 import com.hanshin.supernova.answer.domain.Answer;
+import com.hanshin.supernova.answer.domain.AnswerRecommendation;
 import com.hanshin.supernova.answer.dto.request.AnswerRequest;
 import com.hanshin.supernova.answer.dto.response.AnswerResponse;
+import com.hanshin.supernova.answer.infrastructure.AnswerRecommendationRepository;
 import com.hanshin.supernova.answer.infrastructure.AnswerRepository;
 import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.application.AbstractValidateService;
@@ -12,6 +14,8 @@ import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.question.domain.Question;
+import com.hanshin.supernova.question.domain.QuestionRecommendation;
+import com.hanshin.supernova.question.dto.response.QuestionResponse;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.user.domain.User;
 import java.util.ArrayList;
@@ -131,6 +135,43 @@ public class AnswerService extends AbstractValidateService {
         findQuestion.changeStatus();
 
         return getAnswerResponse(findAnswer, findUser);
+    }
+
+    @Transactional
+    public AnswerResponse updateAnswerRecommendation(AuthUser user, Long aId) {
+        Answer findAnswer = getAnswerById(aId);
+        User findUser = getUserOrThrowIfNotExist(user.getId());
+        // 자신의 응답은 추천하지 못하도록 예외처리
+        if(findAnswer.getAnswererId().equals(findUser.getId())) {
+            throw new AuthInvalidException(ErrorType.WRITER_CANNOT_RECOMMEND_ERROR);
+        }
+        // 기존 추천한 이력 유무에 따른 추천수 증감
+        AnswerRecommendation answerRecommendation = answerRecommendationRepository.findByAnswerIdAndRecommenderId(
+                findAnswer.getId(), findUser.getId());
+        if (answerRecommendation == null) {
+            answerRecommendationRepository.save(AnswerRecommendation.builder()
+                    .recommendedAt(LocalDate.now())
+                    .answerId(findAnswer.getId())
+                    .recommenderId(findUser.getId())
+                    .build());
+
+            findAnswer.increaseRecommendationCnt();
+        } else {
+            answerRecommendationRepository.deleteById(answerRecommendation.getId());
+            findAnswer.decreaseRecommendationCnt();
+        }
+
+        return AnswerResponse.toResponse(
+                findAnswer.getId(),
+                findUser.getNickname(),
+                findAnswer.getAnswer(),
+                findAnswer.getCreatedAt(),
+                findAnswer.getRecommendationCnt(),
+                findAnswer.getTag(),
+                findAnswer.getSource(),
+                findAnswer.isAi(),
+                findAnswer.isAccepted()
+        );
     }
 
 //    /**
