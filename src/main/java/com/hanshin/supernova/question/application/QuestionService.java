@@ -20,7 +20,7 @@ import com.hanshin.supernova.question.infrastructure.QuestionRecommendationRepos
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.question.infrastructure.QuestionViewRepository;
 import com.hanshin.supernova.user.domain.User;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +34,7 @@ public class QuestionService extends AbstractValidateService {
     private final QuestionRepository questionRepository;
     private final QuestionViewRepository questionViewRepository;
     private final CommunityMemberRepository communityMemberRepository;
+    private final QuestionRecommendationRepository questionRecommendationRepository;
 
     /**
      * 질문 등록
