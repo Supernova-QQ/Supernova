@@ -1,6 +1,6 @@
 package com.hanshin.supernova.config.resolver;
 
-import com.hanshin.supernova.auth.application.TokenServiceV1;
+import com.hanshin.supernova.auth.application.TokenService;
 import com.hanshin.supernova.auth.model.AuthToken;
 import com.hanshin.supernova.auth.model.AuthUser;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ import static com.hanshin.supernova.auth.AuthCostants.AUTH_TOKEN_HEADER_KEY;
 @RequiredArgsConstructor
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
-//    private final TokenServiceV1 tokenService;
+    private final TokenService tokenService;
 
     @Override
     public boolean supportsParameter(
@@ -51,7 +51,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
         var token = new AuthToken(accessToken);
 
-//        return tokenService.getAuthUser(token);
-        return null;
+        return tokenService.getAuthUser(
+                token);
     }
 }

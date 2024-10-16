@@ -1,7 +1,7 @@
 package com.hanshin.supernova.user.domain;
 
+import com.hanshin.supernova.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,13 +12,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Email
     @Column(name = "email", unique = true)
     private String email;
 
@@ -34,4 +33,5 @@ public class User {
 
     @Embedded
     private Activity activity;
+
 }

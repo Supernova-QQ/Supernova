@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -20,10 +17,9 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<UserRegisterResponse> register(@RequestBody @Valid UserRegisterRequest request){
-        UserRegisterResponse response = userService.registerUser(request);
-        return ResponseEntity.ok(response);
+    @PostMapping
+    public ResponseEntity<?> createUser(@RequestBody @Valid UserRegisterRequest request){
+        UserRegisterResponse response = userService.register(request);
+        return ResponseDto.created(response);
     }
-
 }
