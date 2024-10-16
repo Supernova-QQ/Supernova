@@ -3,8 +3,10 @@ package com.hanshin.supernova.ai_comment.application;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanshin.supernova.ai_comment.dto.response.AiAnswerResponse;
 import com.hanshin.supernova.ai_comment.util.ChatGptAPIManager;
+import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.gpt.GptInvalidException;
+import com.hanshin.supernova.rate_limiter.annotation.RateLimit;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,8 @@ public class AiAnswerService {
 
     private final ChatGptAPIManager chatGptAPIManager;
 
-    public AiAnswerResponse generateAiAnswer(String title, String content) {
+    @RateLimit(key = "'createAIAnswerTest2:user' + #user.id", limit = 5, period = 60 * 60)
+    public AiAnswerResponse generateAiAnswer(AuthUser user, String title, String content) {
         try {
             return chatGptAPIManager.generateAiAnswer(title, content);
         } catch (ParseException | JsonProcessingException e) {
@@ -32,7 +35,8 @@ public class AiAnswerService {
         }
     }
 
-    public AiAnswerResponse regenerateAiAnswer(String title, String content, String preAnswer) {
+    @RateLimit(key = "'createAIAnswerTest1:user' + #user.id", limit = 5, period = 24 * 60 * 60)
+    public AiAnswerResponse regenerateAiAnswer(AuthUser user, String title, String content, String preAnswer) {
         try {
             return chatGptAPIManager.regenerateAiAnswer(title, content, preAnswer);
         } catch (ParseException | JsonProcessingException e) {

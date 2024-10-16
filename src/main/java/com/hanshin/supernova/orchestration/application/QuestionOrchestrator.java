@@ -54,7 +54,7 @@ public class QuestionOrchestrator {
 
         // AI 답변 요청
         AiAnswerResponse aiAnswerResponse = aiAnswerService.generateAiAnswer(
-                savedQuestion.getTitle(), savedQuestion.getContent());
+                user, savedQuestion.getTitle(), savedQuestion.getContent());
 
         // 답변 등록
         aiCommentService.createAiComment(
@@ -76,7 +76,7 @@ public class QuestionOrchestrator {
 
         // AI 답변 재신청
         AiAnswerResponse regenerationResponse = aiAnswerService.regenerateAiAnswer(
-                findQuestion.getTitle(), findQuestion.getContent(), findAiComment.getAiComment());
+                user, findQuestion.getTitle(), findQuestion.getContent(), findAiComment.getAiComment());
 
         // 답변 등록
         return aiCommentService.updateAiComment(
