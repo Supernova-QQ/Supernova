@@ -18,7 +18,7 @@ public class AiAnswerService {
 
     private final ChatGptAPIManager chatGptAPIManager;
 
-    @RateLimit(key = "'createAIAnswerTest2:user' + #user.id", limit = 5, period = 60 * 60)
+    @RateLimit(key = "'createAIAnswerTest2:user' + #user.id", limit = 5, period = 24 * 60 * 60)
     public AiAnswerResponse generateAiAnswer(AuthUser user, String title, String content) {
         try {
             return chatGptAPIManager.generateAiAnswer(title, content);
