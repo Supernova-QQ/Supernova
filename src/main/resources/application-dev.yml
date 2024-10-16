@@ -5,3 +5,8 @@ spring:
     redis:
       host: localhost
       port: 6379
+
+# chat gpt key
+openai:
+  api:
+    key: ${OPENAI_API_KEY}
