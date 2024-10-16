@@ -30,7 +30,7 @@ public class ChatGptAPIManager {
         String response = getMessageContent(aiResponse);
 
         JSONObject contentObject = (JSONObject) parser.parse(response);
-        String answer = (String) contentObject.get("답변");
+        String answer = contentObject.get("답변").toString();
         return AiAnswerResponse.toResponse(answer);
     }
 
