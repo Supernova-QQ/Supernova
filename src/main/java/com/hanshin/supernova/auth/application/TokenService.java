@@ -33,7 +33,7 @@ public class TokenService {
     private String key;
     private final Set<String> blacklistedTokens = ConcurrentHashMap.newKeySet();
 
-    @Value("${jwt.secret.key}")
+    @Value("${security.jwt.secret.key}")
     public void getSecretKey(String secretKey) {
         log.info("secret key {}", secretKey);
         key = secretKey;
