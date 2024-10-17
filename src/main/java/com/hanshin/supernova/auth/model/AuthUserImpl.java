@@ -1,13 +1,13 @@
 package com.hanshin.supernova.auth.model;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Data
+@RequiredArgsConstructor
 public class AuthUserImpl implements AuthUser {
-    private final Long id;
 
-    @Override
-    public Long getId() {
-        return this.id;
-    }
+    @NotNull
+    private final Long id;
 }
