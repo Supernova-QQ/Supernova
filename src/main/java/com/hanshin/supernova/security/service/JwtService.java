@@ -44,15 +44,19 @@ public class JwtService {
     @Value("${spring.security.jwt.issuer}")
     private String issuerUrl;
 
-    @Value("${security.jwt.access.expiration")
+    @Value("${spring.security.jwt.access.expiration}")
     private int accessTokenExpiration;
 
-    @Value("${security.jwt.refresh.expiration")
+    @Value("${spring.security.jwt.refresh.expiration}")
     private int refreshTokenExpiration;
 
 
     @Autowired
-    public JwtService(UserService userService, RedisService<String> jwtRedisService, @Value("${spring.security.jwt.secretKey}") String secretKey, ObjectMapper objectMapper) {
+    public JwtService(
+            UserService userService,
+            RedisService<String> jwtRedisService,
+            @Value("${spring.security.jwt.secretKey}") String secretKey,
+            ObjectMapper objectMapper) {
         this.userService = userService;
         this.redisService = jwtRedisService;
         this.secretKey = Keys.password(secretKey.toCharArray());

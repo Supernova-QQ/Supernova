@@ -1,6 +1,6 @@
 package com.hanshin.supernova.redis.service;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -8,9 +8,14 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@RequiredArgsConstructor
 public class RedisService<V> {
+
     private final RedisTemplate<String, V> jwtRedisTemplate;
+
+    @Autowired
+    public RedisService(@Qualifier("jwtRedisTemplate")RedisTemplate<String, V> jwtRedisTemplate) {
+        this.jwtRedisTemplate = jwtRedisTemplate;
+    }
 
     public void set(String key, V value, long timeoutSeconds) {
         jwtRedisTemplate.opsForValue().set(key, value, timeoutSeconds, TimeUnit.SECONDS);

@@ -1,11 +1,10 @@
 package com.hanshin.supernova.auth.presentation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hanshin.supernova.auth.application.AuthService;
 import com.hanshin.supernova.auth.dto.request.AuthLoginRequest;
-import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
+import com.hanshin.supernova.security.TokenConstants;
+import com.hanshin.supernova.security.model.AccessTokenWrapper;
 import com.hanshin.supernova.security.model.AuthorizeToken;
 import com.hanshin.supernova.security.service.JwtService;
 import com.hanshin.supernova.user.application.UserService;
@@ -13,21 +12,15 @@ import com.hanshin.supernova.user.domain.User;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import static com.hanshin.supernova.auth.AuthCostants.AUTH_TOKEN_HEADER_KEY;
 
 @RestController
 @RequestMapping(path = "/api/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class AuthController {
-
-    private final AuthService authService;
-
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -48,9 +41,14 @@ public class AuthController {
         jwtService.writeResponse(response, authorizeToken);
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader(AUTH_TOKEN_HEADER_KEY) String token) {
-        authService.logout(token);
-        return ResponseDto.ok("Successfully logged out");
+    @SneakyThrows
+    @PostMapping("/refresh")
+    public void refresh(@RequestBody AccessTokenWrapper accessToken, @CookieValue(name = TokenConstants.REFRESH_TOKEN_COOKIE_NAME) String refreshToken, HttpServletResponse response) {
+        AuthorizeToken oldAuthorizeToken = new AuthorizeToken(accessToken.getAccessToken(), refreshToken);
+        String newAccessToken = jwtService.refresh(oldAuthorizeToken);
+        String newRefreshToken = jwtService.getRefreshToken();
+        AuthorizeToken authorizeToken = new AuthorizeToken(newAccessToken, newRefreshToken);
+        jwtService.setTokenPair(authorizeToken);
+        jwtService.writeResponse(response, authorizeToken);
     }
 }
