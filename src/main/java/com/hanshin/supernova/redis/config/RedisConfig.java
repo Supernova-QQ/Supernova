@@ -33,7 +33,7 @@ public class RedisConfig {
         return redisTemplate;
     }
 
-    @Bean
+    @Bean(name = "jwtRedisTemplate")
     public <V> RedisTemplate<String, V> jwtRedisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, V> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);

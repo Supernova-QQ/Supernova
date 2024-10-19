@@ -29,6 +29,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+	// spring
+//	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 	// Jwt
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
@@ -38,6 +42,7 @@ dependencies {
 	// Spring Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	testImplementation 'org.springframework.security:spring-security-test'
+
 
 	// lombok
 	compileOnly 'org.projectlombok:lombok'
@@ -57,6 +62,11 @@ dependencies {
 	implementation("io.awspring.cloud:spring-cloud-aws-s3:3.0.2")
 	implementation platform('software.amazon.awssdk:bom:2.21.0')
 	implementation("software.amazon.awssdk:auth")
+
+	//embedded-redis
+//	implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.1'
+	implementation 'com.github.codemonstur:embedded-redis:1.4.3'
+
 
 	// json
 	implementation group: 'org.json', name: 'json', version: '20090211'
