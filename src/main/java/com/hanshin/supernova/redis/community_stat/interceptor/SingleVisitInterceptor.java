@@ -54,7 +54,7 @@ public class SingleVisitInterceptor implements HandlerInterceptor {
 //            AuthToken token = new AuthToken(accessToken);
             try {
 //                authUser = tokenService.getAuthUser(token);
-                authUser = authUserResolver.getAuthUser햣 ;
+                authUser = authUserResolver.getAuthUser(accessToken);
             } catch (Exception e) {
                 log.warn("Failed to get AuthUser from token", e);
             }
