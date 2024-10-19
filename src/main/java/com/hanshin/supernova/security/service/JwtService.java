@@ -10,6 +10,7 @@ import com.hanshin.supernova.security.model.AuthorizeToken;
 import com.hanshin.supernova.user.application.UserService;
 import com.hanshin.supernova.user.domain.User;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,7 +60,7 @@ public class JwtService {
             ObjectMapper objectMapper) {
         this.userService = userService;
         this.redisService = jwtRedisService;
-        this.secretKey = Keys.password(secretKey.toCharArray());
+        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
         this.objectMapper = objectMapper;
         this.secretParser = Jwts.parser().verifyWith(this.secretKey).build();
         this.claimParser = Jwts.parser().build();

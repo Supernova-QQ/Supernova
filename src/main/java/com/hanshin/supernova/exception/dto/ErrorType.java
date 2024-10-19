@@ -39,6 +39,8 @@ public enum ErrorType {
 
     // user 예외
     SYSTEM_USER_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "시스템 유저를 찾을 수 없습니다."),
+    PASSWORD_NOT(HttpStatus.BAD_REQUEST, "패스워드가 확인 패스워드랑 일치하지 않습니다."),
+
 
     // 토큰 오류
     AUTHORIZATION_ERROR(HttpStatus.UNAUTHORIZED, "인증, 인가 오류"),
