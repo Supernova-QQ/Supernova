@@ -8,7 +8,6 @@ spring:
 
   security:
     jwt:
-      issuer: "http://localhost:8081"
       secretKey: daccaf8d974dc147519ea15f6c3ae221b57a6ef8fa7508e7eca7e4acc863a6a2972ffd261e05dbe48479dd8e91186e5aaf720ffc223d29558848ada33ca48e07
       access:
         expiration: 3600 # 액세스 토큰 만료 시간 (초 단위)

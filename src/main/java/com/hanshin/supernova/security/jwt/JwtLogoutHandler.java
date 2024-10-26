@@ -16,6 +16,6 @@ public class JwtLogoutHandler implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        jwtService.remove(request, response);
+        jwtService.remove(request, response);  // 쿠키와 Redis에서 RefreshToken 삭제
     }
 }

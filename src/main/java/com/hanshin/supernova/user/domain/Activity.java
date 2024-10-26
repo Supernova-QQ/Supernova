@@ -1,8 +1,9 @@
 package com.hanshin.supernova.user.domain;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import lombok.Data;
 
+@Data
 public class Activity {
     @Column(name = "marked_q_cnt")
     private int markedQuestionCnt;  // 멋진 질문자 배지 계수
