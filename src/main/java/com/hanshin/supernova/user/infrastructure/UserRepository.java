@@ -2,8 +2,6 @@ package com.hanshin.supernova.user.infrastructure;
 
 import com.hanshin.supernova.user.domain.Authority;
 import com.hanshin.supernova.user.domain.User;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,8 +21,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT u.email FROM User u WHERE u.email = :email AND u.nickname = :nickname")
-    Optional<String> findEmailByNameAndNickname(String email, String nickname);
+    // 이메일과 username으로 사용자 찾기 (메서드 수정)
+    @Query("SELECT u FROM User u WHERE u.email = :email AND u.username = :username")
+    Optional<User> findByEmailAndUsername(String email, String username);
 
     @Transactional
     @Modifying

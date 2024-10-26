@@ -1,49 +1,33 @@
 package com.hanshin.supernova.security.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hanshin.supernova.exception.auth.AuthInvalidException;
-import com.hanshin.supernova.exception.dto.ErrorType;
+import com.hanshin.supernova.auth.model.AuthUser;
+import com.hanshin.supernova.auth.model.AuthUserImpl;
 import com.hanshin.supernova.redis.service.RedisService;
-import com.hanshin.supernova.security.RandomStringGenerator;
-import com.hanshin.supernova.security.model.AccessTokenWrapper;
-import com.hanshin.supernova.security.model.AuthorizeToken;
-import com.hanshin.supernova.user.application.UserService;
-import com.hanshin.supernova.user.domain.User;
+import com.hanshin.supernova.user.domain.Authority;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.io.IOException;
-import java.time.Instant;
-import java.util.Arrays;
 import java.util.Date;
 
-import static com.hanshin.supernova.security.TokenConstants.*;
+import static com.hanshin.supernova.auth.AuthConstants.ACCESS_TOKEN_HEADER_KEY;
+import static com.hanshin.supernova.auth.AuthConstants.REFRESH_TOKEN_HEADER_KEY;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
-    private final UserService userService;
-    private final RedisService<String> redisService;
-    private final SecretKey secretKey;
-    private final JwtParser secretParser;
-    private final JwtParser claimParser;
-    private final ObjectMapper objectMapper;
-
-
-    @Value("${spring.security.jwt.issuer}")
-    private String issuerUrl;
+    @Value("${spring.security.jwt.secretKey}")
+    private String SECRET_KEY;
 
     @Value("${spring.security.jwt.access.expiration}")
     private int accessTokenExpiration;
@@ -51,163 +35,151 @@ public class JwtService {
     @Value("${spring.security.jwt.refresh.expiration}")
     private int refreshTokenExpiration;
 
+    private SecretKey key;
+    private final RedisService<String> redisService;  // RedisService 주입
 
     @Autowired
-    public JwtService(
-            UserService userService,
-            RedisService<String> jwtRedisService,
-            @Value("${spring.security.jwt.secretKey}") String secretKey,
-            ObjectMapper objectMapper) {
-        this.userService = userService;
-        this.redisService = jwtRedisService;
-        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
-        this.objectMapper = objectMapper;
-        this.secretParser = Jwts.parser().verifyWith(this.secretKey).build();
-        this.claimParser = Jwts.parser().build();
+    public JwtService(@Value("${spring.security.jwt.secretKey}") String secretKey, RedisService<String> redisService) {
+        this.redisService = redisService;
+        this.SECRET_KEY = secretKey;
+
+        // key 초기화 및 로그 확인
+        if (SECRET_KEY != null)
+            key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    @Nullable
-    public Long getUserId(String accessToken) {
+    // JWT 토큰 유효성 검증
+    public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = claimParser.parseSignedClaims(accessToken);
-            return claims.getPayload().get(USER_ID_CLAIM, Long.class);
+            Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
         } catch (JwtException e) {
+            return false;
+        }
+    }
+
+
+    // JWT 토큰에서 Claims 추출
+    public Claims getClaimsFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(key)
+                .clockSkewSeconds(60) // 1분의 시간 차이를 허용
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public Claims validateAndGetClaims(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .clockSkewSeconds(60) // 1분의 시간 차이를 허용
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            log.warn("Token has expired: {}", e.getMessage());
             return null;
-        } catch (Exception e) {
-            log.warn("Unexpected exception threw while read claim", e);
-            throw e;
-        }
-    }
-
-    public String generateAccessToken(User user) {
-        Instant issuedAt = Instant.now();
-        Instant expiredAt = issuedAt.plusSeconds(accessTokenExpiration);
-
-        ClaimsBuilder claimsBuilder = Jwts.claims();
-        claimsBuilder.subject(user.getUsername());
-        claimsBuilder.add(USER_ID_CLAIM, user.getId());
-        claimsBuilder.add(USER_EMAIL_CLAIM, user.getEmail());
-        claimsBuilder.add(USER_AUTHORITY_CLAIM, user.getAuthority().toString());
-        claimsBuilder.issuedAt(Date.from(issuedAt));
-        claimsBuilder.notBefore(Date.from(issuedAt));
-        claimsBuilder.issuer(issuerUrl);
-        claimsBuilder.expiration(Date.from(expiredAt));
-        Claims claims = claimsBuilder.build();
-
-        return Jwts.builder().claims(claims).signWith(secretKey).compact();
-    }
-
-    public String getRefreshToken() {
-        final int refreshTokenLength = 16;
-        return RandomStringGenerator.generateRandomString(refreshTokenLength);
-    }
-
-    public void setTokenPair(AuthorizeToken authorizeToken) {
-        redisService.set(getPairTokenKey(authorizeToken.getRefreshToken()), authorizeToken.getAccessToken(), refreshTokenExpiration);
-    }
-
-    public String refresh(AuthorizeToken authorizeToken) {
-        final String accessToken = authorizeToken.getAccessToken();
-        final String refreshToken = authorizeToken.getRefreshToken();
-
-        if (isUsedAccessToken(accessToken)) {
-            throw new AuthInvalidException(ErrorType.USED_ACCESS_TOKEN_ERROR);
-        }
-
-        if (isUsedRefreshToken(refreshToken)) {
-            throw new AuthInvalidException(ErrorType.USED_REFRESH_TOKEN_ERROR);
-        }
-
-        String storedAccessToken = redisService.getValue(getPairTokenKey(refreshToken));
-        if (!accessToken.equals(storedAccessToken)) {
-            throw new AuthInvalidException(ErrorType.REFRESH_ACCESS_TOKEN_NOT_MATCH_ERROR);
-        }
-
-        Claims claims;
-        try {
-            claims = secretParser.parseSignedClaims(accessToken).getPayload();
+        } catch (UnsupportedJwtException e) {
+            log.warn("Unsupported JWT token: {}", e.getMessage());
+            return null;
+        } catch (MalformedJwtException e) {
+            log.warn("Malformed JWT token: {}", e.getMessage());
+            return null;
+        } catch (SignatureException e) {
+            log.warn("Invalid signature for JWT token: {}", e.getMessage());
+            return null;
         } catch (JwtException e) {
-            if (e instanceof ExpiredJwtException expired) {
-                claims = expired.getClaims();
-            } else {
-                throw new AuthInvalidException(ErrorType.INVALID_ACCESS_TOKEN_ERROR);
-            }
-        }
-
-        storeUsedAccessToken(accessToken);
-        storeUsedRefreshToken(refreshToken);
-        Long userId = claims.get(USER_ID_CLAIM, Long.class);
-        User user = userService.getById(userId);
-        return generateAccessToken(user);
-    }
-
-    @Nullable
-    public Claims validateAccessToken(String accessToken) {
-        try {
-            if (isUsedAccessToken(accessToken)) {
-                throw new AuthInvalidException(ErrorType.USED_ACCESS_TOKEN_ERROR);
-            }
-            return secretParser.parseSignedClaims(accessToken).getPayload();
-        } catch (JwtException e) {
+            log.warn("General JWT processing error: {}", e.getMessage());
             return null;
         }
     }
 
-    public void writeResponse(HttpServletResponse response, AuthorizeToken authorizeToken) throws IOException {
-        Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, authorizeToken.getRefreshToken());
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(refreshTokenExpiration);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-
-        AccessTokenWrapper wrapper = new AccessTokenWrapper(authorizeToken.getAccessToken());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("UTF-8");
-        objectMapper.writeValue(response.getWriter(), wrapper);
+    // AccessToken 생성
+    public String generateAccessToken(String email, String role) {
+        return Jwts.builder()
+                .subject(email)
+                .claim("role", role)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+                .signWith(key)
+                .compact();
     }
 
+    // RefreshToken 생성
+    public String generateRefreshToken(String email) {
+        return Jwts.builder()
+                .subject(email)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
+                .signWith(key)
+                .compact();
+    }
+
+    // AccessToken에서 사용자 정보를 추출하는 메서드
+    public AuthUser getAuthUserFromToken(String accessToken) {
+        Claims claims = getClaimsFromToken(accessToken);
+        Long userId = claims.get("user_id", Long.class);
+        String email = claims.get("email", String.class);
+        String role = claims.get("role", String.class);
+
+        return new AuthUserImpl(userId, email, "username_placeholder", Authority.valueOf(role));
+    }
+
+    // 로그아웃 시 AccessToken과 RefreshToken 제거 메서드
     public void remove(HttpServletRequest request, HttpServletResponse response) {
-        Arrays.stream(request.getCookies())
-                .filter(c -> c.getName().equals(REFRESH_TOKEN_COOKIE_NAME))
-                .findFirst()
-                .ifPresent(c -> {
-                    storeUsedRefreshToken(c.getValue());
-                    redisService.delete(getPairTokenKey(c.getValue()));
-                });
+        String refreshToken = extractTokenFromRequest(request);
 
-        Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, null);
-        cookie.setMaxAge(0);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        response.addCookie(cookie);
+        if (refreshToken != null) {
+            String email = getEmailFromToken(refreshToken);
+
+            if (email != null && redisService.contains(email)) {
+                redisService.delete(email);  // Redis에서 RefreshToken 삭제
+            }
+
+            // RefreshToken 쿠키에서 제거
+            Cookie removeCookie = new Cookie(REFRESH_TOKEN_HEADER_KEY, null);
+            removeCookie.setMaxAge(0);
+            removeCookie.setHttpOnly(true);
+            removeCookie.setSecure(true);
+            response.addCookie(removeCookie);
+        }
+
+        // AccessToken 헤더에서 제거
+        response.setHeader(ACCESS_TOKEN_HEADER_KEY, "");
     }
 
-    private boolean isUsedAccessToken(String accessToken) {
-        return redisService.contains(getUsedAccessTokenKey(accessToken));
+    // HttpServletRequest에서 RefreshToken을 추출하는 유틸리티 메서드
+    private String extractTokenFromRequest(HttpServletRequest request) {
+        // 헤더에서 RefreshToken 추출 시도
+        String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER_KEY);
+
+        // 쿠키에서도 RefreshToken을 확인
+        if (refreshToken == null || refreshToken.isBlank()) {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (REFRESH_TOKEN_HEADER_KEY.equals(cookie.getName())) {
+                        refreshToken = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+        }
+        return refreshToken;
     }
 
-    private boolean isUsedRefreshToken(String refreshToken) {
-        return redisService.contains(getUsedRefreshTokenKey(refreshToken));
-    }
-
-    private void storeUsedAccessToken(String accessToken) {
-        redisService.set(getUsedAccessTokenKey(accessToken), "", refreshTokenExpiration);
-    }
-
-    private void storeUsedRefreshToken(String refreshToken) {
-        redisService.set(getUsedRefreshTokenKey(refreshToken), "", refreshTokenExpiration);
-    }
-
-    private String getUsedAccessTokenKey(String accessToken) {
-        return "used_a_" + accessToken.hashCode();
-    }
-
-    private String getUsedRefreshTokenKey(String refreshToken) {
-        return "used_r_" + refreshToken;
-    }
-
-    private String getPairTokenKey(String refreshToken) {
-        return "pair_" + refreshToken;
+    // RefreshToken에서 이메일을 추출하는 메서드
+    public String getEmailFromToken(String token) {
+        try {
+            Claims claims = getClaimsFromToken(token);
+            return claims.getSubject();
+        } catch (JwtException e) {
+            log.warn("Failed to extract email from token", e);
+            return null;
+        }
     }
 }
