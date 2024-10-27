@@ -1,16 +1,20 @@
 package com.hanshin.supernova.question.presentation;
 
+import static com.hanshin.supernova.common.CrossOriginConstants.CROSS_ORIGIN_ADDRESS;
+
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.question.application.QuestionListService;
 import com.hanshin.supernova.question.dto.response.QuestionInfoResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin(origins = CROSS_ORIGIN_ADDRESS)
 @RestController
 @RequestMapping(path = "/api/communities/{c_id}")
 @RequiredArgsConstructor
@@ -52,6 +56,9 @@ public class QuestionListController {
         return ResponseDto.ok(responses);
     }
 
+    /**
+     * 답변을 기다리는 최신 4개 질문
+     */
     @GetMapping(path = "/unanswered-latest-4-questions")
     public ResponseEntity<?> unansweredLatest4Questions(
             @PathVariable("c_id") Long cId
