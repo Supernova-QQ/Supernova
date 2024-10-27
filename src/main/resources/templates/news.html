@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>알림 모달</title>
+  <style>
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+      background-color: #34495e;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      color: white;
+      border-radius: 20px;
+
+      h2 {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .news-item {
+      padding: 10px;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .news-item:hover {
+      background-color: #f0f0f0;
+    }
+
+    .news-item.unviewed {
+      font-weight: bold;
+      color: #1F364D;
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .news-item.viewed {
+      color: white;
+      background-color: #1F364D;
+    }
+
+    #load-more-btn, #news-info-related-btn {
+      width: 100px;
+      font-weight: bold;
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #34495e;
+      color: white;
+      border: 1px solid white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #news-info-back-btn {
+      width: 100px;
+      font-weight: bold;
+      display: block;
+      margin: 20px auto 0;
+      padding: 10px 20px;
+      background-color: #34495e;
+      color: white;
+      border: 1px solid white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #news-info-back-btn:hover {
+      background-color: white;
+      color: #34495e;
+    }
+
+    #news-info-related-btn:hover {
+      background-color: white;
+      color: #34495e;
+    }
+
+    #title {
+      display: inline-block;
+      p {
+        font-size: 30px;
+        color: white;
+      }
+    }
+
+    #news {
+      display: inline-block;
+      padding-left: 200px;
+    }
+
+    #news-bell-btn {
+      border: none;
+      background: none;
+      /*background-image: url("../../img/bell/bell-yellow.png");*/
+      /*width: 30px;*/
+      /*height: 30px;*/
+    }
+
+    #news-bell-btn:hover {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<button id="news-bell-btn">🔔</button>
+
+<div id="news-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>알림</h2>
+    <div id="news-list"></div>
+    <button id="load-more-btn">더 보기</button>
+  </div>
+</div>
+
+<div id="news-info-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2 id="news-info-title"></h2>
+    <p id="news-info-type"></p>
+    <p id="news-info-created-at"></p>
+    <p id="news-info-content"></p>
+    <button id="news-info-related-btn" style="display: none;">바로가기</button>
+    <button id="news-info-back-btn">되돌아가기</button>
+  </div>
+</div>
+
+<script>
+  let currentPage = 0;
+  const pageSize = 10;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const newsModal = document.getElementById('news-modal');
+    const newsInfoModal = document.getElementById('news-info-modal');
+    const bellBtn = document.getElementById('news-bell-btn');
+    const closeButtons = document.getElementsByClassName('close');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const backBtn = document.getElementById('news-info-back-btn');
+
+    bellBtn.onclick = () => {
+      newsModal.style.display = 'block';
+      currentPage = 0;
+      document.getElementById('news-list').innerHTML = '';
+      fetchNews();
+    }
+
+    for (let closeBtn of closeButtons) {
+      closeBtn.onclick = () => {
+        newsModal.style.display = 'none';
+        newsInfoModal.style.display = 'none';
+      }
+    }
+
+    window.onclick = (event) => {
+      if (event.target == newsModal) {
+        newsModal.style.display = 'none';
+      }
+      if (event.target == newsInfoModal) {
+        newsInfoModal.style.display = 'none';
+      }
+    }
+
+    loadMoreBtn.onclick = fetchNews;
+
+    backBtn.onclick = () => {
+      newsInfoModal.style.display = 'none';
+      newsModal.style.display = 'block';
+    }
+  });
+
+
+
+  function fetchNews() {
+    const url = `http://localhost:8080/api/news`
+
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-QQ-AUTH-TOKEN': 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0'
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Received question data:', JSON.stringify(data, null, 2));
+      if (data.data) {
+        const responseData = data.data;
+        displayNews(responseData);
+        currentPage++;
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        if (responseData.last) {
+          loadMoreBtn.style.display = 'none';
+        } else {
+          loadMoreBtn.style.display = 'block';
+        }
+      } else {
+        throw new Error('Data structure is not as expected');
+      }
+    })
+    .catch(error => {
+      console.error('There was a problem fetching the news:', error);
+      document.getElementById('news-list').innerHTML = '<p>알림을 불러오는 데 실패했습니다~</p>';
+    });
+  }
+
+  function fetchNewsDetails(newsId) {
+    const url = `http://localhost:8080/api/news/${newsId}`;
+
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-QQ-AUTH-TOKEN': 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0'
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(responseData => {
+      if (responseData && responseData.data) {
+        displayNewsDetails(responseData.data);
+        updateNewsItemStatus(newsId, true);
+      } else {
+        throw new Error('Data structure is not as expected');
+      }
+    })
+    .catch(error => {
+      console.error('There was a problem fetching the news details:', error);
+    });
+  }
+
+  function updateNewsItemStatus(newsId, viewed) {
+    const newsItem = document.querySelector(`.news-item[data-id="${newsId}"]`);
+    if (newsItem) {
+      newsItem.classList.remove('unviewed');
+      newsItem.classList.add('viewed');
+    }
+  }
+
+  function displayNews(newsItems) {
+    const newsList = document.getElementById('news-list');
+
+    if (!Array.isArray(newsItems)) {
+      console.error('newsItems is not an array:', newsItems);
+      newsList.innerHTML = '<p>알림을 불러오는 데 실패했습니다.</p>';
+      return;
+    }
+
+    if (newsItems.length === 0) {
+      newsList.innerHTML = '<p>알림이 없습니다.</p>';
+      return;
+    }
+
+    newsItems.forEach(news => {
+      const newsItem = document.createElement('div');
+      newsItem.className = `news-item ${news.viewed ? 'viewed' : 'unviewed'}`;
+      newsItem.textContent = news.title;
+      newsItem.setAttribute('data-id', news.id);
+      newsItem.onclick = () => fetchNewsDetails(news.id);
+      newsList.appendChild(newsItem);
+    });
+  }
+
+  function displayNewsDetails(news) {
+    document.getElementById('news-info-title').textContent = news.title;
+    document.getElementById('news-info-content').textContent = news.content;
+    // document.getElementById('news-info-type').textContent = `${news.type}`;
+    document.getElementById('news-info-created-at').textContent = `${new Date(news.createdAt).toLocaleString()}`;
+
+    const relatedBtn = document.getElementById('news-info-related-btn');
+    if (news.hasRelatedContent) {
+      relatedBtn.style.display = 'block';
+      relatedBtn.onclick = () => {
+        console.log('Related content ID:', news.relatedContentId);
+      };
+    } else {
+      relatedBtn.style.display = 'none';
+    }
+
+    document.getElementById('news-modal').style.display = 'none';
+    document.getElementById('news-info-modal').style.display = 'block';
+  }
+</script>
+</body>
+</html>

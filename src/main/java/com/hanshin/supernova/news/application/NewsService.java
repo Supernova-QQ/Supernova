@@ -16,6 +16,8 @@ import com.hanshin.supernova.user.infrastructure.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -80,6 +82,16 @@ public class NewsService extends AbstractValidateService {
         newsRepository.deleteById(newsId);
 
         return new SuccessResponse("알림 삭제 완료");
+    }
+
+    public Page<NewsResponse> getAllNews(AuthUser user, Pageable pageable) {
+        Page<News> newsPage = newsRepository.findAllByReceiverIdOrderByCreatedAtDesc(user.getId(),
+                pageable);
+        return newsPage.map(news -> NewsResponse.toResponse(
+                news.getId(), news.getTitle(), news.getContent(),
+                news.getType(), news.isViewed(), news.getCreatedAt(),
+                news.isHasRelatedContent(), news.getRelatedContentId()
+        ));
     }
 
     public List<NewsResponse> getUnViewedNews(AuthUser user) {
