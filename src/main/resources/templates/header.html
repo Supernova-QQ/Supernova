@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:fragment="head">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sci.Q</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+    }
+
+    header {
+      padding: 50px 70px;
+      background-color: white;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .top-section {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header .logo {
+      font-size: 70px;
+      font-weight: bold;
+      color: black;
+    }
+
+    header .search-bar {
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+      margin-left: 15%;
+    }
+
+    header .search-bar input[type="text"] {
+      width: 70%;
+      padding: 10px;
+      border-radius: 25px;
+      border: 1px solid #ccc;
+      padding-left: 40px;
+      background: url('https://via.placeholder.com/15') no-repeat 10px center;
+      background-size: 15px;
+      height: 50px;
+    }
+
+    header .search-bar button {
+      margin-left: 10px;
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      background-color: #f0f4ff;
+      color: black;
+      cursor: pointer;
+      height: 50px;
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+      margin-top: 10px;
+    }
+
+    nav a {
+      color: black;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    a {
+      color: black;
+      text-decoration: none;
+    }
+
+    .icons {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .icons img {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+    }
+
+    /* 알림 */
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;  /* 더 높은 z-index 값 */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #0066cc;
+      width: 80%;
+      max-width: 400px;
+      color: black;
+      border-radius: 20px;
+
+      h2 {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .news-item {
+      padding: 10px;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .news-item:hover {
+      background-color: #f0f0f0;
+    }
+
+    .news-item.unviewed {
+      font-weight: bold;
+      color: white;
+      background-color: steelblue;
+    }
+
+    .news-item.viewed {
+      color: white;
+      background-color: lightslategrey;
+    }
+
+    #load-more-btn, #news-info-related-btn {
+      width: 100px;
+      font-weight: bold;
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: white;
+      color: #1F364D;
+      border: 1px solid #0066cc;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #news-info-back-btn {
+      width: 100px;
+      font-weight: bold;
+      display: block;
+      margin: 20px auto 0;
+      padding: 10px 20px;
+      background-color: white;
+      color: #1F364D;
+      border: 1px solid #0066cc;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #news-info-back-btn:hover {
+      background-color: white;
+      color: #34495e;
+    }
+
+    #news-info-related-btn:hover {
+      background-color: white;
+      color: #34495e;
+    }
+
+    #title {
+      display: inline-block;
+      p {
+        font-size: 30px;
+        color: #1F364D;
+      }
+    }
+
+    #news {
+      display: inline-block;
+      padding-left: 200px;
+    }
+
+    #news-bell-btn {
+      border: none;
+      background: none;
+      /*background-image: url("../../img/bell/bell-yellow.png");*/
+      /*width: 30px;*/
+      /*height: 30px;*/
+    }
+
+    #news-bell-btn:hover {
+      cursor: pointer;
+    }
+
+  </style>
+
+  <!-- 추가 스타일시트를 위한 플레이스홀더 -->
+  <th:block th:replace="${additionalStyles}"></th:block>
+</head>
+
+<body>
+<header th:fragment="header">
+  <div class="top-section">
+
+    <div class="logo">
+      <a th:href="@{/}">
+        Sci.Q
+      </a>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" placeholder="search...">
+      <button>검색</button>
+    </div>
+
+    <div class="icons">
+      <img src="https://via.placeholder.com/24" alt="Profile Icon">
+      <div class="notification">
+        <button id="news-bell-btn">🔔</button>
+      </div>
+      <img src="https://via.placeholder.com/24" alt="Settings Icon">
+    </div>
+  </div>
+  <nav>
+    <a th:href="@{/}">Home</a>
+    <a th:href="@{/communities/main}">Community</a>
+    <a href="#">일반게시판</a>
+    <a href="#">My Page</a>
+    <a href="#">About Us</a>
+  </nav>
+
+  <!-- 알림 모달 -->
+  <div id="news-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>알림</h2>
+      <div id="news-list"></div>
+      <button id="load-more-btn">더 보기</button>
+    </div>
+  </div>
+
+  <div id="news-info-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 id="news-info-title"></h2>
+      <p id="news-info-type"></p>
+      <p id="news-info-created-at"></p>
+      <p id="news-info-content"></p>
+      <button id="news-info-related-btn" style="display: none;">바로가기</button>
+      <button id="news-info-back-btn">되돌아가기</button>
+    </div>
+  </div>
+</header>
+
+</body>
+</html>
