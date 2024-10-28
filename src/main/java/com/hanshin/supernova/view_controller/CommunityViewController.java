@@ -41,4 +41,16 @@ public class CommunityViewController {
         model.addAttribute("communityId", id);
         return "community/community_info";
     }
+
+    @GetMapping("/{communityId}/unanswered-questions")
+    public String unansweredQuestions(@PathVariable(name = "communityId") Long communityId, Model model) {
+        model.addAttribute("communityId", communityId);
+        return "community/unanswered_question_list";
+    }
+
+    @GetMapping("/{communityId}/all-questions")
+    public String allQuestions(@PathVariable(name = "communityId") Long communityId, Model model) {
+        model.addAttribute("communityId", communityId);
+        return "community/all_question_list";
+    }
 }

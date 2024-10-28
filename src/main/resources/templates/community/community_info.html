@@ -60,6 +60,35 @@
       font-weight: bold;
     }
 
+    /* 답변을 기다리는 질문 */
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+
+      h2 {
+        margin-top: 0;
+      }
+    }
+
+    .view-more-btn {
+      padding: 2px 5px;
+      border: 1px solid #007bff;
+      border-radius: 5px;
+      background-color: white;
+      color: #007bff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 0;
+    }
+
+    .view-more-btn:hover {
+      background-color: #007bff;
+      color: white;
+    }
+
     /* 질문 목록 */
 
     .list-item {
@@ -165,17 +194,33 @@
       margin-top: 20px;
     }
 
-    /* 우측 하단에 고정될 캐릭터 */
-    .fixed-character {
+
+    /* 무엇이든 물어보세요 버튼 */
+    .chat-widget {
       position: fixed;
       bottom: 20px;
       right: 20px;
       background-color: #fff;
+      border: 1px solid #ccc;
       padding: 10px;
-      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-      border-radius: 5px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      width: 150px;
       text-align: center;
+      z-index: 1000; /* 화면에서 항상 보이게 z-index를 설정 */
+    }
+
+    .chat-widget img {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 10px;
+    }
+
+    .chat-widget p {
       font-size: 14px;
+      font-weight: bold;
+      color: #333;
+      margin: 0;
     }
   </style>
 </head>
@@ -193,13 +238,21 @@
 
     <!-- Left card -->
     <div class="card">
-      <h3>답변을 기다리는 질문</h3>
+<!--      <h3>답변을 기다리는 질문</h3>-->
+<!--      <div id="left-card"></div>-->
+      <div class="section-header">
+        <h3>답변을 기다리는 질문</h3>
+        <button id="unanswered-view-more-btn" class="view-more-btn">더보기</button>
+      </div>
       <div id="left-card"></div>
     </div>
 
     <!-- Right card -->
     <div class="card">
-      <h3>인기 Q&A</h3>
+      <div class="section-header">
+        <h3>인기 Q&A</h3>
+        <button id="all-view-more-btn" class="view-more-btn">더보기</button>
+      </div>
       <div id="right-card"></div>
     </div>
 
@@ -231,19 +284,24 @@
   </div>
 </div>
 
-<!-- 우측 하단에 고정된 캐릭터 -->
-<div class="fixed-character">
+
+<!-- 무엇이든 물어보세요 위젯 -->
+<div class="chat-widget">
+  <img th:src="@{/images/chatbotQQ.png}" alt="무엇이든 물어보세요 이미지">
   <p>무엇이든 물어보세요!</p>
 </div>
 
 <footer th:replace="~{footer :: footer}"></footer>
 
 <script src="/js/news.js"></script>
+<script src="/js/question.js"></script>
+<script src="/js/search.js"></script>
 
 <script>
+  const communityId = [[${communityId}]];
   document.addEventListener('DOMContentLoaded', function () {
-    const communityId = [[${communityId}]];
     fetchCommunityInfo(communityId);
+    fetchCommunityVisitCnt(communityId);
     fetchUnansweredQuestions(communityId);
     fetchPopularQuestions(communityId);
   })
@@ -277,7 +335,6 @@
     document.getElementById('communityDescription').textContent = communityInfo.description;
     document.getElementById('memberCount').textContent = communityInfo.commCounter.memberCnt;
     document.getElementById('questionCount').textContent = communityInfo.commCounter.questionCnt;
-    document.getElementById('visitorCount').textContent = communityInfo.commCounter.visitorCnt;
     document.getElementById('createdAt').textContent = 'since ' + new Date(
         communityInfo.createdAt).toLocaleDateString();
 
@@ -291,8 +348,33 @@
     publicInfo.style.backgroundColor = communityInfo.isPublic ? 'blue' : 'red';
     publicInfo.title = communityInfo.isPublic ? '공개' : '비공개';
   }
+  
+  function fetchCommunityVisitCnt(communityId) {
+    fetch(url + `/${communityId}/visitors/daily`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-QQ-AUTH-TOKEN': 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Received visitor data:', JSON.stringify(data, null, 2));
 
-  // 커뮤니티 인기 질문 목록 로딩
+      if (data) {
+        updateCommunityVisitor(data);
+      } else {
+        console.error('Unexpected data structure:', data);
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+  function updateCommunityVisitor(visitInfo) {
+    document.getElementById('visitorCount').textContent = visitInfo.visitorCount;
+  }
+
+  // 커뮤니티 답변을 기다리는 질문 목록 로딩
   function fetchUnansweredQuestions(communityId) {
     fetch(url + `/${communityId}/unanswered-latest-4-questions`, {
       method: 'GET',
@@ -313,7 +395,53 @@
     })
     .catch(error => console.error('Error:', error));
   }
+  // function fetchUnansweredQuestions() {
+  //   fetch(`${url}/${communityId}/unanswered-latest-4-questions`, {
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'X-QQ-AUTH-TOKEN': token
+  //     }
+  //   })
+  //   .then(response => response.json())
+  //   .then(data => {
+  //     if (data.data) {
+  //       displayUnansweredQuestions(data.data);
+  //     }
+  //   })
+  //   .catch(error => console.error('Error:', error));
+  // }
 
+  // 질문 목록 표시
+  // function displayUnansweredQuestions(questions) {
+  //   const container = document.getElementById('unanswered-questions');
+  //   container.innerHTML = '';
+  //
+  //   questions.forEach(question => {
+  //     const card = document.createElement('div');
+  //     card.className = 'question-card';
+  //     card.innerHTML = `
+  //           <div class="question-title">${question.title}</div>
+  //           <div class="question-preview">${truncateText(question.content, 100)}</div>
+  //       `;
+  //
+  //     card.addEventListener('click', () => {
+  //       window.location.href = `/questions/info/${question.id}`;
+  //     });
+  //
+  //     container.appendChild(card);
+  //   });
+  // }
+
+  // 더보기 버튼 이벤트 핸들러
+  document.getElementById('unanswered-view-more-btn').addEventListener('click', () => {
+    window.location.href = `/communities/${communityId}/unanswered-questions?sort=latest`;
+  });
+  document.getElementById('all-view-more-btn').addEventListener('click', () => {
+    window.location.href = `/communities/${communityId}/all-questions?sort=latest`;
+  });
+
+
+  // 커뮤니티 인기 질문 목록 로딩
   function fetchPopularQuestions(communityId) {
     fetch(url + `/${communityId}/popular-4-questions`, {
       method: 'GET',

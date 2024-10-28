@@ -7,6 +7,9 @@ import com.hanshin.supernova.question.application.QuestionListService;
 import com.hanshin.supernova.question.dto.response.QuestionInfoResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,35 +27,41 @@ public class QuestionListController {
 
     @GetMapping(path = "/all-latest-questions")
     public ResponseEntity<?> allLatestQuestions(
-            @PathVariable("c_id") Long cId
+            @PathVariable("c_id") Long cId,
+            @PageableDefault(size = 7) Pageable pageable
     ) {
-        var response = questionListService.getAllQuestionsByDesc(cId);
+        Page<QuestionInfoResponse> response = questionListService.getAllQuestionsByDesc(
+                cId, pageable);
         return ResponseDto.ok(response);
     }
 
     @GetMapping(path = "/all-old-questions")
     public ResponseEntity<?> allOldQuestions(
-            @PathVariable("c_id") Long cId
+            @PathVariable("c_id") Long cId,
+            @PageableDefault(size = 7) Pageable pageable
     ) {
-        var response = questionListService.getAllQuestionsByAsc(cId);
+        Page<QuestionInfoResponse> response = questionListService.getAllQuestionsByAsc(cId,
+                pageable);
         return ResponseDto.ok(response);
     }
 
     @GetMapping(path = "/unanswered-latest-questions")
     public ResponseEntity<?> unansweredLatestQuestions(
-            @PathVariable("c_id") Long cId
+            @PathVariable("c_id") Long cId,
+            @PageableDefault(size = 7) Pageable pageable
     ) {
-        List<QuestionInfoResponse> responses = questionListService.getUnAnsweredQuestionsByDesc(
-                cId);
+        Page<QuestionInfoResponse> responses = questionListService.getUnAnsweredQuestionsByDesc(
+                cId, pageable);
         return ResponseDto.ok(responses);
     }
 
     @GetMapping(path = "/unanswered-old-questions")
     public ResponseEntity<?> unansweredOldQuestions(
-            @PathVariable("c_id") Long cId
+            @PathVariable("c_id") Long cId,
+            @PageableDefault(size = 7) Pageable pageable
     ) {
-        List<QuestionInfoResponse> responses = questionListService.getUnAnsweredQuestionsByAsc(
-                cId);
+        Page<QuestionInfoResponse> responses = questionListService.getUnAnsweredQuestionsByAsc(
+                cId, pageable);
         return ResponseDto.ok(responses);
     }
 
