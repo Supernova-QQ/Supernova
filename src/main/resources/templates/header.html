@@ -36,34 +36,142 @@
       color: black;
     }
 
-    header .search-bar {
+    /* 검색 */
+
+    .search-bar {
       display: flex;
       align-items: center;
       flex-grow: 1;
       margin-left: 15%;
+      margin-right: 0;
+      padding-right: 20px;
+      gap: 10px;
     }
 
-    header .search-bar input[type="text"] {
-      width: 70%;
-      padding: 10px;
+    /* 검색 옵션 커스텀 드롭다운 */
+
+    .custom-dropdown {
+      position: relative;
+      align-items: center;
+      min-width: 150px;
+    }
+
+    .dropdown-selected {
+      padding: 10px 15px;
+      background-color: #f8f9fa;
+      border: 1px solid #e0e0e0;
       border-radius: 25px;
-      border: 1px solid #ccc;
-      padding-left: 40px;
-      background: url('https://via.placeholder.com/15') no-repeat 10px center;
-      background-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 50px;
+      box-sizing: border-box;
+    }
+
+    #selected-text {
+      margin-left: 15%;
+    }
+
+    .dropdown-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 90%;
+      background-color: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      margin-top: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: none;
+      z-index: 1000;
+    }
+
+    .dropdown-option {
+      padding: 10px 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: background-color 0.2s;
+    }
+
+    .dropdown-option:hover {
+      background-color: #f8f9fa;
+    }
+
+    .check-mark {
+      margin-right: 8px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .dropdown-option .check-mark {
+      opacity: 0;
+    }
+
+    .dropdown-option.selected .check-mark {
+      opacity: 1;
+    }
+
+    /* 드롭다운이 열렸을 때 */
+    .custom-dropdown.open .dropdown-options {
+      display: block;
+    }
+
+    .custom-dropdown.open .dropdown-selected {
+      border-color: #999;
+    }
+
+
+    .search-input-container {
+      position: relative;
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      margin-right: 0;
+      max-width: 900px;
       height: 50px;
     }
 
-    header .search-bar button {
-      margin-left: 10px;
-      padding: 10px 20px;
-      border-radius: 20px;
-      border: 1px solid #ccc;
-      background-color: #f0f4ff;
-      color: black;
-      cursor: pointer;
+    #search-input {
+      width: 100%;
+      padding-left: 20px;
+      border-radius: 25px;
+      border: 1px solid #e0e0e0;
       height: 50px;
+      font-size: 14px;
+      outline: none;
     }
+
+    #search-btn {
+      position: absolute;
+      right: 5px;
+      background: none;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    #search-btn img {
+      width: 20px;
+      height: 20px;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+
+    #search-btn:hover img {
+      opacity: 1;
+    }
+
+    #search-input:hover {
+      border-color: #ccc;
+    }
+
+    #search-input:focus {
+      border-color: #999;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+    }
+
 
     nav {
       display: flex;
@@ -93,6 +201,20 @@
       height: 24px;
       cursor: pointer;
     }
+
+    /* 빠른 질문 */
+
+    .create-question button {
+      margin-right: 30px;
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      background-color: #f0f4ff;
+      color: black;
+      cursor: pointer;
+      height: 50px;
+    }
+
 
     /* 알림 */
 
@@ -158,7 +280,7 @@
 
     .news-item.viewed {
       color: white;
-      background-color: lightslategrey;
+      background-color: #ccc;
     }
 
     #load-more-btn, #news-info-related-btn {
@@ -237,10 +359,33 @@
         Sci.Q
       </a>
     </div>
-
     <div class="search-bar">
-      <input type="text" placeholder="search...">
-      <button>검색</button>
+      <div class="custom-dropdown">
+        <div class="dropdown-selected">
+          <span id="selected-text">제목 및 내용</span>
+<!--          <span class="check-mark">✓</span>-->
+        </div>
+        <div class="dropdown-options">
+          <div class="dropdown-option" data-value="TITLE_OR_CONTENT">
+<!--            <span class="check-mark">✓</span>-->
+            제목 및 내용
+          </div>
+          <div class="dropdown-option" data-value="HASHTAG">
+<!--            <span class="check-mark">✓</span>-->
+            해시태그
+          </div>
+        </div>
+      </div>
+      <div class="search-input-container">
+        <input type="text" id="search-input" placeholder="search...">
+        <button id="search-btn">
+          <img th:src="@{/images/search.png}" alt="검색">
+        </button>
+      </div>
+    </div>
+
+    <div class="create-question">
+      <button id="create-question-btn">빠른 질문하기</button>
     </div>
 
     <div class="icons">

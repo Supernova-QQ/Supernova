@@ -18,7 +18,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -113,22 +112,32 @@ public class HashtagService {
     // 해시태그 검색을 위한 메소드
     @Transactional(readOnly = true)
     public List<Question> getQuestionsByHashtagName(String hashtagName) {
-        Hashtag hashtagByName = hashtagRepository.findByName(hashtagName);
+        List<Question> findQuestions = new ArrayList<>();
 
-        if(hashtagByName == null) {
+        // 'hashtagName' 를 포함한 해시태그 목록 조회
+        List<Hashtag> hashtagsByName = hashtagRepository.findByNameContaining(hashtagName);
+        if(hashtagsByName == null) {
             return null;
         }
 
-        List<QuestionHashtag> questionHashtags = questionHashtagRepository.findByHashtagId(
-                hashtagByName.getId());
+        List<QuestionHashtag> questionHashtags = new ArrayList<>();
+        // 각 해시태그(hashtagsByName)가 포함된 질문 해시태그 조회
+        hashtagsByName.forEach(
+                hashtag -> questionHashtags.addAll(
+                        questionHashtagRepository.findByHashtagId(hashtag.getId()))
+        );
 
-        List<Question> questions = new ArrayList<>();
-        questionHashtags.forEach(questionHashtag -> {
-            questions.add(questionRepository.findById(questionHashtag.getQuestionId()).orElseThrow(
-                    () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
-            ));
-        });
+        questionHashtags.forEach(
+                questionHashtag -> findQuestions.add(
+                        getQuestionOrThrowIfNotExist(questionHashtag.getQuestionId()))
+        );
 
-        return questions;
+        return findQuestions;
+    }
+
+    private Question getQuestionOrThrowIfNotExist(Long questionId) {
+        return questionRepository.findById(questionId).orElseThrow(
+                () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
+        );
     }
 }
