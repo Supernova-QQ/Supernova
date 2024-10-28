@@ -66,6 +66,21 @@ public class QuestionOrchestrator {
         return questionSaveResponse;
     }
 
+    @Transactional
+    public QuestionSaveResponse updateQuestionWithHashtag(AuthUser user, Long questionId, QuestionRequest request) {
+
+        // 질문 등록
+        QuestionSaveResponse questionUpdateResponse = questionService.editQuestion(user, questionId, request);
+        Question savedQuestion = getQuestionOrThrowIfNotExist(questionUpdateResponse.getQuestionId());
+
+        // 해시태그 등록
+        HashtagRequest hashtagRequest = new HashtagRequest();
+        hashtagRequest.setHashtagNames(request.getHashtags());
+        hashtagService.saveQuestionHashtag(savedQuestion.getId(), hashtagRequest, user);
+
+        return questionUpdateResponse;
+    }
+
     /*
     새로운 AI 댓글
      */
