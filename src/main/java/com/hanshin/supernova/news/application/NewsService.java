@@ -16,10 +16,13 @@ import com.hanshin.supernova.user.infrastructure.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NewsService extends AbstractValidateService {
@@ -27,6 +30,7 @@ public class NewsService extends AbstractValidateService {
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public NewsResponse createNews(NewsRequest request) {
         getUserOrThrowIfNotExist(request.getReceiverId());
 
@@ -38,6 +42,7 @@ public class NewsService extends AbstractValidateService {
                 savedNews.isHasRelatedContent(), savedNews.getRelatedContentId());
     }
 
+    @Transactional
     public NewsResponse getNews(AuthUser user, Long newsId) {
         News findNews = getNewsOrThrowIfNotExist(newsId);
 
@@ -47,7 +52,12 @@ public class NewsService extends AbstractValidateService {
         // 조회한 적 없는 알림의 경우 조회한 상태로 변경
         if (!findNews.isViewed()) {
             findNews.changeViewed();
+            if (!findNews.isViewed()) {
+                log.error("news status does not changed, view = {}", findNews.isViewed());
+            }
         }
+
+        log.info("news status view = {}", findNews.isViewed());
 
         return NewsResponse.toResponse(
                 findNews.getId(), findNews.getTitle(), findNews.getContent(),
@@ -56,6 +66,7 @@ public class NewsService extends AbstractValidateService {
         );
     }
 
+    @Transactional
     public NewsResponse updateNews(AuthUser user, Long newsId, NewsRequest request) {
         News findNews = getNewsOrThrowIfNotExist(newsId);
 
@@ -74,6 +85,7 @@ public class NewsService extends AbstractValidateService {
         );
     }
 
+    @Transactional
     public SuccessResponse deleteNews(AuthUser user, Long newsId) {
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
@@ -84,6 +96,7 @@ public class NewsService extends AbstractValidateService {
         return new SuccessResponse("알림 삭제 완료");
     }
 
+    @Transactional(readOnly = true)
     public Page<NewsResponse> getAllNews(AuthUser user, Pageable pageable) {
         Page<News> newsPage = newsRepository.findAllByReceiverIdOrderByCreatedAtDesc(user.getId(),
                 pageable);
@@ -94,6 +107,7 @@ public class NewsService extends AbstractValidateService {
         ));
     }
 
+    @Transactional(readOnly = true)
     public List<NewsResponse> getUnViewedNews(AuthUser user) {
         List<News> findNewsList = newsRepository.findAllByReceiverIdAndIsViewedFalseOrderByCreatedAtDesc(
                 user.getId());
@@ -101,6 +115,7 @@ public class NewsService extends AbstractValidateService {
         return getNewsResponses(findNewsList);
     }
 
+    @Transactional(readOnly = true)
     public List<NewsResponse> getViewedNews(AuthUser user) {
         List<News> findNewsList = newsRepository.findAllByReceiverIdAndIsViewedTrueOrderByCreatedAtDesc(
                 user.getId());
