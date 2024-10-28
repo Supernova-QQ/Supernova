@@ -24,9 +24,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class QuestionService extends AbstractValidateService {
@@ -90,15 +93,7 @@ public class QuestionService extends AbstractValidateService {
             questionViewRepository.findByViewerIdAndQuestionId(viewer_id, qId).updateViewedAt();
         }
 
-        return QuestionResponse.toResponse(
-                findQuestion.getTitle(),
-                findQuestion.getContent(),
-                findQuestion.isResolved(),
-                findQuestion.getCreatedAt(),
-                findQuestion.getModifiedAt(),
-                findQuestion.getViewCnt(),
-                findQuestion.getRecommendationCnt(),
-                findQuestion.getCommId());
+        return getQuestionResponse(findQuestion);
     }
 
     /**
@@ -134,6 +129,9 @@ public class QuestionService extends AbstractValidateService {
         Question findQuestion = getQuestionById(qId);
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
+
+        log.info("questioner ID = {}", findQuestion.getQuestionerId());
+        log.info("user ID = {}", findUser.getId());
 
         validateSameQuestionerById(findQuestion, findUser.getId());
 
@@ -171,32 +169,24 @@ public class QuestionService extends AbstractValidateService {
             findQuestion.decreaseRecommendationCnt();
         }
 
-        return QuestionResponse.toResponse(
-                findQuestion.getTitle(),
-                findQuestion.getContent(),
-                findQuestion.isResolved(),
-                findQuestion.getCreatedAt(),
-                findQuestion.getModifiedAt(),
-                findQuestion.getViewCnt(),
-                findQuestion.getRecommendationCnt(),
-                findQuestion.getCommId());
+        return getQuestionResponse(findQuestion);
     }
 
     /**
      * 사용자가 등록된 커뮤니티 목록 제공
      */
     @Transactional(readOnly = true)
-    public List<CommunityInfoResponse> getMyCommunities(AuthUser user, Long qId) {
+    public List<CommunityInfoResponse> getMyCommunities(AuthUser user) {
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
         List<CommunityInfoResponse> communityInfoResponses = new ArrayList<>();
 
-        List<CommunityMember> findCMembers = communityMemberRepository.findAllByUserId(
+        List<CommunityMember> findUserCommunities = communityMemberRepository.findAllByUserId(
                 findUser.getId());
-        findCMembers.forEach(findMember -> {
+        findUserCommunities.forEach(userCommunity -> {
             communityInfoResponses.add(CommunityInfoResponse.toResponse(
-                    findMember.getCommunityId(),
-                    findMember.getCommunityName()
+                    userCommunity.getCommunityId(),
+                    userCommunity.getCommunityName()
             ));
         });
 
@@ -214,6 +204,23 @@ public class QuestionService extends AbstractValidateService {
         return questionRepository.findById(q_Id).orElseThrow(
                 () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
         );
+    }
+
+    private QuestionResponse getQuestionResponse(Question findQuestion) {
+        User findUser = getUserOrThrowIfNotExist(findQuestion.getQuestionerId());
+        Community findCommunity = getCommunityOrThrowIfNotExist(findQuestion.getCommId());
+        return QuestionResponse.toResponse(
+                findQuestion.getTitle(),
+                findQuestion.getContent(),
+                findQuestion.isResolved(),
+                findQuestion.getCreatedAt(),
+                findQuestion.getModifiedAt(),
+                findQuestion.getViewCnt(),
+                findQuestion.getRecommendationCnt(),
+                findQuestion.getCommId(),
+                findQuestion.getQuestionerId(),
+                findCommunity.getName(),
+                findUser.getNickname());
     }
 
 }
