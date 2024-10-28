@@ -132,18 +132,36 @@
     }
 
     /* 인기 태그 스타일 추가 */
+    .tag.clickable {
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-block;
+      margin-right: 5px;
+      margin-bottom: 5px;
+      padding: 5px 10px;
+      background-color: #f4f6fa;
+      border-radius: 4px;
+      color: #024098;
+    }
+
+    .tag.clickable:hover {
+      background-color: #e3e8f7;
+      transform: translateY(-1px);
+    }
+
+    .tag.clickable span {
+      color: inherit;
+    }
+
     #popularTags {
       display: flex;
       flex-wrap: wrap;
-      gap: 5px;
+      gap: 8px;
+      margin-top: 10px;
     }
 
     .tag-item {
-      display: inline;
-    }
-
-    .tag span {
-      white-space: nowrap;
+      margin-bottom: 5px;
     }
 
     #mostViewedQuestion:hover {
@@ -213,9 +231,14 @@
 <footer th:replace="~{footer :: footer}"></footer>
 
 <script src="/js/news.js"></script>
+<script src="/js/question.js"></script>
+<script src="/js/search.js"></script>
 
 <script>
+
   document.addEventListener('DOMContentLoaded', function () {
+    // const questionCreateBtn = document.getElementById('create-question-btn');
+    // displayQuestionCreation(questionCreateBtn);
     fetchPopularCommunities();
     fetchPopularQuestions();
     fetchNotice();
@@ -380,16 +403,24 @@
     const container = document.getElementById('popularTags');
     container.innerHTML = ''; // Clear existing content
 
-    tags.forEach((tag, index) => {
-      const card = document.createElement('div');
-      card.className = 'tag-item';
-      card.innerHTML = `
-       <div class="tag">
-           <span>${tag.name}</span>
-           <span>(${tag.tagCnt}), </span>
-       </div>
-      `;
-      container.appendChild(card);
+    tags.forEach(tag => {
+      const tagDiv = document.createElement('div');
+      tagDiv.className = 'tag-item';
+
+      // 클릭 가능한 스타일을 위한 추가 클래스
+      tagDiv.innerHTML = `
+            <div class="tag clickable">
+                <span>#${tag.name}</span>
+                <span>(${tag.tagCnt})</span>
+            </div>
+        `;
+
+      // 클릭 이벤트 추가
+      tagDiv.addEventListener('click', () => {
+        window.location.href = `/search?search-keyword=${encodeURIComponent(tag.name)}&search-type=HASHTAG&sort-type=CREATED_AT`;
+      });
+
+      container.appendChild(tagDiv);
     });
   }
 
@@ -455,6 +486,14 @@
     console.log("questionId for answer: ", answer.questionId);
     displayQuestion(container, answer.questionId)
   }
+
+
+  // function displayQuestionCreation(container) {
+  //   // 질문 생성 페이지로 이동
+  //   container.addEventListener('click', () => {
+  //     window.location.href = `/questions/create`;
+  //   });
+  // }
 
   function displayQuestion(container, questionId) {
     // 질문 내부로 이동

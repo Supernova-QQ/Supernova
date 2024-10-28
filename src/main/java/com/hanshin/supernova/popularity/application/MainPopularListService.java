@@ -50,7 +50,6 @@ public class MainPopularListService {
     }
 
     public List<PopularQuestionResponse> getTop5Questions() {
-//        LocalDate endDate = LocalDate.now().minusDays(1);   // Test 용도
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(30);
         List<Object[]> results = questionViewRepository.findTopNQuestionsByViewCntInDateRange(
@@ -60,7 +59,6 @@ public class MainPopularListService {
 
     public List<PopularHashtagResponse> getTop10Hashtags() {
         log.info("getTop10Hashtags");
-//        LocalDate yesterday = LocalDate.now().minusDays(1); // Test 용도
         LocalDate yesterday = LocalDate.now();
         List<Object[]> results = hashtagStatsRepository.findTop10HashtagsByTaggersInDateRange(
                 yesterday);
@@ -69,7 +67,6 @@ public class MainPopularListService {
     }
 
     public Optional<PopularQuestionResponse> getMostViewedQuestion() {
-//        LocalDate endDate = LocalDate.now().minusDays(1);   // Test 용도
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(1);
         List<Object[]> results = questionViewRepository.findTopNQuestionsByViewCntInDateRange(
@@ -79,7 +76,6 @@ public class MainPopularListService {
     }
 
     public Optional<PopularAnswerResponse> getMostLikedAnswer() {
-//        LocalDate endDate = LocalDate.now().minusDays(1);   // Test 용도
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(1);
         List<Object[]> results = answerRecommendationRepository.findTopNAnswersByRecommendationCntInDateRange(
