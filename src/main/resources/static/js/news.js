@@ -2,7 +2,6 @@ console.log("News script loaded");
 
 let currentPage = 0;
 const pageSize = 10;
-const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log("DOM Content Loaded");
@@ -50,6 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+const newsToken = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+
 function fetchNews() {
   const url = `http://localhost:8080/api/news?page=${currentPage}&size=${pageSize}`;
 
@@ -57,7 +58,7 @@ function fetchNews() {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'X-QQ-AUTH-TOKEN': token
+      'X-QQ-AUTH-TOKEN': newsToken
     }
   })
   .then(response => {
@@ -95,7 +96,7 @@ function fetchNewsDetails(newsId) {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'X-QQ-AUTH-TOKEN': token
+      'X-QQ-AUTH-TOKEN': newsToken
     }
   })
   .then(response => {
