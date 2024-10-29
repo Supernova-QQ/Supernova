@@ -56,6 +56,9 @@ public enum ErrorType {
     ACCEPTED_ANSWER_CANNOT_BE_EDITED_ERROR(HttpStatus.BAD_REQUEST, "채택된 답변은 수정이 불가능합니다."),
     QUESTIONER_CANNOT_ACCEPT_THEIR_OWN_ANSWER_ERROR(HttpStatus.BAD_REQUEST, "게시글 당사자는 자신의 댓글 채택이 불가능합니다."),
 
+    // rate limit 예외
+    RATE_LIMIT_EXCEEDED_ERROR(HttpStatus.TOO_MANY_REQUESTS, "요청 횟수가 한계를 초과하였습니다."),
+
     // 해시태그 예외
     HASHTAG_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id 에 해당하는 해시태그가 존재하지 않습니다."),
     HASHTAG_MAX_SIZE_5_ERROR(HttpStatus.BAD_REQUEST, "해시태그는 최대 5개까지 등록 가능합니다."),
