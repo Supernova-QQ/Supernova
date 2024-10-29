@@ -1,14 +1,18 @@
 package com.hanshin.supernova.popularity.presentation;
 
+import static com.hanshin.supernova.common.CrossOriginConstants.CROSS_ORIGIN_ADDRESS;
+
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.popularity.application.MainPopularListService;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin(origins = CROSS_ORIGIN_ADDRESS)
 @RestController
 @RequestMapping(path = "/api/main")
 @RequiredArgsConstructor

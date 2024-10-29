@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MainPopularListService {
@@ -56,9 +58,11 @@ public class MainPopularListService {
     }
 
     public List<PopularHashtagResponse> getTop10Hashtags() {
-        LocalDate yesterday = LocalDate.now().minusDays(1);
+        log.info("getTop10Hashtags");
+        LocalDate yesterday = LocalDate.now();
         List<Object[]> results = hashtagStatsRepository.findTop10HashtagsByTaggersInDateRange(
                 yesterday);
+        log.info("results size: {}", results.size());
         return getPopularHashtagResponses(results);
     }
 
@@ -88,12 +92,15 @@ public class MainPopularListService {
                 .map(result -> {
                     Long communityId = (Long) result[0];
                     Long visitorCnt = (Long) result[1];
+                    int communityMemberCount = communityRepository.findById(communityId).get()
+                            .getCommCounter().getMemberCnt();
                     String communityName = communityRepository.findById(communityId)
                             .map(Community::getName)
                             .orElse("Unknown Community");
                     return PopularCommunityResponse.builder()
                             .id(communityId)
                             .name(communityName)
+                            .memberCnt(communityMemberCount)
                             .visitorCnt(visitorCnt)
                             .build();
                 })
@@ -128,6 +135,7 @@ public class MainPopularListService {
                     Hashtag findHashtag = hashtagRepository.findById(hashtagId).orElseThrow(
                             () -> new HashtagInvalidException(ErrorType.HASHTAG_NOT_FOUND_ERROR)
                     );
+                    log.info("hashtagId={}, hashtagName={}", hashtagId, findHashtag.getName());
                     return PopularHashtagResponse.builder()
                             .name(findHashtag.getName())
                             .tagCnt(tagCnt)
@@ -146,7 +154,7 @@ public class MainPopularListService {
                             .orElseThrow(() -> new QuestionInvalidException(
                                     ErrorType.QUESTION_NOT_FOUND_ERROR));
                     return PopularAnswerResponse.builder()
-                            .questionId(findAnswer.getId())
+                            .questionId(findAnswer.getQuestionId())
                             .answerId(answerId)
                             .recommendCnt(recommendCnt)
                             .answer(findAnswer.getAnswer())

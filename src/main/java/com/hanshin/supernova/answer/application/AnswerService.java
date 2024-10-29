@@ -20,9 +20,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AnswerService extends AbstractValidateService {
@@ -39,9 +41,12 @@ public class AnswerService extends AbstractValidateService {
         Question findQuestion = getQuestionById(qId);
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
+        log.info("answer creator ID = {}", findUser.getId());
 
         Answer answer = buildAnswer(qId, request, findUser.getId());
         Answer savedAnswer = answerRepository.save(answer);
+
+        log.info("saved Answer Answerer ID = {}", savedAnswer.getAnswererId());
 
         findQuestion.increaseAnswerCnt();
 
@@ -75,6 +80,11 @@ public class AnswerService extends AbstractValidateService {
 
         validateSameAnswerer(findAnswer, findUser.getId());
 
+        // 채택된 답변은 수정이 불가능
+        if (findAnswer.isAccepted()) {
+            throw new AnswerInvalidException(ErrorType.ACCEPTED_ANSWER_CANNOT_BE_EDITED_ERROR);
+        }
+
         findAnswer.updateAnswer(
                 request.getAnswer(),
                 request.getTag(),
@@ -93,9 +103,15 @@ public class AnswerService extends AbstractValidateService {
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
+        log.info("answer deleter ID = {}", findUser.getId());
+
         Answer findAnswer = getAnswerById(aId);
 
         validateSameAnswerer(findAnswer, findUser.getId());
+
+        if (findAnswer.isAccepted()) {
+            throw new AnswerInvalidException(ErrorType.ACCEPTED_ANSWER_CANNOT_BE_DELETED_ERROR);
+        }
 
         answerRepository.deleteById(findAnswer.getId());
         findQuestion.decreaseAnswerCnt();
@@ -131,8 +147,15 @@ public class AnswerService extends AbstractValidateService {
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
         Answer findAnswer = getAnswerById(aId);
+
+        // 질문자가 자신이 등록한 댓글 채택하는 것 방지
+        if (findQuestion.getQuestionerId().equals(findAnswer.getAnswererId())) {
+            throw new AnswerInvalidException(
+                    ErrorType.QUESTIONER_CANNOT_ACCEPT_THEIR_OWN_ANSWER_ERROR);
+        }
+
         findAnswer.changeStatus();
-        findQuestion.changeStatus();
+        findQuestion.changeResolveStatus();
 
         return getAnswerResponse(findAnswer, findUser);
     }
@@ -192,7 +215,7 @@ public class AnswerService extends AbstractValidateService {
 
     private static AnswerResponse getAnswerResponse(Answer answer, User user) {
         return AnswerResponse.toResponse(
-                answer.getAnswererId(),
+                answer.getId(),
                 user.getNickname(),
                 answer.getAnswer(),
                 answer.getCreatedAt(),
@@ -211,6 +234,7 @@ public class AnswerService extends AbstractValidateService {
     }
 
     private static Answer buildAnswer(Long qId, AnswerRequest request, Long userId) {
+        log.info("saved answerer ID = {}", userId);
         return Answer.builder()
                 .answer(request.getAnswer())
                 .tag(request.getTag())
@@ -230,6 +254,8 @@ public class AnswerService extends AbstractValidateService {
     }
 
     private static void validateSameAnswerer(Answer findAnswer, Long userId) {
+        log.info("answerer ID: {}", findAnswer.getAnswererId());
+        log.info("user ID: {}", userId);
         if (!findAnswer.getAnswererId().equals(userId)) {
             throw new AuthInvalidException(ErrorType.NON_IDENTICAL_USER_ERROR);
         }

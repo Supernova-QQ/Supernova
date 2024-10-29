@@ -24,6 +24,7 @@ public class TaggingScheduler {
     private final HashtagStatsRepository hashtagStatsRepository;
 
     @Scheduled(initialDelay = 86400000, fixedRate = 86400000)
+//    @Scheduled(initialDelay = 10000, fixedRate = 10000)
     public void updateTaggingData() {
         Set<String> keys = redisTemplate.keys("hashtag:*:tagging:*:*");
 
