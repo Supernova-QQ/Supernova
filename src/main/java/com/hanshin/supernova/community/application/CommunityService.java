@@ -185,6 +185,7 @@ public class CommunityService extends AbstractValidateService {
     private static CommunityMember buildCommunityMember(Community savedCommunity,
             Autority authority, Long userId) {
         return CommunityMember.builder()
+                .communityName(savedCommunity.getName())
                 .autority(authority)
                 .communityId(savedCommunity.getId())
                 .userId(userId)

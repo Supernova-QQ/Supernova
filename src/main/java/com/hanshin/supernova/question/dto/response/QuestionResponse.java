@@ -17,7 +17,9 @@ public class QuestionResponse {
     private int viewCnt;
     private int recCnt;
     private Long commId;
-//    private String questionerId;
+    private Long questionerId;
+    private String commName;
+    private String questionerName;
 
     public static QuestionResponse toResponse(
             String title,
@@ -27,9 +29,12 @@ public class QuestionResponse {
             LocalDateTime modifiedAt,
             int viewCnt,
             int recCnt,
-            Long commId
+            Long commId,
+            Long questionerId,
+            String commName,
+            String questionerName
     ) {
         return new QuestionResponse(title, content, isResolved, createdAt, modifiedAt, viewCnt,
-                recCnt, commId);
+                recCnt, commId, questionerId, commName, questionerName);
     }
 }

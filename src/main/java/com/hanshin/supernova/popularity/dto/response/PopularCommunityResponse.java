@@ -13,5 +13,6 @@ public class PopularCommunityResponse {
 
     private Long id;
     private String name;
+    private int memberCnt;
     private Long visitorCnt;
 }

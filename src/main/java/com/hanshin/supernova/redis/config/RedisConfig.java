@@ -1,5 +1,6 @@
 package com.hanshin.supernova.redis.config;
 
+import io.lettuce.core.RedisClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,5 +40,10 @@ public class RedisConfig {
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         return template;
+    }
+
+    @Bean
+    public RedisClient redisClient() {
+        return RedisClient.create("redis://" + redisHost + ":" + redisPort);
     }
 }

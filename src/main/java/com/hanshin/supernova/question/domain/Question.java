@@ -29,7 +29,10 @@ public class Question extends BaseEntity {
 
     // 콘텐츠 정보
     private String title;
+
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
+
     private boolean isResolved;
 
     // cnt 정보
@@ -52,8 +55,8 @@ public class Question extends BaseEntity {
         this.commId = commId;
     }
 
-    public void changeStatus() {
-        this.isResolved = !isResolved;
+    public void changeResolveStatus() {
+        this.isResolved = true;
     }
 
     public void updateViewCnt() {

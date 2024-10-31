@@ -1,5 +1,7 @@
 package com.hanshin.supernova.question.presentation;
 
+import static com.hanshin.supernova.common.CrossOriginConstants.CROSS_ORIGIN_ADDRESS;
+
 import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.orchestration.application.QuestionOrchestrator;
@@ -10,6 +12,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin(origins = CROSS_ORIGIN_ADDRESS)
 @RestController
 @RequestMapping(path = "/api/questions")
 @RequiredArgsConstructor
@@ -48,7 +52,7 @@ public class QuestionController {
             AuthUser user,
             @PathVariable("q_id") Long q_id,
             @RequestBody @Valid QuestionRequest request) {
-        var response = questionService.editQuestion(user, q_id, request);
+        var response = questionOrchestrator.updateQuestionWithHashtag(user, q_id, request);
         return ResponseDto.ok(response);
     }
 
@@ -73,12 +77,11 @@ public class QuestionController {
         return ResponseDto.ok(response);
     }
 
-    @GetMapping(path = "/{q_id}/my-communities")
+    @GetMapping(path = "/my-communities")
     public ResponseEntity<?> getMyCommunities(
-            AuthUser user,
-            @PathVariable("q_id") Long q_id
+            AuthUser user
     ) {
-        List<CommunityInfoResponse> responses = questionService.getMyCommunities(user, q_id);
+        List<CommunityInfoResponse> responses = questionService.getMyCommunities(user);
         return ResponseDto.ok(responses);
     }
 }

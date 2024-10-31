@@ -16,16 +16,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
-    List<Question> findAllByCommIdAndIsResolvedOrderByCreatedAtAsc(Long c_id, boolean isResolved);
+    @Query("SELECT q FROM Question q WHERE q.commId=:commId AND q.isResolved=:isResolved ORDER BY q.createdAt ASC")
+    Page<Question> findAllByCommIdAndIsResolvedOrderByCreatedAtAsc(@Param("commId") Long c_id, @Param("isResolved") boolean isResolved, Pageable pageable);
 
-    List<Question> findAllByCommIdAndIsResolvedOrderByCreatedAtDesc(Long c_id, boolean isResolved);
+    @Query("SELECT q FROM Question q WHERE q.commId=:commId AND q.isResolved=:isResolved ORDER BY q.createdAt DESC")
+    Page<Question> findAllByCommIdAndIsResolvedOrderByCreatedAtDesc(@Param("commId") Long c_id, @Param("isResolved") boolean isResolved, Pageable pageable);
 
-    List<Question> findAllByCommIdOrderByCreatedAtDesc(Long c_id);
+    @Query("SELECT q FROM Question q WHERE q.commId=:commId ORDER BY q.createdAt DESC")
+    Page<Question> findAllByCommIdOrderByCreatedAtDesc(@Param("commId") Long c_id, Pageable pageable);
 
-    List<Question> findAllByCommIdOrderByCreatedAtAsc(Long c_id);
+    @Query("SELECT q FROM Question q WHERE q.commId=:commId ORDER BY q.createdAt ASC")
+    Page<Question> findAllByCommIdOrderByCreatedAtAsc(@Param("commId") Long c_id, Pageable pageable);
 
-    // TODO CommIdAnd 추가?
-    List<Question> findByIsResolvedOrderByCreatedAtDesc(boolean isResolved, Pageable pageable);
+    @Query("SELECT q FROM Question q WHERE q.commId=:commId AND q.isResolved=:isResolved ORDER BY q.createdAt ASC")
+    List<Question> findByIsResolvedOrderByCreatedAtDesc(@Param("commId") Long c_id, @Param("isResolved") boolean isResolved, Pageable pageable);
 
     @Query("SELECT q FROM Question q WHERE q.title LIKE %:keyword% OR q.content LIKE %:keyword% ORDER BY q.answerCnt DESC")
     Page<Question> searchByKeywordOrderByAnswerCount(@Param("keyword") String keyword, Pageable pageable);

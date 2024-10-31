@@ -25,7 +25,8 @@ public class VisitorScheduler {
     private final RedisTemplate<String, String> redisTemplate;
     private final CommunityStatsRepository communityStatsRepository;
 
-    @Scheduled(initialDelay = 3600000, fixedDelay = 3600000)
+//    @Scheduled(initialDelay = 3600000, fixedDelay = 3600000)
+    @Scheduled(initialDelay = 1000, fixedDelay = 300000)
     public void updateVisitorData() {
         Set<String> keys = redisTemplate.keys("community:*:visit:*:*");
 

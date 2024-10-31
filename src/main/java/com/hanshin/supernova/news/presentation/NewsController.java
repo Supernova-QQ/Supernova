@@ -6,6 +6,7 @@ import com.hanshin.supernova.news.application.NewsService;
 import com.hanshin.supernova.news.dto.request.NewsRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,6 +69,18 @@ public class NewsController {
     ) {
         var response = newsService.deleteNews(user, newsId);
         return ResponseDto.ok(response);
+    }
+
+    /**
+     * 전체 알림 목록
+     */
+    @GetMapping
+    public ResponseEntity<?> getAllNews(
+            AuthUser user,
+            Pageable pageable
+    ) {
+        var responses = newsService.getAllNews(user, pageable);
+        return ResponseDto.ok(responses);
     }
 
     /**

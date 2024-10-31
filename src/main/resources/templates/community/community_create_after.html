@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head th:replace="~{header :: head(additionalStyles=~{::style})}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>커뮤니티 개설 완료</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+      text-align: center;
+      background-color: #f4f4f9;
+    }
+
+    .container {
+      width: 80%; /* 화면의 70%를 사용 */
+      padding: 50px 70px;
+      min-height: 300px;
+      margin: 0 auto;
+      /*padding: 20px;*/
+      background-color: white;
+      border: 1px solid #ccc;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    .success-message {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .success-message img {
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+    }
+
+    .invite-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 30px;
+    }
+
+    .invite-input {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-right: 10px;
+      font-size: 14px;
+      height: 40px; /* input과 버튼의 높이를 동일하게 설정 */
+    }
+
+    .invite-button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      height: 40px; /* 버튼의 높이를 input과 동일하게 설정 */
+    }
+
+    .invite-button:hover {
+      background-color: #0056b3;
+    }
+
+    .invite-email {
+      display: inline-block;
+      background-color: #e0e0e0;
+      padding: 5px 10px;
+      margin: 5px;
+      border-radius: 15px;
+      font-size: 14px;
+    }
+
+    .invite-email .remove {
+      margin-left: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<header th:replace="~{header :: header}"></header>
+
+<div class="container">
+
+  <h1>커뮤니티 생성이 완료되었습니다!</h1>
+  <h3>커뮤니티 이름: <span th:text="${community.name}"></span></h3>
+
+
+  <!-- 회원 초대 섹션 -->
+  <label for="invite-input">회원 초대</label>
+  <div class="invite-section">
+    <input type="text" id="invite-input" class="invite-input" placeholder="이메일을 입력하세요">
+    <button class="invite-button">초대하기</button>
+  </div>
+  <div id="email-inputs" style="margin-top: 20px;">
+    <!-- 이메일 태그가 들어갈 자리 -->
+  </div>
+</div>
+
+<footer th:replace="~{footer :: footer}"></footer>
+
+<script src="/js/news.js"></script>
+<script src="/js/question.js"></script>
+<script src="/js/search.js"></script>
+
+</body>
+</html>

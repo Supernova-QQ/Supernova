@@ -54,7 +54,7 @@ public class QuestionOrchestrator {
 
         // AI 답변 요청
         AiAnswerResponse aiAnswerResponse = aiAnswerService.generateAiAnswer(
-                savedQuestion.getTitle(), savedQuestion.getContent());
+                user, savedQuestion.getTitle(), savedQuestion.getContent());
 
         // 답변 등록
         aiCommentService.createAiComment(
@@ -64,6 +64,21 @@ public class QuestionOrchestrator {
         newsService.createNews(buildNewsRequest(savedQuestion));
 
         return questionSaveResponse;
+    }
+
+    @Transactional
+    public QuestionSaveResponse updateQuestionWithHashtag(AuthUser user, Long questionId, QuestionRequest request) {
+
+        // 질문 등록
+        QuestionSaveResponse questionUpdateResponse = questionService.editQuestion(user, questionId, request);
+        Question savedQuestion = getQuestionOrThrowIfNotExist(questionUpdateResponse.getQuestionId());
+
+        // 해시태그 등록
+        HashtagRequest hashtagRequest = new HashtagRequest();
+        hashtagRequest.setHashtagNames(request.getHashtags());
+        hashtagService.saveQuestionHashtag(savedQuestion.getId(), hashtagRequest, user);
+
+        return questionUpdateResponse;
     }
 
     /*
@@ -76,7 +91,7 @@ public class QuestionOrchestrator {
 
         // AI 답변 재신청
         AiAnswerResponse regenerationResponse = aiAnswerService.regenerateAiAnswer(
-                findQuestion.getTitle(), findQuestion.getContent(), findAiComment.getAiComment());
+                user, findQuestion.getTitle(), findQuestion.getContent(), findAiComment.getAiComment());
 
         // 답변 등록
         return aiCommentService.updateAiComment(
