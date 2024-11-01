@@ -3,6 +3,8 @@ package com.hanshin.supernova.s3.presentation;
 import static com.hanshin.supernova.common.CrossOriginConstants.CROSS_ORIGIN_ADDRESS;
 
 import com.hanshin.supernova.common.model.ResponseDto;
+import com.hanshin.supernova.exception.dto.ErrorType;
+import com.hanshin.supernova.exception.s3.S3InvalidException;
 import com.hanshin.supernova.s3.application.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,16 @@ public class S3Controller {
 
     @PostMapping
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile image) {
-        String savedFileName = s3Uploader.uploadFile(image);
-        return ResponseDto.ok(savedFileName);
+        try {
+            String fileUrl = s3Uploader.uploadFile(image);
+            if (fileUrl.isEmpty()) {
+                throw new S3InvalidException(ErrorType.EMPTY_IMAGE_ERROR);
+            }
+            log.info("Successfully uploaded image. URL: {}", fileUrl);
+            return ResponseDto.ok(fileUrl);
+        } catch (Exception e) {
+            log.error("Failed to upload image", e);
+            throw new S3InvalidException(ErrorType.IMAGE_UPLOAD_FAILED_ERROR);
+        }
     }
 }

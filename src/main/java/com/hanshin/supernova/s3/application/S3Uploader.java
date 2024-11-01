@@ -2,7 +2,6 @@ package com.hanshin.supernova.s3.application;
 
 import com.hanshin.supernova.s3.utils.CommonUtils;
 import java.io.IOException;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,8 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,40 +23,41 @@ public class S3Uploader {
     private String bucketName;
 
     public String uploadFile(MultipartFile multipartFile) {
-
         if (multipartFile.isEmpty()) {
             log.info("image is null");
             return "";
         }
 
-        String fileName = getFileName(multipartFile);
-
         try {
+            // UUID와 파일 확장자를 결합하여 고유한 파일명 생성
+            String originalFilename = multipartFile.getOriginalFilename();
+            String fileName = CommonUtils.buildFileName(originalFilename);
+
+            // 파일 업로드를 위한 요청 생성
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
+                    .key(fileName)
                     .contentType(multipartFile.getContentType())
                     .contentLength(multipartFile.getSize())
-                    .key(fileName)
+                    .acl("public-read") // 공개 읽기 권한 추가
                     .build();
+
+            // 파일 업로드
             RequestBody requestBody = RequestBody.fromBytes(multipartFile.getBytes());
             s3Client.putObject(putObjectRequest, requestBody);
+
+            // URL 생성
+            String fileUrl = String.format("https://%s.s3.%s.amazonaws.com/%s",
+                    bucketName,
+                    s3Client.serviceClientConfiguration().region().toString(),
+                    fileName);
+
+            log.info("Uploaded file URL: {}", fileUrl);
+            return fileUrl;
+
         } catch (IOException e) {
-            log.error("cannot upload image", e);
-            throw new RuntimeException(e);
+            log.error("Failed to upload file to S3", e);
+            throw new RuntimeException("파일 업로드에 실패했습니다: " + e.getMessage());
         }
-        GetUrlRequest getUrlRequest = GetUrlRequest.builder()
-                .bucket(bucketName)
-                .key(fileName)
-                .build();
-
-        return s3Client.utilities().getUrl(getUrlRequest).toString();
-    }
-
-    public String getFileName(MultipartFile multipartFile) {
-        if (multipartFile.isEmpty()) {
-            return "";
-        }
-        return CommonUtils.buildFileName(
-                Objects.requireNonNull(multipartFile.getOriginalFilename()));
     }
 }

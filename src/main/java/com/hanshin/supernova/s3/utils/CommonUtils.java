@@ -1,19 +1,17 @@
 package com.hanshin.supernova.s3.utils;
 
+import java.util.UUID;
+
 public class CommonUtils {
+
     public static final String FILE_EXTENSION_SEPARATOR = ".";
 
-    public static String getFileName(String originalFileName) {
-        int fileExtensionIndex = originalFileName.lastIndexOf(FILE_EXTENSION_SEPARATOR);
-        return originalFileName.substring(0, fileExtensionIndex); //파일 이름
-    }
-
     public static String buildFileName(String originalFileName) {
-        int fileExtensionIndex = originalFileName.lastIndexOf(FILE_EXTENSION_SEPARATOR); //파일 확장자 구분선
-        String fileExtension = originalFileName.substring(fileExtensionIndex); //파일 확장자
-        String fileName = originalFileName.substring(0, fileExtensionIndex); //파일 이름
-        String now = String.valueOf(System.currentTimeMillis()); //파일 업로드 시간
+        int fileExtensionIndex = originalFileName.lastIndexOf(FILE_EXTENSION_SEPARATOR);
+        String fileExtension = originalFileName.substring(fileExtensionIndex)
+                .toLowerCase(); // 확장자 소문자로 변환
+        String uuid = UUID.randomUUID().toString();
 
-        return fileName + "_" + now + fileExtension;
+        return uuid + fileExtension;
     }
 }
