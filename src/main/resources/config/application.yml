@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: supernova
+  servlet:
+    multipart:
+      enabled: true
+  web:
+    resources:
+      static-locations: classpath:/static/,classpath:/public/
+
+  # DB
+  datasource:
+    url: jdbc:mysql://localhost:3306/supernova
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: update
+      format_sql: true
+    show-sql: true
+    properties:
+      dialect: org.hibernate.dialect.MySQL8InnoDBDialect
+  #    database-platform: org.hibernate.dialect.MySQL8InnoDBDialect
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+
+
+server:
+  port: 8080
+  tomcat:
+    connection-timeout: 30000
+    #    max-threads: 100
+    #    min-spare-threads: 50
+    #    accept-count: 50
+    uri-encoding: UTF-8
+  forward-headers-strategy: framework
+
+jwt:
+  secret:
+    key: daccaf8d974dc147519ea15f6c3ae221b57a6ef8fa7508e7eca7e4acc863a6a2972ffd261e05dbe48479dd8e91186e5aaf720ffc223d29558848ada33ca48e07
+  access:
+    expiration: 3600 # 액세스 토큰 만료 시간 (초 단위)
+  refresh:
+    expiration: 604800 # 리프레시 토큰 만료 시간 (초 단위, 7일)
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
