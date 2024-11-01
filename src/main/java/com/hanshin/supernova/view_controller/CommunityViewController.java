@@ -42,6 +42,14 @@ public class CommunityViewController {
         return "community/community_info";
     }
 
+    @GetMapping("/update/{id}")
+    public String communityUpdate(@PathVariable("id") Long id, Model model) {
+        var communityInfo = communityService.getCommunityInfo(id);
+        model.addAttribute("communityId", id);
+        model.addAttribute("community", communityInfo);
+        return "community/community_update";
+    }
+
     @GetMapping("/{communityId}/unanswered-questions")
     public String unansweredQuestions(@PathVariable(name = "communityId") Long communityId, Model model) {
         model.addAttribute("communityId", communityId);
