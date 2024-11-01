@@ -3,7 +3,7 @@
 <head th:replace="~{header :: head(additionalStyles=~{::style})}">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>새 커뮤니티 생성</title>
+  <title>커뮤니티 수정</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -153,16 +153,15 @@
 <header th:replace="~{header :: header}"></header>
 
 <div class="container">
-  <h1>새 커뮤니티 생성</h1>
+  <h1>커뮤니티 수정</h1>
   <form id="communityForm">
     <!-- 커뮤니티명 입력 -->
     <label for="community-name">커뮤니티명<span class="required">*</span></label>
-    <input type="text" id="community-name" name="name" placeholder="커뮤니티명을 입력하세요" required>
+    <input type="text" id="community-name" name="name" required>
 
     <!-- 설명 입력 -->
     <label for="description">설명<span class="required">*</span></label>
-    <textarea id="description" name="description" placeholder="커뮤니티에 대한 설명을 입력하세요"
-              required></textarea>
+    <textarea id="description" name="description" required></textarea>
     <p class="help-text">커뮤니티 홈 화면/커뮤니티 가입 시 표시되는 설명입니다.</p>
 
     <!-- 커뮤니티 아이콘 -->
@@ -172,29 +171,28 @@
         <img src="https://via.placeholder.com/100" id="icon-preview" alt="커뮤니티 아이콘">
         <input type="file" id="community-icon" accept="image/*">
       </label>
-      커뮤니티를 대표하는 이미지를 등록해주세요.<br>
-      미등록 시, 기본이미지로 설정됩니다.
+      <div>
+        커뮤니티를 대표하는 이미지를 등록해주세요.<br>
+        미등록 시, 기존 이미지가 유지됩니다.
+      </div>
     </div>
 
     <!-- 커뮤니티 설정 -->
     <div class="settings-wrapper">
       <h2>커뮤니티 설정<span class="required">*</span></h2>
       <div class="settings-group">
-        <!-- 커뮤니티 공개 여부 -->
         <div class="settings">
           커뮤니티 공개 여부
           <div class="radio-group">
-            <label><input type="radio" name="visibility" value="public" checked> Public</label>
+            <label><input type="radio" name="visibility" value="public"> Public</label>
             <label><input type="radio" name="visibility" value="private"> Private</label>
           </div>
         </div>
-        <div class="divider"></div> <!-- 구분선 -->
-
-        <!-- 질문/답변 권한 -->
+        <div class="divider"></div>
         <div class="settings">
           질문/답변 권한
           <div class="radio-group">
-            <label><input type="radio" name="access" value="members" checked> Members Only</label>
+            <label><input type="radio" name="access" value="members"> Members Only</label>
             <label><input type="radio" name="access" value="all"> All</label>
           </div>
         </div>
@@ -203,45 +201,83 @@
 
     <!-- 버튼 -->
     <div class="actions">
-      <button type="button" class="cancel-btn">취소</button>
-      <button type="submit" class="submit-btn">생성하기</button>
+      <button type="button" class="cancel-btn" onclick="history.back()">취소</button>
+      <button type="submit" class="submit-btn">수정하기</button>
     </div>
   </form>
 </div>
 
 <footer th:replace="~{footer :: footer}"></footer>
 
-<script src="/js/news.js"></script>
-<script src="/js/question.js"></script>
-<script src="/js/search.js"></script>
-
 <script>
+  const communityId = [[${communityId}]];
+  const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+
+  // 페이지 로드 시 커뮤니티 정보 가져오기
+  document.addEventListener('DOMContentLoaded', function () {
+    fetch(`http://localhost:8080/api/communities/${communityId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-QQ-AUTH-TOKEN': token
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.data) {
+        // 폼 필드에 데이터 채우기
+        document.getElementById('community-name').value = data.data.name;
+        document.getElementById('description').value = data.data.description;
+
+        // 이미지 미리보기 설정
+        if (data.data.imgUrl) {
+          document.getElementById('icon-preview').src = data.data.imgUrl;
+        }
+
+        // 라디오 버튼 설정
+        const visibilityRadios = document.getElementsByName('visibility');
+        visibilityRadios.forEach(radio => {
+          if ((radio.value === 'public' && data.data.isVisible) ||
+              (radio.value === 'private' && !data.data.isVisible)) {
+            radio.checked = true;
+          }
+        });
+
+        const accessRadios = document.getElementsByName('access');
+        accessRadios.forEach(radio => {
+          if ((radio.value === 'all' && data.data.isPublic) ||
+              (radio.value === 'members' && !data.data.isPublic)) {
+            radio.checked = true;
+          }
+        });
+      }
+    });
+  });
 
   // 이미지 미리보기 기능
-  document.getElementById('community-icon').addEventListener('change', function(e) {
+  document.getElementById('community-icon').addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         document.getElementById('icon-preview').src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
   });
 
-
   // 폼 제출 처리
-  document.getElementById('communityForm').addEventListener('submit', async function(e) {
+  document.getElementById('communityForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const formData = new FormData(this);
     const imageFile = document.getElementById('community-icon').files[0];
-    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+    // let imgUrl = document.getElementById('icon-preview').getAttribute('data-original-url'); // 기존 이미지 URL 저장
 
     try {
-      let imageUrl = '';
+      let imageUrl = document.getElementById('icon-preview').src;
 
-      // 1. 이미지 업로드 (이미지가 선택된 경우에만)
+      // 새 이미지가 선택된 경우에만 이미지 업로드
       if (imageFile) {
         const imageFormData = new FormData();
         imageFormData.append('image', imageFile);
@@ -259,27 +295,20 @@
         }
 
         const imageResult = await imageResponse.json();
-        if (!imageResult.data) {
-          throw new Error('이미지 URL을 받지 못했습니다.');
-        }
-
-        imageUrl = imageResult.data;
-        console.log('Uploaded image URL:', imageUrl);
+        imageUrl = imageResult.data; // S3에서 반환된 URL
       }
 
-      // 2. 커뮤니티 생성
+      // 커뮤니티 수정
       const communityData = {
         name: formData.get('name'),
         description: formData.get('description'),
-        imgUrl: imageUrl || '', // 이미지 URL이 있으면 사용, 없으면 빈 문자열
+        imgUrl: imageUrl,
         isVisible: formData.get('visibility') === 'public',
         isPublic: formData.get('access') === 'all'
       };
 
-      console.log('Sending community data:', communityData);
-
-      const communityResponse = await fetch('http://localhost:8080/api/communities', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:8080/api/communities/${communityId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'X-QQ-AUTH-TOKEN': token
@@ -287,22 +316,15 @@
         body: JSON.stringify(communityData)
       });
 
-      if (!communityResponse.ok) {
-        throw new Error('커뮤니티 생성 실패');
+      if (!response.ok) {
+        throw new Error('커뮤니티 수정 실패');
       }
 
-      const result = await communityResponse.json();
-      console.log('Community creation result:', result);
-
-      if (result.data && result.data.id) {
-        window.location.href = `/communities/create-success/${result.data.id}`;
-      } else {
-        throw new Error('커뮤니티 ID를 받지 못했습니다.');
-      }
-
+      const result = await response.json();
+      window.location.href = `/communities/info/${communityId}`;
     } catch (error) {
       console.error('Error:', error);
-      alert(error.message || '커뮤니티 생성 중 오류가 발생했습니다.');
+      alert(error.message || '커뮤니티 수정 중 오류가 발생했습니다.');
     }
   });
 </script>
