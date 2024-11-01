@@ -110,7 +110,7 @@ public class QuestionService extends AbstractValidateService {
 
         validateSameQuestionerById(findQuestion, findUser.getId());
 
-        findQuestion.updateQuestion(request.getTitle(), request.getContent(),
+        findQuestion.updateQuestion(request.getTitle(), request.getContent(), request.getImgUrl(),
                 findCommunity.getId());
 
         // TODO ContentWord update logic
@@ -214,6 +214,7 @@ public class QuestionService extends AbstractValidateService {
         return QuestionResponse.toResponse(
                 findQuestion.getTitle(),
                 findQuestion.getContent(),
+                findQuestion.getImgUrl(),
                 findQuestion.isResolved(),
                 findQuestion.getCreatedAt(),
                 findQuestion.getModifiedAt(),

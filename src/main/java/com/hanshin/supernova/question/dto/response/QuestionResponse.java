@@ -11,6 +11,7 @@ public class QuestionResponse {
 
     private String title;
     private String content;
+    private String imgUrl;
     private boolean isResolved;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
@@ -24,6 +25,7 @@ public class QuestionResponse {
     public static QuestionResponse toResponse(
             String title,
             String content,
+            String imgUrl,
             boolean isResolved,
             LocalDateTime createdAt,
             LocalDateTime modifiedAt,
@@ -34,7 +36,7 @@ public class QuestionResponse {
             String commName,
             String questionerName
     ) {
-        return new QuestionResponse(title, content, isResolved, createdAt, modifiedAt, viewCnt,
+        return new QuestionResponse(title, content, imgUrl, isResolved, createdAt, modifiedAt, viewCnt,
                 recCnt, commId, questionerId, commName, questionerName);
     }
 }

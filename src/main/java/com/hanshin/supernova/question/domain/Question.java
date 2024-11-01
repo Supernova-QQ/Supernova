@@ -49,9 +49,10 @@ public class Question extends BaseEntity {
     @Column(name = "comm_id")
     private Long commId;
 
-    public void updateQuestion(String title, String content, Long commId) {
+    public void updateQuestion(String title, String content, String imgUrl, Long commId) {
         this.title = title;
         this.content = content;
+        this.imgUrl = imgUrl;
         this.commId = commId;
     }
 
