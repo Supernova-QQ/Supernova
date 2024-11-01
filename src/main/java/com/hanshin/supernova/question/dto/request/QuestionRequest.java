@@ -17,6 +17,8 @@ public class QuestionRequest {
     @NotBlank(message = "내용은 필수입니다.")
     private String content;
 
+    private String imgUrl;
+
     @NotNull(message = "커뮤니티 선택은 필수입니다.")
     private Long commId;
 

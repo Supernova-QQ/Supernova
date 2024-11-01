@@ -29,10 +29,10 @@ public class Question extends BaseEntity {
 
     // 콘텐츠 정보
     private String title;
-
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
-
+    @Column(name = "img_url")
+    private String imgUrl;
     private boolean isResolved;
 
     // cnt 정보
