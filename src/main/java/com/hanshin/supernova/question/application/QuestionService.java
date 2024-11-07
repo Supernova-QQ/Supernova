@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,13 +42,15 @@ public class QuestionService extends AbstractValidateService {
      * 질문 등록
      */
     @Transactional
-    public QuestionSaveResponse createQuestion(AuthUser user, QuestionRequest request) {
+    public QuestionSaveResponse createQuestion(AuthUser user,
+            QuestionRequest request) {
         Community findCommunity = getCommunityOrThrowIfNotExist(request.getCommId());
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
         Question question = Question.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
+                .imgUrl(request.getImgUrl())
                 .questionerId(findUser.getId())
                 .commId(findCommunity.getId())
                 .build();
@@ -109,7 +110,8 @@ public class QuestionService extends AbstractValidateService {
 
         validateSameQuestionerById(findQuestion, findUser.getId());
 
-        findQuestion.updateQuestion(request.getTitle(), request.getContent(), findCommunity.getId());
+        findQuestion.updateQuestion(request.getTitle(), request.getContent(), request.getImgUrl(),
+                findCommunity.getId());
 
         // TODO ContentWord update logic
 
@@ -150,7 +152,7 @@ public class QuestionService extends AbstractValidateService {
         Question findQuestion = getQuestionById(qId);
         User findUser = getUserOrThrowIfNotExist(user.getId());
         // 자신의 질문은 추천하지 못하도록 예외처리
-        if(findQuestion.getQuestionerId().equals(findUser.getId())) {
+        if (findQuestion.getQuestionerId().equals(findUser.getId())) {
             throw new AuthInvalidException(ErrorType.WRITER_CANNOT_RECOMMEND_ERROR);
         }
         // 기존 추천한 이력 유무에 따른 추천수 증감
@@ -212,6 +214,7 @@ public class QuestionService extends AbstractValidateService {
         return QuestionResponse.toResponse(
                 findQuestion.getTitle(),
                 findQuestion.getContent(),
+                findQuestion.getImgUrl(),
                 findQuestion.isResolved(),
                 findQuestion.getCreatedAt(),
                 findQuestion.getModifiedAt(),

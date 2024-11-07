@@ -262,9 +262,28 @@
         <span id="active-info" class="status-dot"></span>
         <span id="public-info" class="status-dot"></span>
       </div>
-      <img src="https://via.placeholder.com/120" alt="Community Logo">
+      <img src="https://via.placeholder.com/120" alt="커뮤니티 로고" style="
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;  /* 이미지 비율 유지 */
+        margin-bottom: 20px;
+      ">
       <p id="communityName"></p>
       <p id="communityDescription"></p>
+
+      <!-- 수정 버튼 추가 -->
+      <button id="editButton" class="edit-btn" style="
+        margin: 10px 0;
+        padding: 8px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      ">수정
+      </button>
+
       <div class="stats">
         <div class="stats-item">
           <span>회원수</span>
@@ -338,6 +357,15 @@
     document.getElementById('createdAt').textContent = 'since ' + new Date(
         communityInfo.createdAt).toLocaleDateString();
 
+    // 이미지 URL 처리 추가
+    const communityImage = document.querySelector('.side-info img');
+    if (communityInfo.imgUrl) {
+      communityImage.src = communityInfo.imgUrl;
+    } else {
+      communityImage.src = 'https://via.placeholder.com/120';  // 기본 이미지
+    }
+    communityImage.alt = `${communityInfo.name} 커뮤니티 이미지`;
+
     // 활성 상태 표시
     const activeInfo = document.getElementById('active-info');
     activeInfo.style.backgroundColor = communityInfo.isDormant ? 'gray' : 'green';
@@ -348,7 +376,7 @@
     publicInfo.style.backgroundColor = communityInfo.isPublic ? 'blue' : 'red';
     publicInfo.title = communityInfo.isPublic ? '공개' : '비공개';
   }
-  
+
   function fetchCommunityVisitCnt(communityId) {
     fetch(url + `/${communityId}/visitors/daily`, {
       method: 'GET',
@@ -395,42 +423,6 @@
     })
     .catch(error => console.error('Error:', error));
   }
-  // function fetchUnansweredQuestions() {
-  //   fetch(`${url}/${communityId}/unanswered-latest-4-questions`, {
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'X-QQ-AUTH-TOKEN': token
-  //     }
-  //   })
-  //   .then(response => response.json())
-  //   .then(data => {
-  //     if (data.data) {
-  //       displayUnansweredQuestions(data.data);
-  //     }
-  //   })
-  //   .catch(error => console.error('Error:', error));
-  // }
-
-  // 질문 목록 표시
-  // function displayUnansweredQuestions(questions) {
-  //   const container = document.getElementById('unanswered-questions');
-  //   container.innerHTML = '';
-  //
-  //   questions.forEach(question => {
-  //     const card = document.createElement('div');
-  //     card.className = 'question-card';
-  //     card.innerHTML = `
-  //           <div class="question-title">${question.title}</div>
-  //           <div class="question-preview">${truncateText(question.content, 100)}</div>
-  //       `;
-  //
-  //     card.addEventListener('click', () => {
-  //       window.location.href = `/questions/info/${question.id}`;
-  //     });
-  //
-  //     container.appendChild(card);
-  //   });
-  // }
 
   // 더보기 버튼 이벤트 핸들러
   document.getElementById('unanswered-view-more-btn').addEventListener('click', () => {
@@ -439,7 +431,6 @@
   document.getElementById('all-view-more-btn').addEventListener('click', () => {
     window.location.href = `/communities/${communityId}/all-questions?sort=latest`;
   });
-
 
   // 커뮤니티 인기 질문 목록 로딩
   function fetchPopularQuestions(communityId) {
@@ -495,6 +486,11 @@
       container.appendChild(card);
     });
   }
+
+  // 커뮤니티 수정 버튼 클릭 이벤트
+  document.getElementById('editButton').addEventListener('click', function() {
+    window.location.href = `/communities/update/${communityId}`;
+  });
 
 </script>
 

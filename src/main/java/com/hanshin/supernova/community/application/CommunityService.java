@@ -53,6 +53,7 @@ public class CommunityService extends AbstractValidateService {
                 savedCommunity.getId(),
                 savedCommunity.getName(),
                 savedCommunity.getDescription(),
+                savedCommunity.getImgUrl(),
                 savedCommunity.getCreatedAt(),
                 savedCommunity.isVisible(),
                 savedCommunity.isPublic(),
@@ -78,6 +79,7 @@ public class CommunityService extends AbstractValidateService {
                 findCommunity.getId(),
                 findCommunity.getName(),
                 findCommunity.getDescription(),
+                findCommunity.getImgUrl(),
                 findCommunity.getCreatedAt(),
                 findCommunity.isVisible(),
                 findCommunity.isPublic(),
@@ -112,6 +114,7 @@ public class CommunityService extends AbstractValidateService {
                 findCommunity.getId(),
                 findCommunity.getName(),
                 findCommunity.getDescription(),
+                findCommunity.getImgUrl(),
                 findCommunity.getCreatedAt(),
                 findCommunity.isVisible(),
                 findCommunity.isPublic(),
@@ -174,6 +177,7 @@ public class CommunityService extends AbstractValidateService {
         return Community.builder()
                 .name(request.getName())
                 .description(request.getDescription())
+                .imgUrl(request.getImgUrl())
                 .isVisible(request.isVisible())
                 .isPublic(request.isPublic())
                 .isDormant(false)
@@ -196,6 +200,7 @@ public class CommunityService extends AbstractValidateService {
         findCommunity.update(
                 request.getName(),
                 request.getDescription(),
+                request.getImgUrl(),
                 request.isVisible(),
                 request.isPublic());
     }
@@ -216,7 +221,8 @@ public class CommunityService extends AbstractValidateService {
                     CommunityInfoResponse.toResponse(
                             community.getId(),
                             community.getName(),
-                            community.getCommCounter().getMemberCnt()
+                            community.getCommCounter().getMemberCnt(),
+                            community.getImgUrl()
                     )
             );
         });

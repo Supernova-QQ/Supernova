@@ -609,7 +609,7 @@
 
     <!-- 오른쪽 섹션 (커뮤니티 정보) -->
     <div id="community-info">
-      <img src="https://via.placeholder.com/20" alt="커뮤니티 아이콘">
+<!--      <img src="https://via.placeholder.com/20" alt="커뮤니티 아이콘">-->
       <span id="community-name">커뮤니티 이름</span>
     </div>
   </div>
@@ -827,6 +827,28 @@
     const contentElement = document.querySelector('.question-content p');
     contentElement.style.whiteSpace = 'pre-wrap';
     contentElement.textContent = questionInfo.content;
+
+    // 이미지 표시 추가
+    const existingImage = document.querySelector('.question-image');
+    if (existingImage) {
+      existingImage.remove();
+    }
+
+    if (questionInfo.imgUrl) {
+      const imageDiv = document.createElement('div');
+      imageDiv.className = 'question-image';
+      imageDiv.innerHTML = `
+            <img src="${questionInfo.imgUrl}" alt="질문 이미지" style="
+                width: 600px;
+                max-width: 100%;
+                height: auto;
+                margin: 20px 0;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            ">
+        `;
+      contentElement.parentNode.insertBefore(imageDiv, document.getElementById('question-tags'));
+    }
 
     // 작성 시간 업데이트
     const createdAtElement = document.querySelector('.question-header-left div:last-child');
