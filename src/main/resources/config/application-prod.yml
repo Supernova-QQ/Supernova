@@ -1,6 +1,40 @@
 spring:
 
+  # DB
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  # ElastiCache
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: 6379
+      host: ${SPRING_CACHE_HOST}
+      port: ${SPRING_CACHE_PORT}
+
+
+cloud:
+
+  # S3
+  aws:
+    credentials:
+      access-key: ${S3_ACCESS_KEY}
+      secret-key: ${S3_SECRET_KEY}
+    s3:
+      bucket: ${S3_BUCKET}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+
+# chat gpt key
+openai:
+  api:
+    key: ${OPENAI_API_KEY}
+
+
+logging:
+  level:
+    org.springframework: DEBUG
+    com.zaxxer.hikari: DEBUG
