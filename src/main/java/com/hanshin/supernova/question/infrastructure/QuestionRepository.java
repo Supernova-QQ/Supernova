@@ -91,4 +91,17 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    // 특정 사용자의 질문 중 추천 수가 기준 이상인 질문 목록을 반환
+    @Query("SELECT q.id FROM Question q WHERE q.questionerId = :userId AND q.recommendationCnt >= :recommendationThreshold")
+    List<Long> findPopularQuestionsByUserId(@Param("userId") Long userId, @Param("recommendationThreshold") int recommendationThreshold);
+
+
+    // 특정 사용자의 질문 중 북마크가 10회 이상 된 질문 목록을 반환
+    @Query("SELECT q.id FROM Question q JOIN Bookmark b ON q.id = b.question.id " +
+            "WHERE q.questionerId = :userId " +
+            "GROUP BY q.id HAVING COUNT(b.id) >= :bookmarkThreshold")
+    List<Long> findBookmarkedQuestionsByUserId(@Param("userId") Long userId,
+                                               @Param("bookmarkThreshold") int bookmarkThreshold);
+}
 }
