@@ -10,7 +10,7 @@ spring:
   data:
     redis:
       host:
-      port: 6379
+      port:
 
 
 cloud:

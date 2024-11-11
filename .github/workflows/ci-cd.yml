@@ -51,8 +51,8 @@ jobs:
           spring.datasource.username: ${{ secrets.DATASOURCE_USERNAME }}
           spring.datasource.password: ${{ secrets.DATASOURCE_PASSWORD }}
           # Redis 환경 변수 주입
-          spring.cache.host: ${{ secrets.REDIS_HOST }}
-          spring.cache.port: ${{ secrets.REDIS_PORT }}
+          spring.data.redis.host: ${{ secrets.REDIS_HOST }}
+          spring.data.redis.port: ${{ secrets.REDIS_PORT }}
           # S3 환경변수 주입
           cloud.aws.credentials.access-key: ${{ secrets.S3_ACCESS_KEY }}
           cloud.aws.credentials.secret-key: ${{ secrets.S3_SECRET_KEY }}
