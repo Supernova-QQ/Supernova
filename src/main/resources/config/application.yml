@@ -22,7 +22,7 @@ spring:
     show-sql: true
     properties:
       dialect: org.hibernate.dialect.MySQL8InnoDBDialect
-    database-platform: org.hibernate.dialect.MySQL8InnoDBDialect
+    database-platform: org.hibernate.dialect.MySQLDialect
 
   mvc:
     pathmatch:
