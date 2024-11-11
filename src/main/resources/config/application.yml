@@ -13,6 +13,7 @@ spring:
     url: jdbc:mysql://localhost:3306/supernova
     username: root
     password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     open-in-view: false
     hibernate:
@@ -20,8 +21,9 @@ spring:
       format_sql: true
     show-sql: true
     properties:
-      dialect: org.hibernate.dialect.MySQL8InnoDBDialect
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.MySQLDialect
 
   mvc:
     pathmatch:
