@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>커뮤니티 가입 신청</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f4f4f9;
+            position: relative;
+        }
+
+        /* 최상위 컨테이너 */
+        .outer-container {
+            width: 70%; /* 화면의 70% */
+            margin: 0 auto; /* 중앙 정렬 */
+        }
+
+        .container {
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        label .required {
+            color: red;
+        }
+
+        input[type="text"], textarea {
+            width: 97%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f4f9ff;
+        }
+
+        textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .guide {
+            width: 97%;
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+        }
+
+        .guide p {
+            font-size: 14px;
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .cancel-btn {
+            background-color: #ccc;
+            color: #333;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* 무엇이든 물어보세요 버튼 */
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            width: 150px;
+            text-align: center;
+            z-index: 1000; /* 화면에서 항상 보이게 z-index를 설정 */
+        }
+
+        .chat-widget img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+
+        .chat-widget p {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="outer-container">
+    <div class="container">
+        <h1>커뮤니티 가입 신청</h1>
+
+        <!-- 커뮤니티 설명 -->
+        <label for="community-description">커뮤니티 설명</label>
+        <input type="text" id="community-description" value="반갑습니다. 한국해양과학기술원 커뮤니티입니다." readonly>
+
+        <!-- 신청 사유 -->
+        <label for="application-reason">신청 사유<span class="required">*</span></label>
+        <textarea id="application-reason" placeholder="신청 사유를 입력하세요."></textarea>
+
+        <!-- 신청 목적 -->
+        <label for="application-purpose">신청 목적</label>
+        <textarea id="application-purpose" placeholder="신청 목적을 입력하세요."></textarea>
+
+        <!-- 가입 안내 -->
+        <div class="guide">
+            <b>가입안내</b>
+            <p>가입 신청 시 신청자의 이메일과 닉네임이 커뮤니티 관리자에게 공개됩니다.</p>
+            <p>커뮤니티 관리 기준에 의해 부적절한 활동 시 관리자에 의해 활동이 제한될 수 있습니다.</p>
+            <p>가입 후 승인 알림으로 안내됩니다.</p>
+        </div>
+
+        <!-- 필수 입력 항목 표시 -->
+        <p class="help-text">* 표시는 필수 입력 항목</p>
+
+        <!-- 버튼 섹션 -->
+        <div class="buttons">
+            <button class="cancel-btn">취소</button>
+            <button class="submit-btn">신청하기</button>
+        </div>
+    </div>
+
+    <!-- 무엇이든 물어보세요 위젯 -->
+    <div class="chat-widget">
+        <img th:src="@{/images/chatbotQQ.png}" alt="무엇이든 물어보세요 이미지">
+        <p>무엇이든 물어보세요!</p>
+    </div>
+
+</div>
+
+</body>
+</html>

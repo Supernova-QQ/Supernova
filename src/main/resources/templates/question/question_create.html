@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{header :: head(additionalStyles=~{::style})}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>질문 작성</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background-color: #f4f4f9;
+      position: relative;
+    }
+
+    .container {
+      width: 70%; /* 화면의 70% */
+      margin: 20px auto; /* 중앙 정렬 */
+      padding: 20px;
+      background-color: white;
+      border: 1px solid #ccc;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    label .required {
+      color: red;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f4f9ff;
+    }
+
+    textarea {
+      height: 150px;
+      resize: none;
+    }
+
+
+    /* 이미지 업로드 버튼 */
+
+    .image-upload-section {
+      margin: 20px 0;
+    }
+
+    .image-preview-container {
+      margin: 10px 0;
+    }
+
+    #image-preview {
+      max-width: 300px;
+      max-height: 200px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+
+    .upload-btn {
+      padding: 8px 16px;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .upload-btn:hover {
+      background-color: #e0e0e0;
+    }
+
+    .file-upload {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+
+    /* 태그 컨테이너 스타일 */
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tag-input {
+      width: 150px !important; /* 기존 100%에서 변경 */
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f4f9ff;
+    }
+
+    .tag-input.error {
+      border-color: red;
+      background-color: #fff0f0;
+    }
+
+    /* 에러 메시지 스타일 */
+    .error-message {
+      color: red;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .settings-wrapper {
+      border-top: 1px solid #ddd;
+      margin-top: 20px;
+      padding-top: 20px;
+    }
+
+    .settings-wrapper h2 {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .settings-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+
+    }
+
+    .settings {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .settings:first {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .settings label {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+    }
+
+    .settings input[type="radio"] {
+      margin-right: 5px;
+    }
+
+    .divider {
+      border-left: 1px solid #ddd;
+      height: 60px;
+      margin: 0 10px;
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 20px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .buttons button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .cancel-btn {
+      background-color: #ccc;
+      color: #333;
+    }
+
+    .submit-btn {
+      background-color: #007bff;
+      color: white;
+    }
+
+    /* 커뮤니티 선택 스타일 추가 */
+    .community-select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f4f9ff;
+    }
+
+    .community-select:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+
+    /* 무엇이든 물어보세요 버튼 */
+    .chat-widget {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      width: 150px;
+      text-align: center;
+      z-index: 1000; /* 화면에서 항상 보이게 z-index 설정 */
+    }
+
+    .chat-widget img {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 10px;
+    }
+
+    .chat-widget p {
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<header th:replace="~{header :: header}"></header>
+
+<div class="container">
+  <h1>질문 작성</h1>
+
+  <!-- 필수 입력 항목 안내 -->
+  <p class="help-text">* 표시는 필수 입력 항목</p>
+
+  <!-- 제목 입력 -->
+  <label for="question-title">제목<span class="required">*</span></label>
+  <input type="text" id="question-title" placeholder="질문의 제목을 입력하세요.">
+
+  <!-- 설명 입력 -->
+  <label for="question-description">설명<span class="required">*</span></label>
+  <textarea id="question-description" placeholder="질문 내용을 입력하세요."></textarea>
+
+  <!-- 이미지 업로드 섹션 추가 -->
+  <div class="image-upload-section">
+    <label for="question-image">이미지 첨부</label>
+    <div class="image-preview-container">
+      <img id="image-preview" src="https://via.placeholder.com/200x150" alt="이미지 미리보기"
+           style="display: none;">
+    </div>
+    <input type="file" id="question-image" accept="image/*" style="display: none;">
+    <button type="button" id="upload-button" class="upload-btn">
+      이미지 업로드
+    </button>
+    <p class="file-upload" id="file-name">선택된 파일 없음</p>
+  </div>
+
+  <!-- 커뮤니티 선택 섹션 -->
+  <label for="community-select">커뮤니티 선택<span class="required">*</span></label>
+  <select id="community-select" class="community-select">
+    <option value="">커뮤니티를 선택하세요</option>
+  </select>
+
+  <!-- 태그 입력 -->
+  <label for="tag-container">#태그 (최대 10개)</label>
+  <div id="tag-container" class="tag-container">
+    <input type="text" class="tag-input" placeholder="#" onkeyup="validateHashtag(this)">
+  </div>
+
+  <!-- 답변 설정 -->
+  <!--  <div class="settings-wrapper">-->
+  <!--    <h2>답변 설정<span class="required">*</span></h2>-->
+  <!--    <div class="settings-group">-->
+  <!--      &lt;!&ndash; 공개 여부 &ndash;&gt;-->
+  <!--      공개여부-->
+  <!--      <div class="divider"></div> &lt;!&ndash; 구분선 &ndash;&gt;-->
+
+  <!--      <div class="settings">-->
+  <!--        <label><input type="radio" name="visibility" value="members" checked> 공개 여부: Members-->
+  <!--          Only</label>-->
+  <!--        <label><input type="radio" name="visibility" value="all"> 공개 여부: ALL</label>-->
+  <!--      </div>-->
+
+  <!--      &lt;!&ndash; 답변/댓글 권한 &ndash;&gt;-->
+  <!--      답변/댓글 권한-->
+  <!--      <div class="divider"></div> &lt;!&ndash; 구분선 &ndash;&gt;-->
+
+  <!--      <div class="settings">-->
+  <!--        <label><input type="radio" name="answer-access" value="members" checked> 답변/댓글 권한: Members-->
+  <!--          Only</label>-->
+  <!--        <label><input type="radio" name="answer-access" value="all"> 답변/댓글 권한: All</label>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
+
+  <!-- 버튼 섹션 -->
+  <div class="buttons">
+    <button class="cancel-btn">취소</button>
+    <button class="submit-btn">등록하기</button>
+  </div>
+</div>
+
+<!-- 무엇이든 물어보세요 위젯 -->
+<div class="chat-widget">
+  <img src="https://via.placeholder.com/50" alt="무엇이든 물어보세요 이미지">
+  <p>무엇이든 물어보세요!</p>
+</div>
+
+<footer th:replace="~{footer :: footer}"></footer>
+
+<script src="/js/news.js"></script>
+<script src="/js/question.js"></script>
+<script src="/js/search.js"></script>
+
+<script>
+  // 페이지 로드 시 커뮤니티 목록을 가져오는 함수
+  document.addEventListener('DOMContentLoaded', function () {
+    fetchMyCommunities();
+  });
+
+  // 이미지 업로드 관련 코드
+  document.getElementById('upload-button').addEventListener('click', function () {
+    document.getElementById('question-image').click();
+  });
+
+  document.getElementById('question-image').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    const preview = document.getElementById('image-preview');
+    const fileName = document.getElementById('file-name');
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        fileName.textContent = file.name;
+      }
+      reader.readAsDataURL(file);
+    } else {
+      preview.style.display = 'none';
+      fileName.textContent = '선택된 파일 없음';
+    }
+  });
+
+  const url = `http://localhost:8080/api/questions`;
+  const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+
+  function fetchMyCommunities() {
+    fetch(url + '/my-communities', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-QQ-AUTH-TOKEN': token
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Received question data:', JSON.stringify(data, null, 2));
+
+      if (data.data && Array.isArray(data.data)) {
+        populateCommunitySelect(data.data);
+      } else {
+        console.error('Failed to fetch communities:', data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching communities:', error);
+    });
+  }
+
+  function populateCommunitySelect(communities) {
+    const select = document.getElementById('community-select');
+
+    // 기존 옵션들 제거 (첫 번째 기본 옵션 제외)
+    while (select.options.length > 1) {
+      select.remove(1);
+    }
+
+    // 새로운 커뮤니티 옵션들 추가
+    communities.forEach(community => {
+      const option = document.createElement('option');
+      option.value = community.cid;
+      option.textContent = community.cname;
+      select.appendChild(option);
+    });
+
+    // URL에서 communityId 파라미터가 있다면 해당 커뮤니티 선택
+    const urlParams = new URLSearchParams(window.location.search);
+    const communityId = urlParams.get('communityId');
+    if (communityId) {
+      select.value = communityId;
+    }
+  }
+
+  /* 해시태그 */
+
+  // 특수문자 체크를 위한 정규식
+  const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+
+  function validateHashtag(input) {
+    // 특수문자 체크
+    if (specialCharRegex.test(input.value)) {
+      alert('해시태그에는 특수문자를 사용할 수 없습니다.');
+      input.value = input.value.replace(specialCharRegex, '');
+    }
+
+    // 입력값이 있고 마지막 입력필드인 경우 새로운 입력필드 추가
+    const container = document.getElementById('tag-container');
+    const inputs = container.getElementsByClassName('tag-input');
+
+    if (input.value && input === inputs[inputs.length - 1] && inputs.length < 10) {
+      const newInput = document.createElement('input');
+      newInput.type = 'text';
+      newInput.className = 'tag-input';
+      newInput.placeholder = '#';
+      newInput.onkeyup = function () {
+        validateHashtag(this);
+      };
+      container.appendChild(newInput);
+    }
+  }
+
+  function getHashtags() {
+    const container = document.getElementById('tag-container');
+    const inputs = container.getElementsByClassName('tag-input');
+    const hashtags = [];
+
+    for (let input of inputs) {
+      if (input.value) {
+        // #이 없는 경우 추가
+        // const tag = input.value.startsWith('#') ? input.value : '#' + input.value;
+        // hashtags.push(tag);
+        hashtags.push(input.value);
+      }
+    }
+
+    return hashtags;
+  }
+
+  // 폼 제출 처리
+  document.querySelector('.submit-btn').addEventListener('click', async function () {
+    const title = document.getElementById('question-title').value;
+    const content = document.getElementById('question-description').value.replace(/\n/g, '<br>');
+    const commId = document.getElementById('community-select').value;
+    const hashtags = getHashtags();
+    const imageFile = document.getElementById('question-image').files[0];
+
+    // 필수 필드 검증
+    if (!title.trim()) {
+      alert('제목은 필수입니다.');
+      return;
+    }
+    if (!content.trim()) {
+      alert('내용은 필수입니다.');
+      return;
+    }
+    if (!commId) {
+      alert('커뮤니티 선택은 필수입니다.');
+      return;
+    }
+
+    try {
+      let imageUrl = '';
+
+      // 1. 이미지 업로드 (이미지가 선택된 경우에만)
+      if (imageFile) {
+        const imageFormData = new FormData();
+        imageFormData.append('image', imageFile);
+
+        const imageResponse = await fetch('http://localhost:8080/api/images', {
+          method: 'POST',
+          headers: {
+            'X-QQ-AUTH-TOKEN': token
+          },
+          body: imageFormData
+        })
+
+        if (!imageResponse.ok) {
+          throw new Error('이미지 업로드 실패');
+        }
+
+        const imageResult = await imageResponse.json();
+        if (!imageResult.data) {
+          throw new Error('이미지 URL을 받지 못했습니다.');
+        }
+
+        imageUrl = imageResult.data;
+        console.log('Uploaded image URL:', imageUrl);
+      }
+
+      // 2. 질문 생성
+      const questionData = {
+        title: title,
+        content: content,
+        imgUrl: imageUrl || '', // 이미지 URL이 있으면 사용, 없으면 빈 문자열
+        commId: parseInt(commId),
+        hashtags: hashtags
+      };
+
+      // 질문 등록 API 호출
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-QQ-AUTH-TOKEN': token
+        },
+        body: JSON.stringify(questionData)
+      });
+
+      const data = await response.json();
+      if (data.data) {
+        window.location.href = `/questions/info/${data.data.questionId}`;
+      } else {
+        throw new Error(data.reason || '질문 등록 실패');
+      }
+      // API 요청
+      // fetch(url, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'X-QQ-AUTH-TOKEN': token
+      //   },
+      //   body: JSON.stringify(questionData)
+      // })
+      // .then(response => response.json())
+      // .then(data => {
+      //   console.log('Received question data:', JSON.stringify(data, null, 2));
+      //   if (data.data) {
+      //     // 성공 시 질문 상세 페이지로 이동
+      //     window.location.href = `/questions/info/${data.data.questionId}`;
+      //   } else {
+      //     alert('질문 등록에 실패했습니다: ' + data.message);
+      //   }
+      // })
+      // .catch(error => {
+      //   console.error('Error:', error);
+      //   alert('질문 등록 중 오류가 발생했습니다.');
+      // });
+    } catch (error) {
+      console.error('Error:', error);
+      alert(error.message || '질문 등록 중 오류가 발생했습니다.');
+    }
+  });
+
+  // 취소 버튼 처리
+  document.querySelector('.cancel-btn').addEventListener('click', function () {
+    window.history.back();
+  });
+</script>
+
+</body>
+</html>

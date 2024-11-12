@@ -125,6 +125,3 @@ local.properties
 
 ### environment ###
 *.env
-
-### application
-application.yml

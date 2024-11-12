@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head th:replace="~{header :: head(additionalStyles=~{::style})}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>새 커뮤니티 생성</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+    }
+
+    .container {
+      width: 60%;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: white;
+      border: 1px solid #ccc;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    label .required {
+      color: red;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    textarea {
+      height: 100px;
+      resize: none;
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 20px;
+    }
+
+    .icon-section {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .icon-section img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-right: 20px;
+    }
+
+    .icon-section label {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      color: #007bff;
+    }
+
+    .icon-section input[type="file"] {
+      display: none;
+    }
+
+    .settings-wrapper {
+      border-top: 1px solid #ddd;
+      margin-top: 20px;
+      padding-top: 20px;
+    }
+
+    .settings-wrapper h2 {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .settings-group {
+      display: flex;
+      align-items: center;
+    }
+
+    .settings {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .settings .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .settings .radio-group label {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+    }
+
+    .settings .radio-group input {
+      margin-right: 5px;
+    }
+
+    .divider {
+      border-left: 1px solid #ddd;
+      height: 60px;
+      margin: 0 20px;
+    }
+
+    .actions {
+      text-align: right;
+      margin-top: 30px;
+    }
+
+    .actions button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .actions .cancel-btn {
+      background-color: #ccc;
+      color: #333;
+    }
+
+    .actions .submit-btn {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+<header th:replace="~{header :: header}"></header>
+
+<div class="container">
+  <h1>새 커뮤니티 생성</h1>
+  <form id="communityForm">
+    <!-- 커뮤니티명 입력 -->
+    <label for="community-name">커뮤니티명<span class="required">*</span></label>
+    <input type="text" id="community-name" name="name" placeholder="커뮤니티명을 입력하세요" required>
+
+    <!-- 설명 입력 -->
+    <label for="description">설명<span class="required">*</span></label>
+    <textarea id="description" name="description" placeholder="커뮤니티에 대한 설명을 입력하세요"
+              required></textarea>
+    <p class="help-text">커뮤니티 홈 화면/커뮤니티 가입 시 표시되는 설명입니다.</p>
+
+    <!-- 커뮤니티 아이콘 -->
+    <div>커뮤니티 아이콘</div>
+    <div class="icon-section">
+      <label for="community-icon">
+        <img src="https://via.placeholder.com/100" id="icon-preview" alt="커뮤니티 아이콘">
+        <input type="file" id="community-icon" accept="image/*">
+      </label>
+      커뮤니티를 대표하는 이미지를 등록해주세요.<br>
+      미등록 시, 기본이미지로 설정됩니다.
+    </div>
+
+    <!-- 커뮤니티 설정 -->
+    <div class="settings-wrapper">
+      <h2>커뮤니티 설정<span class="required">*</span></h2>
+      <div class="settings-group">
+        <!-- 커뮤니티 공개 여부 -->
+        <div class="settings">
+          커뮤니티 공개 여부
+          <div class="radio-group">
+            <label><input type="radio" name="visibility" value="public" checked> Public</label>
+            <label><input type="radio" name="visibility" value="private"> Private</label>
+          </div>
+        </div>
+        <div class="divider"></div> <!-- 구분선 -->
+
+        <!-- 질문/답변 권한 -->
+        <div class="settings">
+          질문/답변 권한
+          <div class="radio-group">
+            <label><input type="radio" name="access" value="members" checked> Members Only</label>
+            <label><input type="radio" name="access" value="all"> All</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 버튼 -->
+    <div class="actions">
+      <button type="button" class="cancel-btn">취소</button>
+      <button type="submit" class="submit-btn">생성하기</button>
+    </div>
+  </form>
+</div>
+
+<footer th:replace="~{footer :: footer}"></footer>
+
+<script src="/js/news.js"></script>
+<script src="/js/question.js"></script>
+<script src="/js/search.js"></script>
+
+<script>
+
+  // 이미지 미리보기 기능
+  document.getElementById('community-icon').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('icon-preview').src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+
+  // 폼 제출 처리
+  document.getElementById('communityForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const imageFile = document.getElementById('community-icon').files[0];
+    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+
+    try {
+      let imageUrl = '';
+
+      // 1. 이미지 업로드 (이미지가 선택된 경우에만)
+      if (imageFile) {
+        const imageFormData = new FormData();
+        imageFormData.append('image', imageFile);
+
+        const imageResponse = await fetch('http://localhost:8080/api/images', {
+          method: 'POST',
+          headers: {
+            'X-QQ-AUTH-TOKEN': token
+          },
+          body: imageFormData
+        });
+
+        if (!imageResponse.ok) {
+          throw new Error('이미지 업로드 실패');
+        }
+
+        const imageResult = await imageResponse.json();
+        if (!imageResult.data) {
+          throw new Error('이미지 URL을 받지 못했습니다.');
+        }
+
+        imageUrl = imageResult.data;
+        console.log('Uploaded image URL:', imageUrl);
+      }
+
+      // 2. 커뮤니티 생성
+      const communityData = {
+        name: formData.get('name'),
+        description: formData.get('description'),
+        imgUrl: imageUrl || '', // 이미지 URL이 있으면 사용, 없으면 빈 문자열
+        isVisible: formData.get('visibility') === 'public',
+        isPublic: formData.get('access') === 'all'
+      };
+
+      console.log('Sending community data:', communityData);
+
+      const communityResponse = await fetch('http://localhost:8080/api/communities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-QQ-AUTH-TOKEN': token
+        },
+        body: JSON.stringify(communityData)
+      });
+
+      if (!communityResponse.ok) {
+        throw new Error('커뮤니티 생성 실패');
+      }
+
+      const result = await communityResponse.json();
+      console.log('Community creation result:', result);
+
+      if (result.data && result.data.id) {
+        window.location.href = `/communities/create-success/${result.data.id}`;
+      } else {
+        throw new Error('커뮤니티 ID를 받지 못했습니다.');
+      }
+
+    } catch (error) {
+      console.error('Error:', error);
+      alert(error.message || '커뮤니티 생성 중 오류가 발생했습니다.');
+    }
+  });
+</script>
+
+</body>
+</html>

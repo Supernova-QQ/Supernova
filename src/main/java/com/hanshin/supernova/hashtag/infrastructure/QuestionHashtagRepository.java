@@ -13,4 +13,5 @@ public interface QuestionHashtagRepository extends JpaRepository<QuestionHashtag
     void deleteAllByQuestionId(Long questionId);
 
     List<QuestionHashtag> findByQuestionId(Long qId);
+    List<QuestionHashtag> findByHashtagId(Long hId);
 }

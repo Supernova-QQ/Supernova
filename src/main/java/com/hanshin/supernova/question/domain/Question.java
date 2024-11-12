@@ -1,6 +1,9 @@
 package com.hanshin.supernova.question.domain;
 
 import com.hanshin.supernova.common.entity.BaseEntity;
+import com.hanshin.supernova.exception.answer.AnswerInvalidException;
+import com.hanshin.supernova.exception.dto.ErrorType;
+import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,7 +29,10 @@ public class Question extends BaseEntity {
 
     // 콘텐츠 정보
     private String title;
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
+    @Column(name = "img_url")
+    private String imgUrl;
     private boolean isResolved;
 
     // cnt 정보
@@ -34,8 +40,8 @@ public class Question extends BaseEntity {
     private int viewCnt;
     @Column(name = "recommendation_cnt")
     private int recommendationCnt;
-//    @Column(name = "answer_cnt")
-//    private Long answerCnt;
+    @Column(name = "answer_cnt")
+    private int answerCnt;
 
     // 참조 정보
     @Column(name = "questioner_id")
@@ -43,30 +49,41 @@ public class Question extends BaseEntity {
     @Column(name = "comm_id")
     private Long commId;
 
-    public void updateQuestion(String title, String content, Long commId) {
+    public void updateQuestion(String title, String content, String imgUrl, Long commId) {
         this.title = title;
         this.content = content;
+        this.imgUrl = imgUrl;
         this.commId = commId;
     }
 
-    public void changeStatus() {
-        this.isResolved = !isResolved;
+    public void changeResolveStatus() {
+        this.isResolved = true;
     }
 
     public void updateViewCnt() {
         this.viewCnt++;
     }
 
-    public void updateRecommendationCnt() {
+    public void increaseRecommendationCnt() {
         this.recommendationCnt++;
     }
+    public void decreaseRecommendationCnt() {
+        if (this.recommendationCnt > 0) {
+            this.recommendationCnt--;
+        } else {
+            throw new QuestionInvalidException(ErrorType.CNT_NEGATIVE_ERROR);
+        }
+    }
 
-//    public void increaseAnswerCnt() {
-//        this.answerCnt++;
-//    }
-//
-//    public void decreaseAnswerCnt() {
-//        this.answerCnt--;
-//    }   // TODO 답변 수가 0 아래로 내려갈 때 예외
+    public void increaseAnswerCnt() {
+        this.answerCnt++;
+    }
 
+    public void decreaseAnswerCnt() {
+        if(this.answerCnt > 0) {
+            this.answerCnt--;
+        } else {
+            throw new AnswerInvalidException(ErrorType.ANSWER_CNT_NEGATIVE_ERROR);
+        }
+    }
 }

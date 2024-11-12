@@ -1,5 +1,6 @@
 package com.hanshin.supernova.user.dto.request;
 
+import com.hanshin.supernova.user.domain.Authority;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -20,4 +21,7 @@ public class UserRegisterRequest {
     @NotNull(message = "닉네임은 필수입니다.")
     @Size(max = 10, message = "닉네임은 최대 10글자 입니다.")
     private String nickname;
+
+    @NotNull(message = "사용자의 권한 설정은 필수입니다. 일반 사용자의 경우 'USER' 권한으로 추가해주세요.")
+    private Authority authority;
 }

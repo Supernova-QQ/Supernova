@@ -1,5 +1,8 @@
 package com.hanshin.supernova.community.presentation;
 
+import static com.hanshin.supernova.common.CrossOriginConstants.CROSS_ORIGIN_ADDRESS;
+
+import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.community.application.CommunityService;
@@ -9,6 +12,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin(origins = CROSS_ORIGIN_ADDRESS)
 @RestController
 @RequestMapping(path = "/api/communities")
 @RequiredArgsConstructor
@@ -28,25 +33,28 @@ public class CommunityController {
 
     @PostMapping
     public ResponseEntity<?> createCommunity(
+            AuthUser user,
             @RequestBody @Valid CommunityRequest request) {
-        var response = communityService.createCommunity(request);
+        var response = communityService.createCommunity(user, request);
         return ResponseDto.created(response);
     }
 
     @PutMapping(path = "/{c_id}")
     public ResponseEntity<?> updateCommunity(
+            AuthUser user,
             @RequestBody @Valid CommunityRequest request,
             @PathVariable(name = "c_id") Long cId
     ) {
-        var response = communityService.updateCommunity(request, cId);
+        var response = communityService.updateCommunity(user, request, cId);
         return ResponseDto.ok(response);
     }
 
     @PatchMapping(path = "/{c_id}")
     public ResponseEntity<?> dormantCommunity(
+            AuthUser user,
             @PathVariable(name = "c_id") Long cId
     ) {
-        var response = communityService.dormantCommunity(cId);
+        var response = communityService.dormantCommunity(user, cId);
         return ResponseDto.ok(response);
     }
 
@@ -66,17 +74,19 @@ public class CommunityController {
 
     @PostMapping(path = "/{c_id}")
     public ResponseEntity<?> joinCommunity(
+            AuthUser user,
             @PathVariable(name = "c_id") Long cId
     ) {
-        SuccessResponse response = communityService.joinCommunity(cId);
+        SuccessResponse response = communityService.joinCommunity(user, cId);
         return ResponseDto.created(response);
     }
 
     @DeleteMapping(path = "/{c_id}")
     public ResponseEntity<?> LeaveCommunity(
+            AuthUser user,
             @PathVariable(name = "c_id") Long cId
     ) {
-        SuccessResponse response = communityService.leaveCommunity(cId);
+        SuccessResponse response = communityService.leaveCommunity(user, cId);
         return ResponseDto.ok(response);
     }
 

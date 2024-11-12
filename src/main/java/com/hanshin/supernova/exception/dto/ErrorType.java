@@ -15,16 +15,24 @@ public enum ErrorType {
 
     // common
     DUPLICATED_NAME_ERROR(HttpStatus.BAD_REQUEST, "중복된 이름입니다."),
+    CNT_NEGATIVE_ERROR(HttpStatus.BAD_REQUEST, "계수는 0보다 작을 수 없습니다."),
 
     // community
     COMMUNITY_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id에 해당하는 커뮤니티가 존재하지 않습니다."),
     NON_IDENTICAL_COMMUNITY_CREATOR_ERROR(HttpStatus.FORBIDDEN, "커뮤니티의 생성자가 아닙니다."),
 
     // admin 예외
-    NON_ADMIN_AUTH_ERROR(HttpStatus.FORBIDDEN, "관리자 권한이 필요한 서비스 입니다."),
+    ONLY_ADMIN_AUTHORITY_ERROR(HttpStatus.BAD_REQUEST, "관리자 권한이 필요한 기능입니다."),
 
     // auth 예외
     NON_IDENTICAL_USER_ERROR(HttpStatus.FORBIDDEN, "작성자와 접근자가 일치하지 않습니다."),
+    WRITER_CANNOT_RECOMMEND_ERROR(HttpStatus.FORBIDDEN, "자신의 게시물은 추천할 수 없습니다."),
+
+    // notice 예외
+    NOTICE_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "공지사항을 찾을 수 없습니다."),
+
+    // user 예외
+    SYSTEM_USER_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "시스템 유저를 찾을 수 없습니다."),
 
     // 토큰 오류
     AUTHORIZATION_ERROR(HttpStatus.UNAUTHORIZED, "인증, 인가 오류"),
@@ -36,29 +44,38 @@ public enum ErrorType {
     USER_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "유저 정보를 찾을 수 없습니다."),
     FAIL_TO_LOGIN_ERROR(HttpStatus.UNAUTHORIZED, "로그인에 실패했습니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 틀렸습니다."),
-  
+
     // 질문 예외
     QUESTION_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id에 해당하는 질문이 존재하지 않습니다."),
     NEITHER_BLANK_ERROR(HttpStatus.BAD_REQUEST, "제목과 내용은 빈 문자열일 수 없습니다."),
-    QUESTION_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id에 해당하는 질문이 존재하지 않습니다."),
 
-    // 토큰 오류
-    AUTHORIZATION_ERROR(HttpStatus.UNAUTHORIZED, "인증, 인가 오류"),
-    EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, "해당 토큰은 만료된 토큰입니다."),
-    NULL_TOKEN(HttpStatus.UNAUTHORIZED, "access token 이 존재하지 않습니다."),
-    TOKEN_BLACKLISTED(HttpStatus.BAD_REQUEST, "해당 토큰은 이미 로그아웃 되었습니다."),
-
-    // 로그인 오류
-    USER_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "유저 정보를 찾을 수 없습니다."),
-    FAIL_TO_LOGIN_ERROR(HttpStatus.UNAUTHORIZED, "로그인에 실패했습니다."),
-    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 틀렸습니다."),
-  
     // 답변 예외
     ANSWER_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id에 해당하는 답변이 존재하지 않습니다."),
+    ANSWER_CNT_NEGATIVE_ERROR(HttpStatus.BAD_REQUEST, "답변 수는 0보다 작을 수 없습니다."),
+    ACCEPTED_ANSWER_CANNOT_BE_DELETED_ERROR(HttpStatus.BAD_REQUEST, "채택된 답변은 삭제가 불가능합니다."),
+    ACCEPTED_ANSWER_CANNOT_BE_EDITED_ERROR(HttpStatus.BAD_REQUEST, "채택된 답변은 수정이 불가능합니다."),
+    QUESTIONER_CANNOT_ACCEPT_THEIR_OWN_ANSWER_ERROR(HttpStatus.BAD_REQUEST, "게시글 당사자는 자신의 댓글 채택이 불가능합니다."),
+
+    // S3 예외
+    EMPTY_IMAGE_ERROR(HttpStatus.BAD_REQUEST, "이미지 파일이 비어있습니다."),
+    IMAGE_UPLOAD_FAILED_ERROR(HttpStatus.BAD_REQUEST, "이미지 업로드에 실패하였습니다."),
+
+    // rate limit 예외
+    RATE_LIMIT_EXCEEDED_ERROR(HttpStatus.TOO_MANY_REQUESTS, "요청 횟수가 한계를 초과하였습니다."),
 
     // 해시태그 예외
     HASHTAG_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id 에 해당하는 해시태그가 존재하지 않습니다."),
-    HASHTAG_MAX_SIZE_5_ERROR(HttpStatus.BAD_REQUEST, "해시태그는 최대 5개까지 등록 가능합니다.");
+    HASHTAG_MAX_SIZE_5_ERROR(HttpStatus.BAD_REQUEST, "해시태그는 최대 5개까지 등록 가능합니다."),
+
+    // 알림 예외
+    NOT_RECEIVER_ERROR(HttpStatus.BAD_REQUEST, "알림을 수신하는 당사자가 아닙니다."),
+    NEWS_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id 에 맞는 알림이 존재하지 않습니다."),
+
+    // gpt 예외
+    JSON_PARSE_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "파싱 과정에서 문제가 생겼습니다."),
+    GPT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인가되지 않은 요청입니다."),
+    GPT_RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "요청이 너무 많습니다."),
+    GPT_REQUEST_FAILED(HttpStatus.BAD_REQUEST, "요청이 실패하였습니다.");
 
     private final HttpStatus status;
     private final String message;

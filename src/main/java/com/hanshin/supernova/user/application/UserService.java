@@ -38,6 +38,7 @@ public class UserService {
                 .password(request.getPassword())
                 .username(request.getNickname())
                 .nickname(request.getNickname())
+                .authority(request.getAuthority())
                 .build();
 
         User savedUser = userRepository.save(user);

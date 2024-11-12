@@ -10,11 +10,11 @@ public class CommunityInfoResponse {
     private Long id;
     private String name;
     private int userCnt;
-//    private String profileImg;
+    private String imgUrl;
 
     public static CommunityInfoResponse toResponse(
-            Long id, String name, int userCnt
+            Long id, String name, int userCnt, String imgUrl
     ) {
-        return new CommunityInfoResponse(id, name, userCnt);
+        return new CommunityInfoResponse(id, name, userCnt, imgUrl);
     }
 }
