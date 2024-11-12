@@ -209,13 +209,22 @@
 
 <footer th:replace="~{footer :: footer}"></footer>
 
-<script>
+<script type="module" src="/js/config.js"></script>
+
+<script type="module">
+  import CONFIG from '/static/js/config.js';
   const communityId = [[${communityId}]];
-  const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+
+  // const communityURL = `http://localhost:8080/api/communities`;
+  // const baseURL = 'http://localhost:8080';
+  // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+  const communityURL = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
+  const baseURL = CONFIG.API.BASE_URL;
+  const token = CONFIG.AUTH.DEFAULT_TOKEN;
 
   // 페이지 로드 시 커뮤니티 정보 가져오기
   document.addEventListener('DOMContentLoaded', function () {
-    fetch(`http://localhost:8080/api/communities/${communityId}`, {
+    fetch(communityURL + `/${communityId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -282,7 +291,7 @@
         const imageFormData = new FormData();
         imageFormData.append('image', imageFile);
 
-        const imageResponse = await fetch('http://localhost:8080/api/images', {
+        const imageResponse = await fetch(baseURL + '/api/images', {
           method: 'POST',
           headers: {
             'X-QQ-AUTH-TOKEN': token
@@ -307,7 +316,7 @@
         isPublic: formData.get('access') === 'all'
       };
 
-      const response = await fetch(`http://localhost:8080/api/communities/${communityId}`, {
+      const response = await fetch(communityURL + `/${communityId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

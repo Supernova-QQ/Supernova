@@ -324,11 +324,14 @@
 
 <footer th:replace="~{footer :: footer}"></footer>
 
-<script src="/js/news.js"></script>
-<script src="/js/question.js"></script>
-<script src="/js/search.js"></script>
+<script type="module" src="/js/config.js"></script>
+<script type="module" src="/js/news.js"></script>
+<script type="module" src="/js/question.js"></script>
+<script type="module" src="/js/search.js"></script>
 
-<script>
+<script type="module">
+  import CONFIG from '/static/js/config.js';
+
   // 페이지 로드 시 커뮤니티 목록을 가져오는 함수
   document.addEventListener('DOMContentLoaded', function () {
     fetchMyCommunities();
@@ -358,8 +361,10 @@
     }
   });
 
-  const url = `http://localhost:8080/api/questions`;
-  const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+  // const url = `http://localhost:8080/api/questions`;
+  // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+  const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.QUESTIONS;
+  const token = CONFIG.AUTH.DEFAULT_TOKEN;
 
   function fetchMyCommunities() {
     fetch(url + '/my-communities', {
