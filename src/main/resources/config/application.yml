@@ -1,8 +1,8 @@
 spring:
-  profiles:
-    active: dev
   application:
     name: supernova
+  profiles:
+    active: dev
   servlet:
     multipart:
       enabled: true
