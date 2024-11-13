@@ -211,11 +211,13 @@
 
 <footer th:replace="~{footer :: footer}"></footer>
 
-<script src="/js/news.js"></script>
-<script src="/js/question.js"></script>
-<script src="/js/search.js"></script>
+<script type="module" src="/js/config.js"></script>
+<script type="module" src="/js/news.js"></script>
+<script type="module" src="/js/question.js"></script>
+<script type="module" src="/js/search.js"></script>
 
-<script>
+<script type="module">
+  import CONFIG from '/static/js/config.js';
 
   // 이미지 미리보기 기능
   document.getElementById('community-icon').addEventListener('change', function(e) {
@@ -236,7 +238,11 @@
 
     const formData = new FormData(this);
     const imageFile = document.getElementById('community-icon').files[0];
-    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+
+    // const baseURL = `http://localhost:8080`;
+    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+    const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
+    const token = CONFIG.AUTH.DEFAULT_TOKEN;
 
     try {
       let imageUrl = '';
@@ -246,7 +252,7 @@
         const imageFormData = new FormData();
         imageFormData.append('image', imageFile);
 
-        const imageResponse = await fetch('http://localhost:8080/api/images', {
+        const imageResponse = await fetch(baseURL + '/api/images', {
           method: 'POST',
           headers: {
             'X-QQ-AUTH-TOKEN': token
@@ -278,7 +284,7 @@
 
       console.log('Sending community data:', communityData);
 
-      const communityResponse = await fetch('http://localhost:8080/api/communities', {
+      const communityResponse = await fetch(baseURL + '/api/communities', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

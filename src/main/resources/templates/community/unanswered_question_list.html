@@ -116,11 +116,13 @@
 
 <footer th:replace="~{footer :: footer}"></footer>
 
-<script src="/js/news.js"></script>
-<script src="/js/question.js"></script>
-<script src="/js/search.js"></script>
+<script type="module" src="/js/config.js"></script>
+<script type="module" src="/js/news.js"></script>
+<script type="module" src="/js/question.js"></script>
+<script type="module" src="/js/search.js"></script>
 
-<script th:inline="javascript">
+<script type="module">
+  import CONFIG from '/static/js/config.js';
   let questionCurrentPage = 0;
   const communityId = [[${communityId}]];
   let currentSort = 'latest';
@@ -129,9 +131,10 @@
     fetchQuestions(0);
   });
 
-  const url = `http://localhost:8080/api/communities`;
-  const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
-
+  // const url = `http://localhost:8080/api/communities`;
+  // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+  const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
+  const token = CONFIG.AUTH.DEFAULT_TOKEN;
 
   function fetchQuestions(page = 0) {
     const endpoint = currentSort === 'latest' ? 'unanswered-latest-questions' : 'unanswered-old-questions';

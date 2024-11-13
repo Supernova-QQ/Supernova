@@ -174,11 +174,14 @@
 
 <footer th:replace="~{footer :: footer}"></footer>
 
-<script src="/js/news.js"></script>
-<script src="/js/question.js"></script>
-<script src="/js/search.js"></script>
+<script type="module" src="/js/config.js"></script>
+<script type="module" src="/js/news.js"></script>
+<script type="module" src="/js/question.js"></script>
+<script type="module" src="/js/search.js"></script>
 
-<script>
+<script type="module">
+  import CONFIG from '/static/js/config.js';
+
   document.addEventListener('DOMContentLoaded', function () {
     fetchPopularCommunities();
     fetchPopularQuestions();
@@ -188,7 +191,10 @@
     fetchPopularAnswer();
   });
 
-  const url = `http://localhost:8080/api/main`
+  // const url = `http://localhost:8080/api/main`;
+  // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+  const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.MAIN;
+  const token = CONFIG.AUTH.DEFAULT_TOKEN;
 
   /* 커뮤니티 */
   function fetchPopularCommunities() {
