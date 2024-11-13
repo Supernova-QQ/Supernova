@@ -7,12 +7,14 @@ import com.hanshin.supernova.exception.user.UserInvalidException;
 import com.hanshin.supernova.exception.user.UserRegisterInvalidException;
 import com.hanshin.supernova.security.service.JwtService;
 import com.hanshin.supernova.user.domain.Activity;
+import com.hanshin.supernova.user.domain.Authority;
 import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.user.dto.request.UserRegisterRequest;
 import com.hanshin.supernova.user.dto.response.ChangePasswordResponse;
 import com.hanshin.supernova.user.dto.response.ResetPasswordResponse;
 import com.hanshin.supernova.user.dto.response.UserRegisterResponse;
 import com.hanshin.supernova.user.infrastructure.UserRepository;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -67,7 +69,7 @@ public class UserServiceImpl implements UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .username(request.getUsername())
                 .nickname(request.getNickname())
-                .authority(request.getAuthority())
+                .authority(Authority.USER)
                 .activity(newActivity)
                 .build();
         return userRepository.save(user);
@@ -162,5 +164,24 @@ public class UserServiceImpl implements UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public User getUserFromClaims(HttpServletRequest request) {
+
+        // JwtFilter에서 저장한 Claims 객체를 HttpServletRequest에서 가져옴
+        Claims claims = (Claims) request.getAttribute("claims");
+
+        if (claims == null) {
+            throw new AuthInvalidException(ErrorType.SYSTEM_USER_NOT_FOUND_ERROR);
+        }
+        // Claims에서 사용자 이메일 추출
+        String email = claims.getSubject();
+        if (email == null) {
+            throw new AuthInvalidException(ErrorType.SYSTEM_USER_NOT_FOUND_ERROR);
+        }
+
+        // 이메일을 통해 User 엔티티 조회하여 반환
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthInvalidException(ErrorType.SYSTEM_USER_NOT_FOUND_ERROR));
     }
 }

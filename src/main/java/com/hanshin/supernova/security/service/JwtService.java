@@ -6,9 +6,11 @@ import com.hanshin.supernova.redis.service.RedisService;
 import com.hanshin.supernova.user.domain.Authority;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,15 @@ public class JwtService {
     @Value("${spring.security.jwt.access.expiration}")
     private int accessTokenExpiration;
 
+    @Getter
+    private int accessTokenExpirationMinutes;
+
+    @PostConstruct
+    public void init() {
+        // 초를 분으로 변환
+        this.accessTokenExpirationMinutes = this.accessTokenExpiration / 60;
+    }
+
     @Value("${spring.security.jwt.refresh.expiration}")
     private int refreshTokenExpiration;
 
@@ -53,6 +64,7 @@ public class JwtService {
         try {
             Jwts.parser()
                     .verifyWith(key)
+                    .clockSkewSeconds(360) // 1분의 시간 차이를 허용
                     .build()
                     .parseSignedClaims(token);
             return true;
@@ -62,21 +74,21 @@ public class JwtService {
     }
 
 
-    // JWT 토큰에서 Claims 추출
-    public Claims getClaimsFromToken(String token) {
-        return Jwts.parser()
-                .verifyWith(key)
-                .clockSkewSeconds(60) // 1분의 시간 차이를 허용
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-    }
+//    // JWT 토큰에서 Claims 추출
+//    public Claims getClaimsFromToken(String token) {
+//        return Jwts.parser()
+//                .verifyWith(key)
+//                .clockSkewSeconds(360) // 1분의 시간 차이를 허용
+//                .build()
+//                .parseSignedClaims(token)
+//                .getPayload();
+//    }
 
-    public Claims validateAndGetClaims(String token) {
+    public Claims getClaimsFromToken(String token) {
         try {
             return Jwts.parser()
                     .verifyWith(key)
-                    .clockSkewSeconds(60) // 1분의 시간 차이를 허용
+                    .clockSkewSeconds(360) // 1분의 시간 차이를 허용
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
@@ -99,12 +111,13 @@ public class JwtService {
     }
 
     // AccessToken 생성
-    public String generateAccessToken(String email, String role) {
+    public String generateAccessToken(Long userId, String email, String role) {
         return Jwts.builder()
                 .subject(email)
                 .claim("role", role)
+                .claim("userId", userId)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationMinutes * 1000L))
                 .signWith(key)
                 .compact();
     }

@@ -8,6 +8,7 @@ import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.community.application.CommunityService;
 import com.hanshin.supernova.community.dto.request.CommunityRequest;
 import com.hanshin.supernova.community.dto.response.CommunityInfoResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

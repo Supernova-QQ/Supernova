@@ -83,7 +83,10 @@ public enum ErrorType {
     JSON_PARSE_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "파싱 과정에서 문제가 생겼습니다."),
     GPT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인가되지 않은 요청입니다."),
     GPT_RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "요청이 너무 많습니다."),
-    GPT_REQUEST_FAILED(HttpStatus.BAD_REQUEST, "요청이 실패하였습니다.");
+    GPT_REQUEST_FAILED(HttpStatus.BAD_REQUEST, "요청이 실패하였습니다."),
+
+    // 북마크 예외
+    ASSIGNED_BOOKMARK_ERROR(HttpStatus.BAD_REQUEST, "북마크는 질문 또는 답변 중 하나에만 할당될 수 있습니다.");
 
     private final HttpStatus status;
     private final String message;

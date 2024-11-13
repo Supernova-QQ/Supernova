@@ -44,7 +44,7 @@ public class AuthController {
         }
 
         // 로그인 성공 시 AccessToken과 RefreshToken 발급
-        String accessToken = jwtService.generateAccessToken(user.getEmail(), user.getAuthority().name());
+        String accessToken = jwtService.generateAccessToken(user.getId(), user.getEmail(), user.getAuthority().name());
 
         // RefreshToken 생성 및 Redis에 저장 (7일간 유효)
         String refreshToken = jwtService.generateRefreshToken(user.getEmail());
@@ -53,7 +53,7 @@ public class AuthController {
         // 헤더와 쿠키를 설정할 HttpHeaders 객체 생성
         HttpHeaders headers = new HttpHeaders();
 
-        // RefreshToken을 쿠키에 추가
+        // RefreshToken을 HttpOnly 쿠키에 추가
         ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER_KEY, refreshToken)
                 .httpOnly(true)
                 .secure(true)  // HTTPS를 사용하는 경우 true로 설정
@@ -87,6 +87,7 @@ public class AuthController {
 
         // RefreshToken에서 사용자 이메일 추출
         String email = jwtService.getClaimsFromToken(refreshToken).getSubject();
+        Long userId = jwtService.getClaimsFromToken(refreshToken).get("userId", Long.class);
 
         // Redis에서 해당 이메일의 RefreshToken 조회 (유효성 재검증)
         String storedRefreshToken = redisService.getValue(email);
@@ -95,7 +96,7 @@ public class AuthController {
         }
 
         // 새로운 AccessToken 발급
-        String newAccessToken = jwtService.generateAccessToken(email, "USER");  // 권한은 예시로 ROLE_USER 사용
+        String newAccessToken = jwtService.generateAccessToken(userId, email, "USER");  // 권한은 예시로 ROLE_USER 사용
 
         // 새 AccessToken 반환
         return ResponseEntity.ok(newAccessToken);
@@ -130,6 +131,5 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during logout");
         }
     }
-
 
 }
