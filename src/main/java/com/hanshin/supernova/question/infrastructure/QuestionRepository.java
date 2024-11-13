@@ -83,4 +83,3 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Long> findBookmarkedQuestionsByUserId(@Param("userId") Long userId,
                                                @Param("bookmarkThreshold") int bookmarkThreshold);
 }
-}
