@@ -1,7 +1,7 @@
 let CONFIG = {
   API: {
-    // BASE_URL: 'http://localhost:8080',
-    BASE_URL: 'http://13.124.80.116:8080',
+    BASE_URL: 'http://localhost:8080',
+    // BASE_URL: 'http://13.124.80.116:8080',
     ENDPOINTS: {
       COMMUNITIES: '/api/communities',
       QUESTIONS: '/api/questions',
