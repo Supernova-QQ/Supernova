@@ -418,7 +418,7 @@
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'X-QQ-ACCESS-TOKEN': token
       }
     })
     .then(response => response.json())
@@ -486,7 +486,7 @@
     fetch(url + `/${questionId}`, {
       headers: {
         'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'X-QQ-ACCESS-TOKEN': token
       }
     })
     .then(response => response.json())
@@ -527,7 +527,7 @@
     fetch(url + `/${questionId}/hashtags`, {
       headers: {
         'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'X-QQ-ACCESS-TOKEN': token
       }
     })
     .then(response => response.json())
@@ -598,7 +598,7 @@
         const imageResponse = await fetch(baseURL + '/api/images', {
           method: 'POST',
           headers: {
-            'X-QQ-AUTH-TOKEN': token
+            'X-QQ-ACCESS-TOKEN': token
           },
           body: imageFormData
         });
@@ -628,7 +628,7 @@
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'X-QQ-AUTH-TOKEN': token
+          'X-QQ-ACCESS-TOKEN': token
         },
         body: JSON.stringify(questionData)
       });
@@ -656,7 +656,7 @@
     //   method: 'PUT',
     //   headers: {
     //     'Content-Type': 'application/json',
-    //     'X-QQ-AUTH-TOKEN': token
+    //     'X-QQ-ACCESS-TOKEN': token
     //   },
     //   body: JSON.stringify(questionData)
     // })

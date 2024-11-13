@@ -794,7 +794,7 @@
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'X-QQ-ACCESS-TOKEN': token
       }
     })
     .then(response => response.json())
@@ -842,7 +842,7 @@
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'X-QQ-ACCESS-TOKEN': token
       }
     })
     .then(response => response.json())
@@ -984,7 +984,7 @@
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'X-QQ-ACCESS-TOKEN': token
       }
     })
     .then(response => response.json())
@@ -1044,7 +1044,7 @@
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'X-QQ-ACCESS-TOKEN': token
       }
     });
 
@@ -1085,7 +1085,7 @@
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'X-QQ-ACCESS-TOKEN': token
       },
       body: JSON.stringify(jsonData)
     })
@@ -1132,7 +1132,7 @@
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'X-QQ-ACCESS-TOKEN': token
       }
     })
     .then(response => response.json())
@@ -1188,11 +1188,10 @@
       regenerationBtn.disabled = true;
 
       try {
-        const response = await fetch(url + `/${questionId}/ai-answers`, {
+        const response = await fetchWithAuth(url + `/${questionId}/ai-answers`, {
           method: 'PUT',
           headers: {
-            'Content-Type': 'application/json',
-            'X-QQ-AUTH-TOKEN': token
+            'Content-Type': 'application/json'
           }
         });
         const data = await response.json();
@@ -1222,7 +1221,7 @@
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'X-QQ-ACCESS-TOKEN': token
       }
     })
     .then(response => response.json())
@@ -1368,7 +1367,7 @@
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'X-QQ-AUTH-TOKEN': token
+          'X-QQ-ACCESS-TOKEN': token
         },
         body: JSON.stringify({
           answer: answerText,
@@ -1419,7 +1418,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-QQ-AUTH-TOKEN': token
+          'X-QQ-ACCESS-TOKEN': token
         }
       });
 
@@ -1451,7 +1450,7 @@
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'X-QQ-AUTH-TOKEN': token
+          'X-QQ-ACCESS-TOKEN': token
         }
       });
 
@@ -1484,7 +1483,7 @@
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'X-QQ-AUTH-TOKEN': token
+          'X-QQ-ACCESS-TOKEN': token
         }
       });
 

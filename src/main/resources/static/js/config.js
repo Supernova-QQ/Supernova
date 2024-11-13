@@ -12,8 +12,8 @@ let CONFIG = {
     }
   },
   AUTH: {
-    TOKEN_KEY: 'X-QQ-AUTH-TOKEN',
-    DEFAULT_TOKEN: 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0'
+    TOKEN_KEY: 'X-QQ-ACCESS-TOKEN',
+    DEFAULT_TOKEN: localStorage.getItem('ACCESS_TOKEN_HEADER_KEY')
   },
   PAGINATION: {
     DEFAULT_PAGE: 0,

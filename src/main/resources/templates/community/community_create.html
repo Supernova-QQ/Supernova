@@ -255,7 +255,7 @@
         const imageResponse = await fetch(url + '/api/images', {
           method: 'POST',
           headers: {
-            'X-QQ-AUTH-TOKEN': token
+            'X-QQ-ACCESS-TOKEN': token
           },
           body: imageFormData
         });
@@ -288,7 +288,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-QQ-AUTH-TOKEN': token
+          'X-QQ-ACCESS-TOKEN': token
         },
         body: JSON.stringify(communityData)
       });
