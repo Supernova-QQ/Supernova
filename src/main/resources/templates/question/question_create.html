@@ -371,7 +371,7 @@
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'X-QQ-ACCESS-TOKEN': token
       }
     })
     .then(response => response.json())
@@ -491,7 +491,7 @@
         const imageResponse = await fetch('http://localhost:8080/api/images', {
           method: 'POST',
           headers: {
-            'X-QQ-AUTH-TOKEN': token
+            'X-QQ-ACCESS-TOKEN': token
           },
           body: imageFormData
         })
@@ -523,7 +523,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-QQ-AUTH-TOKEN': token
+          'X-QQ-ACCESS-TOKEN': token
         },
         body: JSON.stringify(questionData)
       });
@@ -539,7 +539,7 @@
       //   method: 'POST',
       //   headers: {
       //     'Content-Type': 'application/json',
-      //     'X-QQ-AUTH-TOKEN': token
+      //     'X-QQ-ACCESS-TOKEN': token
       //   },
       //   body: JSON.stringify(questionData)
       // })
