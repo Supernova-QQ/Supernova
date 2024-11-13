@@ -30,7 +30,8 @@ public class Community extends BaseEntity {
 
     private String description;
 
-//    private MultipartFile profileImg;  // 커뮤니티 프로필 이미지
+    @Column(name = "img_url")
+    private String imgUrl;  // 커뮤니티 프로필 이미지
 
     @Column(name = "is_visible")
     private boolean isVisible; // 외부인의 조회 가능 여부
@@ -48,9 +49,10 @@ public class Community extends BaseEntity {
     private CommCounter commCounter;
 
     public void update(
-            String name, String description, boolean isVisible, boolean isPublic) {
+            String name, String description, String imgUrl, boolean isVisible, boolean isPublic) {
         this.name = name;
         this.description = description;
+        this.imgUrl = imgUrl;
         this.isVisible = isVisible;
         this.isPublic = isPublic;
     }

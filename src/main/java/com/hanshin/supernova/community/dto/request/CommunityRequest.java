@@ -14,7 +14,7 @@ public class CommunityRequest {
     @Size(max = 200, message = "소개글은 최대 200자까지 작성 가능합니다.")
     private String description;
 
-    //    private String imageUrl;
+    private String imgUrl;
 
     @JsonProperty("isVisible")
     private boolean isVisible;

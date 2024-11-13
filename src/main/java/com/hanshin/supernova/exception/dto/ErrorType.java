@@ -64,6 +64,10 @@ public enum ErrorType {
     ACCEPTED_ANSWER_CANNOT_BE_EDITED_ERROR(HttpStatus.BAD_REQUEST, "채택된 답변은 수정이 불가능합니다."),
     QUESTIONER_CANNOT_ACCEPT_THEIR_OWN_ANSWER_ERROR(HttpStatus.BAD_REQUEST, "게시글 당사자는 자신의 댓글 채택이 불가능합니다."),
 
+    // S3 예외
+    EMPTY_IMAGE_ERROR(HttpStatus.BAD_REQUEST, "이미지 파일이 비어있습니다."),
+    IMAGE_UPLOAD_FAILED_ERROR(HttpStatus.BAD_REQUEST, "이미지 업로드에 실패하였습니다."),
+
     // rate limit 예외
     RATE_LIMIT_EXCEEDED_ERROR(HttpStatus.TOO_MANY_REQUESTS, "요청 횟수가 한계를 초과하였습니다."),
 
