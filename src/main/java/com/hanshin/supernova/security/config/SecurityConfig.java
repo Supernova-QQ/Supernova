@@ -61,24 +61,41 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(cnf -> cnf.ignoringRequestMatchers("/api/**"));
 
+        // 로그인 페이지와 관련된 설정 추가
+        http.authorizeHttpRequests(auth -> {
+            auth.requestMatchers("/", "/auth/login", "/register").permitAll(); // 홈, 로그인, 회원가입 페이지 접근 허용
+            auth.requestMatchers("/api/**").permitAll(); // API 요청 전체 허용 (필요에 따라 수정 가능)
+            auth.anyRequest().permitAll();
+        });
+
+//        http.authorizeHttpRequests(auth -> {
+//            auth.requestMatchers("/api/auth/login").permitAll();
+//            auth.requestMatchers("/api/users/all").permitAll();
+//            auth.requestMatchers("/api/bookmarks/**").permitAll();
+//            auth.requestMatchers("/api/main").permitAll();
+//            auth.requestMatchers("/api/notices").permitAll();
+//            auth.requestMatchers("/api/news").permitAll();
+//            auth.requestMatchers("/api/communities/**").permitAll();
+//            auth.requestMatchers("/api/questions/**").permitAll();
+//            auth.requestMatchers("/api/users/**").permitAll();
+//            auth.requestMatchers("/api/auth/refresh").permitAll();
+//            auth.requestMatchers("/api/auth/**").anonymous();
+//            auth.requestMatchers("/api/**").permitAll();
+//        });
+
+        // 폼 로그인 설정
+        http.formLogin(cnf -> {
+            cnf.loginPage("/auth/login") // 로그인 페이지 경로 설정
+                    .loginProcessingUrl("/login") // 로그인 폼의 action 경로와 일치
+                    .defaultSuccessUrl("/") // 로그인 성공 시 리다이렉트할 페이지
+                    .permitAll(); // 로그인 관련 URL은 누구나 접근 가능
+        });
+
         http.logout(cnf -> {
             cnf.logoutUrl("/api/auth/logout");
             cnf.permitAll();
             cnf.addLogoutHandler(logoutHandler);
             cnf.logoutSuccessUrl("/");
-        });
-
-        http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers("/api/auth/login").permitAll(); // 로그인 엔드포인트 허용 및 필터 제외
-            auth.requestMatchers("/api/users/all").permitAll(); // 로그인 엔드포인트 허용 및 필터 제외
-            auth.requestMatchers("/api/main").permitAll();
-            auth.requestMatchers("/api/notices").permitAll();
-            auth.requestMatchers("/api/news").permitAll();
-            auth.requestMatchers("/api/communities/**").permitAll();
-            auth.requestMatchers("/api/questions/**").permitAll();
-            auth.requestMatchers("/api/users/**").permitAll();
-            auth.requestMatchers("/api/auth/refresh").permitAll(); // RefreshToken 엔드포인트 허용
-            auth.requestMatchers("/api/auth/**").anonymous();
         });
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);  // JWT 필터 추가

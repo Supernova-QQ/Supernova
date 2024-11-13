@@ -23,6 +23,8 @@ import com.hanshin.supernova.user.domain.User;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +46,7 @@ public class QuestionService extends AbstractValidateService {
      */
     @Transactional
     public QuestionSaveResponse createQuestion(AuthUser user, QuestionRequest request) {
+
         Community findCommunity = getCommunityOrThrowIfNotExist(request.getCommId());
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
@@ -101,6 +104,7 @@ public class QuestionService extends AbstractValidateService {
      */
     @Transactional
     public QuestionSaveResponse editQuestion(AuthUser user, Long qId, QuestionRequest request) {
+
         Community findCommunity = getCommunityOrThrowIfNotExist(request.getCommId());
 
         Question findQuestion = getQuestionById(qId);

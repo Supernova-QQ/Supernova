@@ -30,4 +30,6 @@ public interface UserService {
     void deleteUser(Long userId, String password);
 
     public List<User> getAllUsers();
+
+    public User getUserFromClaims(HttpServletRequest request);
 }
