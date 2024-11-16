@@ -241,7 +241,7 @@
 
     // const baseURL = `http://localhost:8080`;
     // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
-    const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
+    const url = CONFIG.API.BASE_URL;
     const token = CONFIG.AUTH.DEFAULT_TOKEN;
 
     try {
@@ -252,7 +252,7 @@
         const imageFormData = new FormData();
         imageFormData.append('image', imageFile);
 
-        const imageResponse = await fetch(baseURL + '/api/images', {
+        const imageResponse = await fetch(url + '/api/images', {
           method: 'POST',
           headers: {
             'X-QQ-AUTH-TOKEN': token
@@ -284,7 +284,7 @@
 
       console.log('Sending community data:', communityData);
 
-      const communityResponse = await fetch(baseURL + '/api/communities', {
+      const communityResponse = await fetch(url + '/api/communities', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
