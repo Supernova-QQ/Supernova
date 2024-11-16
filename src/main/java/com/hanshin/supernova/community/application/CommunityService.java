@@ -19,6 +19,9 @@ import com.hanshin.supernova.exception.dto.ErrorType;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,7 @@ public class CommunityService extends AbstractValidateService {
 
     private final CommunityRepository communityRepository;
     private final CommunityMemberRepository communityMemberRepository;
+    private final PageableHandlerMethodArgumentResolverCustomizer pageableCustomizer;
 
     /**
      * 커뮤니티 생성
@@ -134,6 +138,28 @@ public class CommunityService extends AbstractValidateService {
     }
 
     /**
+     * 커뮤니티 목록 - 최신 순
+     */
+    @Transactional(readOnly = true)
+    public Page<CommunityInfoResponse> getLatestCommunities(Pageable pageable) {
+
+        Page<Community> findAllCommunities = communityRepository.findAllOrderByCreatedAtDesc(pageable);
+
+        return findAllCommunities.map(this::convertToCommunityInfoResponse);
+    }
+
+    /**
+     * 커뮤니티 목록 - 오래된 순
+     */
+    @Transactional(readOnly = true)
+    public Page<CommunityInfoResponse> getOldCommunities(Pageable pageable) {
+
+        Page<Community> findAllCommunities = communityRepository.findAllOrderByCreatedAtASC(pageable);
+
+        return findAllCommunities.map(this::convertToCommunityInfoResponse);
+    }
+
+    /**
      * 커뮤니티 가입 요청 처리 - 회원에게 발송된 초대 알림에서 '수락' 버튼을 클릭 시 해당 api 로 요청이 들어온다.
      */
     @Transactional
@@ -184,6 +210,16 @@ public class CommunityService extends AbstractValidateService {
                 .createdBy(creatorId)
                 .commCounter(commCounter)
                 .build();
+    }
+
+
+    private CommunityInfoResponse convertToCommunityInfoResponse(Community community) {
+        return new CommunityInfoResponse(
+                community.getId(),
+                community.getName(),
+                community.getCommCounter().getMemberCnt(),
+                community.getImgUrl()
+        );
     }
 
     private static CommunityMember buildCommunityMember(Community savedCommunity,

@@ -9,8 +9,10 @@ import com.hanshin.supernova.community.application.CommunityService;
 import com.hanshin.supernova.community.dto.request.CommunityRequest;
 import com.hanshin.supernova.community.dto.response.CommunityInfoResponse;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -66,9 +68,25 @@ public class CommunityController {
         return ResponseDto.ok(response);
     }
 
-    @GetMapping
-    public ResponseEntity<?> getAllCommunities() {
-        List<CommunityInfoResponse> response = communityService.getAllCommunities();
+//    @GetMapping
+//    public ResponseEntity<?> getAllCommunities() {
+//        List<CommunityInfoResponse> response = communityService.getAllCommunities();
+//        return ResponseDto.ok(response);
+//    }
+
+    @GetMapping(path = "/all-latest-communities")
+    public ResponseEntity<?> allLatestCommunities(
+            @PageableDefault(size = 7) Pageable pageable
+    ) {
+        Page<CommunityInfoResponse> response = communityService.getLatestCommunities(pageable);
+        return ResponseDto.ok(response);
+    }
+
+    @GetMapping(path = "/all-old-communities")
+    public ResponseEntity<?> allOldCommunities(
+            @PageableDefault(size = 7) Pageable pageable
+    ) {
+        Page<CommunityInfoResponse> response = communityService.getOldCommunities(pageable);
         return ResponseDto.ok(response);
     }
 
