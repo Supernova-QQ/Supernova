@@ -96,16 +96,6 @@
       flex-shrink: 0;
     }
 
-    /*.create-community-btn {*/
-    /*    padding: 20px;*/
-    /*    background-color: #007BFF;*/
-    /*    color: white;*/
-    /*    text-align: center;*/
-    /*    border-radius: 10px;*/
-    /*    cursor: pointer;*/
-    /*    align-self: start;*/
-    /*}*/
-
     .create-community-btn {
       display: inline-block;
       padding: 20px;
@@ -127,6 +117,39 @@
       border: 1px solid #ccc;
       font-size: 14px;
     }
+
+    /**
+    커뮤니티 더보기 버튼
+     */
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-top: 30px;
+    }
+
+    .section-header h3 {
+      margin: 0;
+    }
+
+    .more-btn {
+      padding: 2px 5px;
+      border: 1px solid #007bff;
+      border-radius: 5px;
+      background-color: white;
+      color: #007bff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 0;
+    }
+
+    .more-btn:hover {
+      background-color: #007bff;
+      color: white;
+    }
+
   </style>
 </head>
 <body>
@@ -135,14 +158,17 @@
 <div class="main-container">
   <div class="container">
     <div class="left-column">
-      <h2>인기 커뮤니티</h2>
+      <div class="section-header">
+        <h3>인기 커뮤니티</h3>
+        <button class="more-btn" onclick="location.href='/communities/list'">더보기</button>
+      </div>
       <div id="popularCommunities">
         <!-- 여기에 동적으로 커뮤니티 카드가 추가된다 -->
       </div>
     </div>
 
     <div class="middle-column">
-      <h2>인기 질문</h2>
+      <h3>인기 질문</h3>
       <div id="popularQuestions">
         <!-- 여기에 동적으로 질문 카드가 추가된다 -->
       </div>
@@ -198,7 +224,7 @@
 
   /* 커뮤니티 */
   function fetchPopularCommunities() {
-    fetch(url + `/premonth-top3-communities`, {
+    fetch(url + `/premonth-topN-communities`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
