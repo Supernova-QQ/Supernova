@@ -21,11 +21,11 @@ public class MainPopularListController {
     private final MainPopularListService mainPopularListService;
 
     /**
-     * 근 30일 최다 방문객수 커뮤니티 3개
+     * 근 30일 최다 방문객수 커뮤니티 N(5)개
      */
-    @GetMapping("/premonth-top3-communities")
-    public ResponseEntity<?> preMonthTop3Communities() {
-        var responses = mainPopularListService.getTop3Communities();
+    @GetMapping("/premonth-topN-communities")
+    public ResponseEntity<?> preMonthTopNCommunities() {
+        var responses = mainPopularListService.getTopNCommunities();
         return ResponseDto.ok(responses);
     }
 
