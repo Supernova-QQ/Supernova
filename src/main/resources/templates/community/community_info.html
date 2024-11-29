@@ -378,14 +378,14 @@
         document.getElementById('createdAt').textContent = 'since ' + new Date(
             communityInfo.createdAt).toLocaleDateString();
 
-        // 이미지 URL 처리 추가
-        const communityImage = document.querySelector('.side-info img');
-        if (communityInfo.imgUrl) {
-            communityImage.src = communityInfo.imgUrl;
-        } else {
-            communityImage.src = '/static/images/quokka.png';  // 기본 이미지
-        }
-        communityImage.alt = `${communityInfo.name} 커뮤니티 이미지`;
+    // 이미지 URL 처리 추가
+    const communityImage = document.querySelector('.side-info img');
+    if (communityInfo.imgUrl) {
+      communityImage.src = communityInfo.imgUrl;
+    } else {
+      communityImage.src = '/static/images/quokka.png';  // 기본 이미지
+    }
+    communityImage.alt = `${communityInfo.name} 커뮤니티 이미지`;
 
         // 활성 상태 표시
         const activeInfo = document.getElementById('active-info');

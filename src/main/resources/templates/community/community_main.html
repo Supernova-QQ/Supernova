@@ -153,39 +153,39 @@
             font-size: 16px;
         }
 
-        /**
-        커뮤니티 더보기 버튼
-         */
+    /**
+    커뮤니티 더보기 버튼
+     */
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-top: 30px;
-        }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-top: 30px;
+    }
 
-        .section-header h3 {
-            margin: 0;
-        }
+    .section-header h3 {
+      margin: 0;
+    }
 
-        .more-btn {
-            padding: 2px 5px;
-            border: 1px solid #007bff;
-            border-radius: 5px;
-            background-color: white;
-            color: #007bff;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-top: 0;
-        }
+    .more-btn {
+      padding: 2px 5px;
+      border: 1px solid #007bff;
+      border-radius: 5px;
+      background-color: white;
+      color: #007bff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 0;
+    }
 
-        .more-btn:hover {
-            background-color: #007bff;
-            color: white;
-        }
+    .more-btn:hover {
+      background-color: #007bff;
+      color: white;
+    }
 
-    </style>
+  </style>
 </head>
 
 <body>
@@ -193,23 +193,23 @@
 <div th:insert="~{header :: headerScripts}"></div>
 
 <main>
-    <div class="container">
-        <div class="left-column">
-            <div class="section-header">
-                <h3>인기 커뮤니티</h3>
-                <button class="more-btn" onclick="location.href='/communities/list'">더보기</button>
-            </div>
-            <div id="popularCommunities">
-                <!-- 여기에 동적으로 커뮤니티 카드가 추가된다 -->
-            </div>
-        </div>
+  <div class="container">
+    <div class="left-column">
+      <div class="section-header">
+        <h3>인기 커뮤니티</h3>
+        <button class="more-btn" onclick="location.href='/communities/list'">더보기</button>
+      </div>
+      <div id="popularCommunities">
+        <!-- 여기에 동적으로 커뮤니티 카드가 추가된다 -->
+      </div>
+    </div>
 
-        <div class="middle-column">
-            <h3>인기 질문</h3>
-            <div id="popularQuestions">
-                <!-- 여기에 동적으로 질문 카드가 추가된다 -->
-            </div>
-        </div>
+    <div class="middle-column">
+      <h3>인기 질문</h3>
+      <div id="popularQuestions">
+        <!-- 여기에 동적으로 질문 카드가 추가된다 -->
+      </div>
+    </div>
 
         <!-- 커뮤니티 생성 버튼과 공지사항 섹션 -->
         <div class="right-column">
@@ -258,17 +258,17 @@
     // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
     const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.MAIN;
 
-    /* 커뮤니티 */
-    function fetchPopularCommunities() {
-        fetch(url + `/premonth-topN-communities`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Received data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+  /* 커뮤니티 */
+  function fetchPopularCommunities() {
+    fetch(url + `/premonth-topN-communities`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Received data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
 
                 if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularCommunities(data.data);

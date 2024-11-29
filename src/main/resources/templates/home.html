@@ -196,20 +196,20 @@
 <div th:insert="~{header :: headerScripts}"></div>
 
 <main>
-  <div class="container">
-    <div class="left-column">
-      <h2>전체 커뮤니티 최신 질문</h2>
-      <div id="left-card">
-        <!-- 여기에 동적으로 전체 게시판 최신 질문이 추가됨 -->
-      </div>
-    </div>
+    <div class="container">
+        <div class="left-column">
+            <h3>전체 커뮤니티 최신 질문</h3>
+            <div id="left-card">
+                <!-- 여기에 동적으로 전체 게시판 최신 질문이 추가됨 -->
+            </div>
+        </div>
 
-    <div class="middle-column">
-      <h2>일반 커뮤니티 최신 질문</h2>
-      <div id="right-card">
-        <!-- 여기에 동적으로 일반 게시판 최신 질문이 추가됨 -->
-      </div>
-    </div>
+        <div class="middle-column">
+            <h3>반 커뮤니티 최신 질문</h3>
+            <div id="right-card">
+                <!-- 여기에 동적으로 일반 게시판 최신 질문이 추가됨 -->
+            </div>
+        </div>
 
         <div class="right-column">
             <div class="info-box">
@@ -479,7 +479,7 @@
         console.log("questionId for answer: ", answer.questionId);
         displayQuestion(container, answer.questionId)
     }
-    
+
     function displayQuestion(container, questionId) {
         // 질문 내부로 이동
         container.addEventListener('click', () => {
