@@ -86,7 +86,7 @@ public enum ErrorType {
     GPT_REQUEST_FAILED(HttpStatus.BAD_REQUEST, "요청이 실패하였습니다."),
 
     // 북마크 예외
-    ASSIGNED_BOOKMARK_ERROR(HttpStatus.BAD_REQUEST, "북마크는 질문 또는 답변 중 하나에만 할당될 수 있습니다.");
+    BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "북마크를 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;

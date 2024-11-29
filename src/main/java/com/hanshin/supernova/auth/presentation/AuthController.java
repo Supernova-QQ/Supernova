@@ -9,8 +9,12 @@ import com.hanshin.supernova.security.service.JwtService;
 import com.hanshin.supernova.user.application.UserService;
 import com.hanshin.supernova.user.domain.User;
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.hanshin.supernova.auth.AuthConstants.*;
 
+@Slf4j
 @RestController
 @RequestMapping(path = "/api/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
@@ -30,6 +35,16 @@ public class AuthController {
 
     @Value("${spring.security.jwt.refresh.expiration}")
     private int refreshTokenExpiration;
+
+
+    @Getter
+    private int refreshTokenExpirationMinutes;
+
+    @PostConstruct
+    public void init() {
+        // 초를 분으로 변환
+        this.refreshTokenExpirationMinutes = this.refreshTokenExpiration / 60;
+    }
 
 
     // 로그인 엔드포인트
@@ -47,18 +62,23 @@ public class AuthController {
         String accessToken = jwtService.generateAccessToken(user.getId(), user.getEmail(), user.getAuthority().name());
 
         // RefreshToken 생성 및 Redis에 저장 (7일간 유효)
-        String refreshToken = jwtService.generateRefreshToken(user.getEmail());
-        redisService.set(user.getEmail(), refreshToken, refreshTokenExpiration);  // Redis에 RefreshToken 저장
+        String refreshToken = jwtService.generateRefreshToken(user.getId(), user.getEmail(), user.getAuthority().name());
+        log.info("Redis에 저장할 RefreshToken: {}", refreshToken);
+
+        // Redis에 RefreshToken 저장 및 로그 추가
+        redisService.set(user.getEmail(), refreshToken, refreshTokenExpirationMinutes);  // Redis에 RefreshToken 저장
+        log.info("Redis에 RefreshToken 저장 완료: 키={}, 만료시간={}", user.getEmail(), refreshTokenExpirationMinutes);
+
 
         // 헤더와 쿠키를 설정할 HttpHeaders 객체 생성
         HttpHeaders headers = new HttpHeaders();
 
         // RefreshToken을 HttpOnly 쿠키에 추가
         ResponseCookie refreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER_KEY, refreshToken)
-                .httpOnly(true)
+                .httpOnly(true) // JavaScript 접근 불가 (HttpOnly 쿠키)
                 .secure(true)  // HTTPS를 사용하는 경우 true로 설정
                 .path("/")  // 쿠키 경로 설정
-                .maxAge(refreshTokenExpiration)  // 쿠키 만료 시간 설정
+                .maxAge(refreshTokenExpirationMinutes)  // 쿠키 만료 시간 설정
                 .build();
         headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
@@ -72,8 +92,20 @@ public class AuthController {
     // RefreshToken을 사용해 AccessToken 재발급
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshAccessToken(HttpServletRequest request) {
-        // 요청에서 RefreshToken 가져오기
-        String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER_KEY);
+
+//        // 요청에서 RefreshToken 가져오기
+//        String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER_KEY);
+
+        // 요청에서 쿠키로 RefreshToken 가져오기
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (REFRESH_TOKEN_HEADER_KEY.equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
 
         // RefreshToken이 없는 경우
         if (refreshToken == null || refreshToken.isBlank()) {
@@ -113,17 +145,43 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
 
-        // ACCESS_TOKEN_HEADER_KEY에서 AccessToken을 추출
-        String accessToken = request.getHeader(ACCESS_TOKEN_HEADER_KEY);
+        // 쿠키에서 RefreshToken 가져오기
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals(REFRESH_TOKEN_HEADER_KEY)) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        // RefreshToken이 없는 경우 오류 응답 반환
+        if (refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Refresh token is missing");
+        }
+
+        HttpHeaders headers = new HttpHeaders();
 
         try {
-            // AccessToken에서 이메일 추출
-            String email = jwtService.getClaimsFromToken(accessToken).getSubject();
+            // RefreshToken에서 이메일 추출
+            String email = jwtService.getClaimsFromToken(refreshToken).getSubject();
 
             // Redis에서 RefreshToken 삭제
             redisService.delete(email);
 
-            return ResponseEntity.ok("Logged out successfully");
+            // RefreshToken 쿠키를 삭제하도록 만료된 쿠키 설정
+            ResponseCookie expiredRefreshTokenCookie = ResponseCookie.from(REFRESH_TOKEN_HEADER_KEY, "")
+                    .httpOnly(true)
+                    .secure(true)  // HTTPS를 사용하는 경우 true로 설정
+                    .path("/")  // 쿠키 경로 설정
+                    .maxAge(0)  // 쿠키를 즉시 만료
+                    .build();
+            headers.add(HttpHeaders.SET_COOKIE, expiredRefreshTokenCookie.toString());
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body("Logged out successfully");
 
         } catch (ExpiredJwtException e) {
             return ResponseEntity.status(ErrorType.EXPIRED_ACCESS_TOKEN.getStatus()).body("Access token is expired");
@@ -131,5 +189,4 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during logout");
         }
     }
-
 }

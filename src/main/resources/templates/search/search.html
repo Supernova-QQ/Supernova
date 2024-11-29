@@ -93,6 +93,7 @@
 </head>
 <body>
 <header th:replace="~{header :: header}"></header>
+<div th:insert="~{header :: headerScripts}"></div>
 
 <div class="container">
   <div class="search-header">
@@ -141,14 +142,12 @@
     // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
     const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.SEARCH;
     // const baseURL = CONFIG.API.BASE_URL;
-    const token = CONFIG.AUTH.DEFAULT_TOKEN;
 
     function fetchSearchResults(page) {
       fetch(url + `?search-keyword=${encodeURIComponent(searchKeyword)}&search-type=${searchType}&sort-type=${currentSort}&page=${page}`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-          'X-QQ-ACCESS-TOKEN': token
+          'Content-Type': 'application/json'
         }
       })
       .then(response => response.json())

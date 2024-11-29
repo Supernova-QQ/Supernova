@@ -5,6 +5,27 @@
 
     <style>
         /* CSS 스타일 */
+        html {
+            height: 100%;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .container {
             width: 50%;
             margin: 50px auto;
@@ -66,26 +87,25 @@
 <body>
 <header th:replace="~{header :: header}"></header>
 <div th:insert="~{header :: headerScripts}"></div>
+<main>
+    <div class="container">
+        <h2>로그인</h2>
+        <form id="signin-form" action="/login" method="post">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
 
-<div class="container">
-    <h2>로그인</h2>
-    <form id="signin-form" action="/login" method="post">
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
-        </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
 
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-
-        <button type="submit" class="btn-signin">Sign In</button>
-    </form>
-</div>
-
+            <button type="submit" class="btn-signin">Sign In</button>
+        </form>
+    </div>
+</main>
 <footer th:replace="~{footer :: footer}"></footer>
-<script src="/js/api.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const signinForm = document.getElementById('signin-form');
@@ -107,10 +127,11 @@
             })
                 .then(response => response.json())
                 .then(response => {
-                    if (response.accessToken) {
+                    if (response.accessToken && response.refreshToken) {
                         // ACCESS_TOKEN_HEADER_KEY로 AccessTokeㅇn 저장
                         localStorage.setItem('ACCESS_TOKEN_HEADER_KEY', response.accessToken);
                         console.log("로그인 성공 - Access Token:", response.accessToken); // accessToken 로그 출력
+                        console.log("로그인 성공 - Refresh Token:", response.refreshToken); // RefreshToken 로그 출력
 
                         alert('로그인 성공!');
                         window.location.href = '/'; // 성공 시 홈 페이지로 리다이렉트

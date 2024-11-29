@@ -34,17 +34,22 @@ public class JwtService {
     @Value("${spring.security.jwt.access.expiration}")
     private int accessTokenExpiration;
 
+    @Value("${spring.security.jwt.refresh.expiration}")
+    private int refreshTokenExpiration;
+
     @Getter
     private int accessTokenExpirationMinutes;
+
+    @Getter
+    private int refreshTokenExpirationMinutes;
+
 
     @PostConstruct
     public void init() {
         // 초를 분으로 변환
         this.accessTokenExpirationMinutes = this.accessTokenExpiration / 60;
+        this.refreshTokenExpirationMinutes = this.refreshTokenExpiration / 60;
     }
-
-    @Value("${spring.security.jwt.refresh.expiration}")
-    private int refreshTokenExpiration;
 
     private SecretKey key;
     private final RedisService<String> redisService;  // RedisService 주입
@@ -88,25 +93,25 @@ public class JwtService {
         try {
             return Jwts.parser()
                     .verifyWith(key)
-                    .clockSkewSeconds(360) // 1분의 시간 차이를 허용
+                    .clockSkewSeconds(60) // 1분의 시간 차이를 허용
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
             log.warn("Token has expired: {}", e.getMessage());
-            return null;
+            throw e; // 예외를 던져 JwtFilter에서 처리하도록 함
         } catch (UnsupportedJwtException e) {
             log.warn("Unsupported JWT token: {}", e.getMessage());
-            return null;
+            throw e;
         } catch (MalformedJwtException e) {
             log.warn("Malformed JWT token: {}", e.getMessage());
-            return null;
+            throw e;
         } catch (SignatureException e) {
             log.warn("Invalid signature for JWT token: {}", e.getMessage());
-            return null;
+            throw e;
         } catch (JwtException e) {
             log.warn("General JWT processing error: {}", e.getMessage());
-            return null;
+            throw e;
         }
     }
 
@@ -123,11 +128,13 @@ public class JwtService {
     }
 
     // RefreshToken 생성
-    public String generateRefreshToken(String email) {
+    public String generateRefreshToken(Long userId, String email, String role) {
         return Jwts.builder()
                 .subject(email)
+                .claim("role", role)
+                .claim("userId", userId)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMinutes * 1000L))
                 .signWith(key)
                 .compact();
     }
@@ -135,8 +142,9 @@ public class JwtService {
     // AccessToken에서 사용자 정보를 추출하는 메서드
     public AuthUser getAuthUserFromToken(String accessToken) {
         Claims claims = getClaimsFromToken(accessToken);
-        Long userId = claims.get("user_id", Long.class);
-        String email = claims.get("email", String.class);
+
+        Long userId = claims.get("userId", Long.class);
+        String email = claims.getSubject();
         String role = claims.get("role", String.class);
 
         return new AuthUserImpl(userId, email, "username_placeholder", Authority.valueOf(role));
@@ -195,4 +203,10 @@ public class JwtService {
             return null;
         }
     }
+
+    public boolean isRefreshTokenStored(String token) {
+        String key = "refresh_token:" + token;
+        return redisService.exists(key); // Redis에 토큰 키가 존재하는지 확인
+    }
+
 }

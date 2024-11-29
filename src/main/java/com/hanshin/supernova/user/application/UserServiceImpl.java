@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+//import jakarta.persistence.EntityManager;
+//import jakarta.persistence.PersistenceContext;
 
 import java.util.List;
 
@@ -59,17 +61,22 @@ public class UserServiceImpl implements UserService {
                 savedUser.getUsername(),
                 savedUser.getNickname(),
                 savedUser.getEmail(),
-                savedUser.getPassword());
+                savedUser.getPassword(),
+                savedUser.getAuthority());
     }
 
     private User buildAndSaveUser(UserRegisterRequest request) {
         Activity newActivity = new Activity();
+
+        // request.getAuthority()가 null인 경우 Authority.USER로 설정
+        Authority authority = request.getAuthority() != null ? request.getAuthority() : Authority.USER;
+
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .username(request.getUsername())
                 .nickname(request.getNickname())
-                .authority(Authority.USER)
+                .authority(authority)
                 .activity(newActivity)
                 .build();
         return userRepository.save(user);
@@ -162,6 +169,25 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
+//// userId만으로 회원 삭제(외래키의 영향을 받는다면 검사를 비활성화하여 삭제되도록 함
+//    @PersistenceContext
+//    private EntityManager entityManager;
+//
+//    @Transactional
+//    @Override
+//    public void deleteUser(Long userId) {
+//        User user = getById(userId);
+//        // 외래 키 검사 비활성화
+//        entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
+//
+//        // 유저 삭제
+//        userRepository.deleteById(userId);
+//
+//        // 외래 키 검사 활성화
+//        entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
+//
+//    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -183,5 +209,17 @@ public class UserServiceImpl implements UserService {
         // 이메일을 통해 User 엔티티 조회하여 반환
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthInvalidException(ErrorType.SYSTEM_USER_NOT_FOUND_ERROR));
+    }
+
+    public String getUsernameById(Long userId) {
+        return userRepository.findById(userId)
+                .map(User::getUsername)
+                .orElseThrow(() -> new UserInvalidException(ErrorType.USER_NOT_FOUND_ERROR));
+    }
+
+    public String getNicknameById(Long userId) {
+        return userRepository.findById(userId)
+                .map(User::getNickname) // User 객체의 getNickname 호출
+                .orElseThrow(() -> new UserInvalidException(ErrorType.USER_NOT_FOUND_ERROR)); // 유저가 없으면 예외 발생
     }
 }
