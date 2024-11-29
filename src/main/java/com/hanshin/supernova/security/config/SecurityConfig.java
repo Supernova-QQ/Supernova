@@ -64,7 +64,7 @@ public class SecurityConfig {
 
         // 접근 허용 관련 설정
         http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers("/", "/auth/login", "/register", "/users/all").permitAll(); // 홈, 로그인, 회원가입 페이지 접근 허용
+            auth.requestMatchers("/", "/auth/login", "/register", "/users/**").permitAll(); // 홈, 로그인, 회원가입 페이지 접근 허용
             auth.requestMatchers("/api/**").permitAll(); // API 요청 전체 허용 (필요에 따라 수정 가능)
             auth.anyRequest().permitAll();
         });

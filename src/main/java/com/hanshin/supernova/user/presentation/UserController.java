@@ -6,15 +6,13 @@ import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.user.application.UserService;
 import com.hanshin.supernova.user.domain.User;
-import com.hanshin.supernova.user.dto.request.ChangePasswordRequest;
-import com.hanshin.supernova.user.dto.request.DeleteUserRequest;
-import com.hanshin.supernova.user.dto.request.ResetPasswordRequest;
-import com.hanshin.supernova.user.dto.request.UserRegisterRequest;
+import com.hanshin.supernova.user.dto.request.*;
 import com.hanshin.supernova.user.dto.response.ChangePasswordResponse;
 import com.hanshin.supernova.user.dto.response.ResetPasswordResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Slf4j
 @RestController
 @RequestMapping(path = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
@@ -90,4 +89,15 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+//    // 특정 회원의 이름 업데이트
+//    @PutMapping("/{id}/update-name")
+//    public String updateUserName(@PathVariable Long id, @RequestBody UpdateNameRequest request) {
+//        String newName = request.getNewName(); // JSON에서 파싱된 값
+//        boolean isUpdated = userService.updateUserName(id, newName);
+//        if (isUpdated) {
+//            return "회원 이름이 성공적으로 업데이트되었습니다.";
+//        } else {
+//            return "업데이트 실패: 해당 회원을 찾을 수 없습니다.";
+//        }
+//    }
 }
