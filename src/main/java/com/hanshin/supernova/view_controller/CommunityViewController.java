@@ -24,6 +24,11 @@ public class CommunityViewController {
         return "community/community_main";
     }
 
+    @GetMapping("/list")
+    public String communityList() {
+        return "community/community_list";
+    }
+
     @GetMapping("/create")
     public String communityCreate() {
         return "community/community_create";

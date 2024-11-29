@@ -272,17 +272,17 @@
     const baseURL = CONFIG.API.BASE_URL;
     const token = CONFIG.AUTH.DEFAULT_TOKEN;
 
-    /* 커뮤니티 */
-    function fetchPopularCommunities() {
-        fetch(url + `/premonth-top3-communities`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Received data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+  /* 커뮤니티 */
+  function fetchPopularCommunities() {
+    fetch(url + `/premonth-topN-communities`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Received data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
 
                 if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularCommunities(data.data);
