@@ -98,9 +98,13 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
 
     // 특정 사용자의 질문 중 북마크가 10회 이상 된 질문 목록을 반환
-    @Query("SELECT q.id FROM Question q JOIN Bookmark b ON q.id = b.question.id " +
+    @Query("SELECT q.id FROM Question q JOIN Bookmark b ON q.id = b.targetId " +
             "WHERE q.questionerId = :userId " +
             "GROUP BY q.id HAVING COUNT(b.id) >= :bookmarkThreshold")
     List<Long> findBookmarkedQuestionsByUserId(@Param("userId") Long userId,
                                                @Param("bookmarkThreshold") int bookmarkThreshold);
+
+    // 특정 사용자가 작성한 질문 목록을 최신순으로 조회
+    @Query("SELECT q FROM Question q WHERE q.questionerId = :userId ORDER BY q.createdAt DESC")
+    List<Question> findAllByQuestionerId(@Param("userId") Long userId);
 }

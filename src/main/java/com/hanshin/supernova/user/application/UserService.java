@@ -27,9 +27,13 @@ public interface UserService {
 
     ResetPasswordResponse resetPassword(String email, String username, String newPassword, String confirmNewPassword);
 
+//    void deleteUser(Long userId, String password);
+
     void deleteUser(Long userId, String password);
 
     public List<User> getAllUsers();
 
     public User getUserFromClaims(HttpServletRequest request);
+
+    public String getNicknameById(Long userId);
 }

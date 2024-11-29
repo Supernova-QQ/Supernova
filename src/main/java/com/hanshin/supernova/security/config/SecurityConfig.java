@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -61,9 +62,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(cnf -> cnf.ignoringRequestMatchers("/api/**"));
 
-        // 로그인 페이지와 관련된 설정 추가
+        // 접근 허용 관련 설정
         http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers("/", "/auth/login", "/register").permitAll(); // 홈, 로그인, 회원가입 페이지 접근 허용
+            auth.requestMatchers("/", "/auth/login", "/register", "/users/all").permitAll(); // 홈, 로그인, 회원가입 페이지 접근 허용
             auth.requestMatchers("/api/**").permitAll(); // API 요청 전체 허용 (필요에 따라 수정 가능)
             auth.anyRequest().permitAll();
         });

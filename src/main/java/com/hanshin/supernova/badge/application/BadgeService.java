@@ -2,23 +2,19 @@ package com.hanshin.supernova.badge.application;
 
 import com.hanshin.supernova.answer.domain.Answer;
 import com.hanshin.supernova.answer.infrastructure.AnswerRepository;
-import com.hanshin.supernova.exception.auth.AuthInvalidException;
-import com.hanshin.supernova.exception.dto.ErrorType;
+import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
-import com.hanshin.supernova.user.application.UserService;
-import com.hanshin.supernova.user.application.UserServiceImpl;
 import com.hanshin.supernova.user.domain.Activity;
 import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.user.infrastructure.UserRepository;
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BadgeService {
@@ -26,103 +22,109 @@ public class BadgeService {
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
     private final AnswerRepository answerRepository;
-    private final UserService userService;
-
 
     /**
      * 멋진 질문자 배지를 부여하는 메서드
-     * @param request JwtFilter에서 추출된 사용자 Claims를 담은 request
+     * @param user 인증된 사용자 정보
      */
     @Transactional
-    public void grantBookmarkedQuestionerBadge(HttpServletRequest request) {
+    public void grantBookmarkedQuestionerBadge(AuthUser user) {
+        log.info("\n\n\n\ngrantBookmarkedQuestionerBadge");
+        // 1. AuthUser의 userId로 User 엔티티 조회
+        User foundUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        // 1. Claims에서 추출한 사용자 이메일을 User 엔티티에서 조회한 이메일을 가져옴
-        User user = userService.getUserFromClaims(request);
-
-        // 2. 사용자가 작성한 질문이 다른 사용자의 북마크에 10건 이상 추가되었는지 조회
+        // 2. 사용자가 작성한 질문 중 다른 사용자의 북마크에 10건 이상 추가된 질문 조회
         int bookmarkThreshold = 10; // 북마크 기준 수
-        List<Long> bookmarkedQuestions = questionRepository.findBookmarkedQuestionsByUserId(user.getId(), bookmarkThreshold);
+        List<Long> bookmarkedQuestions = questionRepository.findBookmarkedQuestionsByUserId(foundUser.getId(), bookmarkThreshold);
+        log.info("bookmarked questions: {}", bookmarkedQuestions);
 
-        // 3. 조건을 충족하면 멋진 질문자 배지를 부여
-        if (bookmarkedQuestions.size() >= 1) {
-            Activity activity = user.getActivity();
+        // 3. 북마크 기준을 충족하는 질문이 있으면 멋진 질문자 배지를 부여
+        if (!bookmarkedQuestions.isEmpty()) {
+            Activity activity = foundUser.getActivity();
             if (!activity.hasMarkedQuestionBadge()) {
                 activity.setMarkedQuestionBadge(true);
-                userRepository.save(user); // 변경된 Activity 상태를 저장
+                userRepository.save(foundUser); // 변경된 Activity 상태를 저장
             }
         }
     }
 
     /**
      * 인기 질문자 배지를 부여하는 메서드
-     * @param request JwtFilter에서 추출된 사용자 Claims를 담은 request
+     * @param user 인증된 사용자 정보
      */
     @Transactional
-    public void grantPopularQuestionBadge(HttpServletRequest request) {
+    public void grantPopularQuestionBadge(AuthUser user) {
+        log.info("\n\n\n\ngrantPopularQuestionBadge");
+        // 1. AuthUser의 userId로 User 엔티티 조회
+        User foundUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        // 1. Claims에서 추출한 사용자 이메일을 User 엔티티에서 조회한 이메일을 가져옴
-        User user = userService.getUserFromClaims(request);
-
-        // 2. 추천 수가 10 이상인 질문을 3개 이상 가지고 있는지 조회
+        // 2. 추천 수가 10 이상인 질문을 조회
         int recommendationThreshold = 10; // 추천 수 기준
         int questionCountThreshold = 3; // 질문 개수 기준
-        List<Long> popularQuestions = questionRepository.findPopularQuestionsByUserId(user.getId(), recommendationThreshold);
+        List<Long> popularQuestions = questionRepository.findPopularQuestionsByUserId(foundUser.getId(), recommendationThreshold);
+        log.info("popular questions: {}", popularQuestions);
 
-        // 4. 조건을 충족하면 인기 질문자 배지를 부여
+        // 3. 조건을 충족하는 경우 인기 질문자 배지를 부여
         if (popularQuestions.size() >= questionCountThreshold) {
-            Activity activity = user.getActivity();
+            Activity activity = foundUser.getActivity();
             if (!activity.hasPopularQuestionBadge()) {
                 activity.setPopularQuestionBadge(true);
-                userRepository.save(user); // 변경된 Activity 상태를 저장
+                userRepository.save(foundUser); // 변경된 Activity 상태를 저장
             }
         }
     }
 
     /**
      * 정확한 답변자 배지를 부여하는 메서드
-     * @param request JwtFilter에서 추출된 사용자 Claims를 담은 request
+     * @param user 인증된 사용자 정보
      */
-    public void grantAcceptedAnswerBadge(HttpServletRequest request) {
+    @Transactional
+    public void grantAcceptedAnswerBadge(AuthUser user) {
+        log.info("\n\n\n\ngrantAcceptedAnswerBadge");
+        // 1. AuthUser의 userId로 User 엔티티 조회
+        User foundUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        // 1. Claims에서 추출한 사용자 이메일을 User 엔티티에서 조회한 이메일을 가져옴
-        User user = userService.getUserFromClaims(request);
-
-        // 2. 사용자가 소스를 제공한 답변 중 채택된 답변 수가 3개 이상인지 조회
+        // 2. 사용자가 작성한 답변 중 소스를 제공하고 채택된 답변을 조회
         int acceptedAnswerCountThreshold = 3; // 채택된 답변 수 기준
-        List<Answer> acceptedAnswersWithSource = answerRepository.findAcceptedAnswersWithSourceByUserId(user.getId());
+        List<Answer> acceptedAnswersWithSource = answerRepository.findAcceptedAnswersWithSourceByUserId(foundUser.getId());
+        log.info("acceptedAnswerCountThreshold: {}", acceptedAnswersWithSource);
 
-
-        // 3. 조건을 충족하면 정확한 답변자 배지를 부여
+        // 3. 조건을 충족하는 경우 정확한 답변자 배지를 부여
         if (acceptedAnswersWithSource.size() >= acceptedAnswerCountThreshold) {
-            Activity activity = user.getActivity();
-            if (!activity.hasAcceptedAnswerBadge()){
+            Activity activity = foundUser.getActivity();
+            if (!activity.hasAcceptedAnswerBadge()) {
                 activity.setAcceptedAnswerBadge(true);
-                userRepository.save(user);
+                userRepository.save(foundUser); // 변경된 Activity 상태를 저장
             }
         }
     }
 
     /**
      * 인기 답변자 배지를 부여하는 메서드
-     * @param request JwtFilter에서 추출된 사용자 Claims를 담은 request
+     * @param user 인증된 사용자 정보
      */
     @Transactional
-    public void grantPopularAnswererBadge(HttpServletRequest request) {
+    public void grantPopularAnswererBadge(AuthUser user) {
+        log.info("\n\n\n\ngrantPopularAnswererBadge");
+        // 1. AuthUser의 userId로 User 엔티티 조회
+        User foundUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        // 1. Claims에서 추출한 사용자 이메일을 User 엔티티에서 조회한 이메일을 가져옴
-        User user = userService.getUserFromClaims(request);
-
-        // 2. 사용자가 소스를 제공한 답변 중 추천 수가 10 이상인 답변이 3개 이상인지 조회
+        // 2. 사용자가 작성한 답변 중 소스를 제공하고 추천 수가 10 이상인 답변을 조회
         int recommendationThreshold = 10; // 추천 수 기준
         int answerCountThreshold = 3; // 답변 개수 기준
-        List<Answer> popularAnswersWithSource = answerRepository.findPopularAnswersWithSourceByUserId(user.getId(), recommendationThreshold);
+        List<Answer> popularAnswersWithSource = answerRepository.findPopularAnswersWithSourceByUserId(foundUser.getId(), recommendationThreshold);
+        log.info("popularAnswersWithSource: {}", popularAnswersWithSource);
 
-        // 3. 조건을 충족하면 인기 답변자 배지를 부여
+        // 3. 조건을 충족하는 경우 인기 답변자 배지를 부여
         if (popularAnswersWithSource.size() >= answerCountThreshold) {
-            Activity activity = user.getActivity();
+            Activity activity = foundUser.getActivity();
             if (!activity.hasPopularAnswerBadge()) {
                 activity.setPopularAnswerBadge(true);
-                userRepository.save(user); // 변경된 Activity 상태를 저장
+                userRepository.save(foundUser); // 변경된 Activity 상태를 저장
             }
         }
     }

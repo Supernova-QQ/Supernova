@@ -8,7 +8,6 @@ import com.hanshin.supernova.orchestration.application.QuestionOrchestrator;
 import com.hanshin.supernova.question.application.QuestionService;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
 import com.hanshin.supernova.question.dto.response.CommunityInfoResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -84,5 +83,12 @@ public class QuestionController {
     ) {
         List<CommunityInfoResponse> responses = questionService.getMyCommunities(user);
         return ResponseDto.ok(responses);
+    }
+
+    // questionId로 communityId 조회
+    @GetMapping("/{q_id}/c_id")
+    public ResponseEntity<Long> getCommunityIdByQuestionId(@PathVariable Long q_id) {
+        Long communityId = questionService.findCommunityIdByQuestionId(q_id);
+        return ResponseEntity.ok(communityId);
     }
 }

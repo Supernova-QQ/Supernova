@@ -14,7 +14,7 @@
         }
 
         header {
-            padding: 50px 70px;
+            padding: 50px 50px 20px 50px;
             background-color: white;
             box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
             display: flex;
@@ -24,7 +24,8 @@
         }
 
         .top-section {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr;
             width: 100%;
             justify-content: space-between;
             align-items: center;
@@ -33,7 +34,9 @@
         header .logo {
             font-size: 70px;
             font-weight: bold;
-            color: black;
+            -webkit-text-stroke: 2px black;
+            font-style: italic;
+            text-align: center;
         }
 
         /* 검색 */
@@ -42,8 +45,8 @@
             display: flex;
             align-items: center;
             flex-grow: 1;
-            margin-left: 15%;
-            margin-right: 0;
+            margin-left: 3%;
+            margin-right: 3%;
             padding-right: 20px;
             gap: 10px;
         }
@@ -70,7 +73,10 @@
         }
 
         #selected-text {
-            margin-left: 15%;
+            margin: 0 0 0 15%; !important;
+            color: #000000; !important;
+            font-size: 16px; !important;
+
         }
 
         .dropdown-options {
@@ -89,6 +95,7 @@
 
         .dropdown-option {
             padding: 10px 15px;
+            border-radius: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -172,10 +179,45 @@
             box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
         }
 
+        /* 설정 드롭다운 메뉴 숨김 기본 스타일 */
+        .setting-dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 5px;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            margin-top: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
 
-        nav {
+        /* 설정 드롭다운 메뉴 내부 버튼 스타일 */
+        .setting-dropdown-menu button {
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        /* 버튼에 마우스를 올렸을 때 */
+        .setting-dropdown-menu button:hover {
+            background-color: #f8f9fa;
+        }
+
+        header nav {
             display: flex;
-            gap: 20px;
+            width: 55%;
+            gap: 10%;
+            margin-top: 20px;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .footer-middle nav {
+            display: flex;
+            gap: 35px;
             margin-top: 10px;
         }
 
@@ -183,6 +225,8 @@
             color: black;
             text-decoration: none;
             font-size: 16px;
+            flex: 1;
+            text-align: center;
         }
 
         a {
@@ -335,6 +379,7 @@
         #news-bell-btn, #setting-btn{
             border: none;
             background: none;
+            font-size: large;
             /*background-image: url("../../img/bell/bell-yellow.png");*/
             /*width: 30px;*/
             /*height: 30px;*/
@@ -382,12 +427,18 @@
                 <button id="create-question-btn">빠른 질문하기</button>
             </div>
             <div class="icons">
-                <img th:src="@{/images/basic-profile.png}" alt="Profile Icon">
+                <a th:href="@{/my}">
+                    <img th:src="@{/images/basic-profile.png}" alt="Profile Icon">
+                </a>
                 <div class="notification">
                     <button id="news-bell-btn">🔔</button>
                 </div>
                 <div class="setting">
                     <button id="setting-btn">⚙️</button>
+                    <!-- 드롭다운 메뉴 -->
+                    <div id="setting-dropdown-menu" class="setting-dropdown-menu">
+                        <button id="logout-btn" data-value="LOGOUT">로그아웃</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -408,8 +459,8 @@
     <nav>
         <a th:href="@{/}">Home</a>
         <a th:href="@{/communities/main}">Community</a>
-        <a th:href="@{/communities/info/1}">일반게시판</a>
-        <a href="#">My Page</a>
+        <a h:href="@{/communities/info/1}">일반게시판</a>
+        <a th:href="@{/my}">My Page</a>
         <a href="#">About Us</a>
     </nav>
 
@@ -437,6 +488,5 @@
 <th:block th:fragment="headerScripts">
     <script src="/js/header.js"></script>
 </th:block>
-<script src="/js/api.js"></script>
 </body>
 </html>
