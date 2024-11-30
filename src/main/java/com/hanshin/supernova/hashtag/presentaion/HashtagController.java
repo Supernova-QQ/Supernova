@@ -6,6 +6,7 @@ import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.hashtag.application.HashtagService;
 import com.hanshin.supernova.hashtag.dto.request.HashtagRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
