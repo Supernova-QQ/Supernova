@@ -21,7 +21,7 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
     @Query("SELECT c.imgUrl FROM Community c WHERE c.id = :communityId")
     Optional<String> findImgUrlById(@Param("communityId") Long communityId);
 
-    @Query("SELECT c FROM Community c ORDER BY c.createdAt DESC")
+  @Query("SELECT c FROM Community c ORDER BY c.createdAt DESC")
     Page<Community> findAllOrderByCreatedAtDesc(Pageable pageable);
 
     @Query("SELECT c FROM Community c ORDER BY c.createdAt ASC")
