@@ -388,6 +388,11 @@
             cursor: pointer;
         }
 
+
+        .profile {
+            border-radius: 50%;
+        }
+
     </style>
 
     <!-- 추가 스타일시트를 위한 플레이스홀더 -->
@@ -427,7 +432,7 @@
             </div>
             <div class="icons">
                 <a th:href="@{/my}">
-                    <img th:src="@{/images/basic-profile.png}" alt="Profile Icon">
+                    <img th:src="@{/images/basic-profile.png}" alt="Profile Picture" class="profile" id="profile">
                 </a>
                 <div class="notification">
                     <button id="news-bell-btn">🔔</button>

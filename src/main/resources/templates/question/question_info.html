@@ -285,7 +285,7 @@
             cursor: pointer;
         }
 
-        #regenerationBtn:hover{
+        #regenerationBtn:hover {
             background-color: #0056b3;
             color: white;
         }
@@ -396,6 +396,7 @@
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
+            background-color: white;
         }
 
         .input-container {
@@ -635,7 +636,7 @@
             <!-- 왼쪽 섹션 (프로필 및 질문 정보) -->
             <div class="question-header-left">
                 <div class="profile-image">
-                    <img th:src="@{/images/basic-profile.png}" alt="프로필 이미지">
+                    <img th:src="@{/images/basic-profile.png}" alt="프로필 이미지" id="Questioner-Profile-Picture">
                 </div>
                 <div class="profile-info">
                     <!--        커뮤니티 회원<br>-->
@@ -699,7 +700,7 @@
         <div class="answer-form">
             <div class="profile-image">
                 <!--            <img src="path_to_profile_image" alt="프로필 이미지">-->
-                <img th:src="@{/images/basic-profile.png}" alt="프로필 이미지">
+                <img th:src="@{/images/basic-profile.png}" alt="프로필 이미지" id="profile-picture">
 
             </div>
             <div class="answer-inside">
@@ -749,6 +750,7 @@
 
 <script type="module">
     import CONFIG from '/static/js/config.js';
+
     let questionId = null;
     document.addEventListener('DOMContentLoaded', function () {
         questionId = [[${questionId}]];
@@ -862,6 +864,10 @@
     function displayQuestion(questionInfo) {
 
         console.log("question info = ", questionInfo);
+
+        // 질문자 프로필 이미지 업데이트
+        const profileImageElement = document.getElementById('Questioner-Profile-Picture');
+        profileImageElement.src = questionInfo.profileImageUrl || '/images/basic-profile.png'; // 기본 이미지 처리
 
         // 질문자 정보 업데이트
         document.querySelector('.profile-info').textContent = questionInfo.questionerName;
@@ -1134,14 +1140,16 @@
     function displayAiComment(aiAnswer) {
         const container = document.getElementById('ai-answer-section');
         container.innerHTML = `
-     <div class="ai-answer">
-       <div class="profile-image"></div>
-       <div class="ai-answer-content">
-        <div class="answer-meta"><span>${aiAnswer.nickname}</span> | <span>formatDate(aiAnswer.createdAt)</span></div>
-        <p style="white-space: pre-wrap">${aiAnswer.answer}</p>
-       </div>
-     </div>
-    `;
+            <div class="ai-answer">
+                <div class="profile-image">
+                    <img src="${'/images/basic-profile.png'}" alt="프로필 이미지">
+                </div>
+                <div class="ai-answer-content">
+                    <div class="answer-meta"><span>${aiAnswer.nickname}</span> | <span>formatDate(aiAnswer.createdAt)</span></div>
+                    <p style="white-space: pre-wrap">${aiAnswer.answer}</p>
+                </div>
+            </div>
+        `;
     }
 
     function fetchAiCommentAgain(questionId) {
@@ -1240,7 +1248,9 @@
         `;
 
             card.innerHTML = `
-            <div class="answer-icon profile-image"><img src="../../static/images/basic-profile.png" alt="기본 프로필 사진"></div>
+            <div class="answer-icon profile-image">
+                <img src="${answer.profileImageUrl || '/images/basic-profile.png'}" alt="프로필 이미지">
+            </div>
             <div class="answer-content ${answer.accepted ? 'accepted' : ''}">
                 <div class="bookmark-btn-container">
                     <button class="bookmark-btn" data-answer-id="${answer.id}">
@@ -1470,7 +1480,6 @@
     }
 
 
-
     /**
      * 질문 북마크 버튼 초기화
      */
@@ -1515,7 +1524,7 @@
             try {
                 const response = await fetchWithAuth(`${CONFIG.API.BASE_URL}/api/communities/${communityId}/bookmarks`, {
                     method: method,
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {'Content-Type': 'application/json'},
                     body: body
                 });
 
@@ -1581,7 +1590,7 @@
                 try {
                     const response = await fetchWithAuth(`${CONFIG.API.BASE_URL}/api/communities/${communityId}/bookmarks`, {
                         method: method,
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {'Content-Type': 'application/json'},
                         body: body
                     });
 
@@ -1605,7 +1614,7 @@
     async function fetchCommunityId(q_id) {
         try {
             const response = await fetch(url + `/${q_id}/c_id`);
-                if (!response.ok) throw new Error('커뮤니티 ID 조회에 실패했습니다.');
+            if (!response.ok) throw new Error('커뮤니티 ID 조회에 실패했습니다.');
             return await response.json();
         } catch (error) {
             console.error('커뮤니티 ID 조회 오류:', error);

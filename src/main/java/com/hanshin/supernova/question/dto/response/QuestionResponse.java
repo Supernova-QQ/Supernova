@@ -12,6 +12,7 @@ public class QuestionResponse {
     private String title;
     private String content;
     private String imgUrl;
+    private String profileImageUrl;
     private boolean isResolved;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
@@ -26,6 +27,7 @@ public class QuestionResponse {
             String title,
             String content,
             String imgUrl,
+            String profileImageUrl,
             boolean isResolved,
             LocalDateTime createdAt,
             LocalDateTime modifiedAt,
@@ -36,7 +38,7 @@ public class QuestionResponse {
             String commName,
             String questionerName
     ) {
-        return new QuestionResponse(title, content, imgUrl, isResolved, createdAt, modifiedAt, viewCnt,
+        return new QuestionResponse(title, content, imgUrl, profileImageUrl, isResolved, createdAt, modifiedAt, viewCnt,
                 recCnt, commId, questionerId, commName, questionerName);
     }
 }

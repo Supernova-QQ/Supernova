@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", function() {
         // accessToken이 존재하면 로그인 상태 요소 표시
         document.getElementById("loggedInElements").style.display = "flex";
         document.getElementById("loggedOutElements").style.display = "none";
+        // 로그인 상태일 때만 fetchProfile 호출
+        fetchProfile();
     } else {
         // accessToken이 없으면 로그아웃 상태 요소 표시
         document.getElementById("loggedInElements").style.display = "none";
@@ -58,6 +60,40 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
+
+// 프로필 데이터 가져오기 및 표시
+async function fetchProfile() {
+    console.log("fetchProfile 실행됨");
+    try {
+        const response = await fetchWithAuth("/api/users/profile", {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch profile data");
+
+        const data = await response.json();
+        console.log("fetchProfile data:", data);
+
+        displayProfile(data); // 프로필 데이터를 화면에 표시
+    } catch (error) {
+        console.error("Error fetching profile:", error);
+    }
+}
+
+// 프로필 데이터를 화면에 표시
+function displayProfile(data) {
+    console.log("displayProfile data:", data);
+
+    const profile = document.getElementById("profile");
+    const profilePicture = document.getElementById("profile-picture");
+    const profileImageUrl = data.data?.profileImageUrl || "/images/basic-profile.png";
+
+    console.log("프로필 이미지 URL:", profileImageUrl);
+
+    profile.src = profileImageUrl; // 프로필 이미지 업데이트
+    profilePicture.src = profileImageUrl; // 프로필 이미지 업데이트
+}
 
 // AccessToken 자동 갱신을 위한 fetchWithAuth 함수 정의
 async function fetchWithAuth(url, options = {}) {

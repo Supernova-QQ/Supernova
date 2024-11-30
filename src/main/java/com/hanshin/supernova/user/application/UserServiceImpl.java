@@ -1,5 +1,6 @@
 package com.hanshin.supernova.user.application;
 
+import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.auth.UserAuthManagementInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
@@ -10,10 +11,7 @@ import com.hanshin.supernova.user.domain.Activity;
 import com.hanshin.supernova.user.domain.Authority;
 import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.user.dto.request.UserRegisterRequest;
-import com.hanshin.supernova.user.dto.response.ChangeNicknameResponse;
-import com.hanshin.supernova.user.dto.response.ChangePasswordResponse;
-import com.hanshin.supernova.user.dto.response.ResetPasswordResponse;
-import com.hanshin.supernova.user.dto.response.UserRegisterResponse;
+import com.hanshin.supernova.user.dto.response.*;
 import com.hanshin.supernova.user.infrastructure.UserRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -238,6 +236,20 @@ public class UserServiceImpl implements UserService {
 
         return new ChangeNicknameResponse("닉네임이 성공적으로 변경되었습니다.", newNickname);
 
+    }
+
+    public UserProfileResponse getUserProfile(AuthUser authUser){
+
+        User user = userRepository.findById(authUser.getId())
+                .orElseThrow(() -> new UserInvalidException(ErrorType.USER_NOT_FOUND_ERROR));
+        return new UserProfileResponse(user);
+    }
+
+    public void updateProfileImage(String imageUrl, AuthUser authUser) {
+        User user = userRepository.findById(authUser.getId())
+                .orElseThrow(() -> new UserInvalidException(ErrorType.USER_NOT_FOUND_ERROR));
+        user.updateProfileImage(imageUrl);
+        userRepository.save(user);
     }
 
 //    public boolean updateUserName(Long id, String newName) {

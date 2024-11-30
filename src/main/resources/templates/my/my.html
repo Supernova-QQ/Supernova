@@ -283,8 +283,7 @@
 
         <!-- 오른쪽 섹션: 사용자 정보 및 배지 -->
         <div class="right-column">
-            <img th:src="@{/images/basic-profile.png}" alt="Profile Picture" class="profile-picture"
-                 id="profile-picture">
+            <img th:src="@{/images/basic-profile.png}" alt="Profile Picture" class="profile-picture" id="profile-picture">
             <p class="username" id="username" style="white-space: pre-line"
                th:text="'안녕하세요,'+ ${nickname} + '님!'"></p>
 
@@ -317,7 +316,6 @@
         fetchMyCommunities();
     });
 
-
     const url = CONFIG.API.BASE_URL
 
     // 사용자 질문 가져오기
@@ -330,7 +328,10 @@
             },
         })
             .then((response) => response.json())
-            .then((question) => renderQuestions(question))
+            .then((question) => {
+                console.log("Fetched questions:", question); // 확인 로그
+                renderQuestions(question);
+            })
             .catch((error) => console.error('Error fetching question:', error));
     }
 
@@ -373,6 +374,17 @@
                 <img src="${question.imgUrl}" alt="Community Image" class="item-icon">
             <div>
             `;
+
+            // 커뮤니티 ID와 질문 ID를 포함한 URL로 이동
+            item.addEventListener('click', () => {
+                console.log("question communityId", question.communityId);
+                console.log("question id", question.questionId);
+                if (question.communityId && question.questionId) {
+                    window.location.href = `/communities/info/${question.communityId}?redirectTo=questions/info/${question.questionId}`;
+                } else {
+                    console.error("Community ID or Question ID is missing for question:", question);
+                }
+            });
             questionList.appendChild(item);
         });
     }

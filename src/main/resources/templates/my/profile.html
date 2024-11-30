@@ -57,12 +57,11 @@
             text-align: center;
         }
 
-        .profile-picture {
+        .profile {
             width: 125px;
             height: 125px;
             border-radius: 50%;
             margin: 20px;
-            cursor: pointer;
         }
 
         .username {
@@ -176,18 +175,32 @@
             display: inline-block;
         }
 
+        .delete-setting-btn {
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            margin-right: 15px;
+        }
+
+        .change-setting-btn {
+            border: 1px solid #007bff;
+            color: #007bff;
+        }
+
+        .delete-setting-btn,
         .change-setting-btn {
             margin-left: auto;
             display: inline-block;
             padding: 7px 10px;
-            border: 1px solid #007bff;
-            color: #007bff;
             background-color: white;
             text-decoration: none;
             border-radius: 5px;
             cursor: pointer;
         }
 
+        .delete-setting-btn:hover{
+            background-color: #dc3545;
+            color: white;
+        }
         .change-setting-btn:hover {
             background-color: #007bff;
             color: white;
@@ -203,8 +216,7 @@
     <div class="container">
         <!-- 왼쪽 섹션: 사용자 정보 및 배지 -->
         <div class="left-column">
-            <img th:src="@{/images/basic-profile.png}" alt="Profile Picture" class="profile-picture"
-                 id="profile-picture">
+            <img th:src="@{/images/basic-profile.png}" alt="Profile Picture" class="profile" id="profile-picture">
             <p class="username" id="username" style="white-space: pre-line"
                th:text="'안녕하세요,'+ ${nickname} + '님!'"></p>
 
@@ -222,19 +234,27 @@
 
         <div class="right-column">
             <div class="setting-element">
-                <img th:src="@{/images/lock.png}" alt="비밀번호">
-                <div class="change-setting"><h3>비밀번호</h3></div>
-                <a th:href="@{/my/change-password}" class="change-setting-btn">
-                    <div>변경</div>
+                <img th:src="@{/images/nickname.png}" alt="닉네임">
+                <div class="change-setting"><h3>닉네임</h3></div>
+                <a th:href="@{/my/change-nickname}">
+                    <button class="change-setting-btn">수정</button>
                 </a>
             </div>
             <div class="setting-element">
-                <img th:src="@{/images/nickname.png}" alt="닉네임">
-                <div class="change-setting"><h3>닉네임</h3></div>
-                <a th:href="@{/my/change-nickname}" class="change-setting-btn">
-                    <div>변경</div>
+                <img th:src="@{/images/profile.png}" alt="프로필">
+                <div class="change-setting"><h3>프로필 사진</h3></div>
+                <button id="delete-profile-btn" class="delete-setting-btn">삭제</button>
+                <button id="change-profile-btn" class="change-setting-btn">변경</button>
+                <input type="file" id="profile-image-input" accept="image/*" hidden>
+            </div>
+            <div class="setting-element">
+                <img th:src="@{/images/lock.png}" alt="비밀번호">
+                <div class="change-setting"><h3>비밀번호</h3></div>
+                <a th:href="@{/my/change-password}">
+                    <button class="change-setting-btn">변경</button>
                 </a>
             </div>
+
         </div>
     </div>
 </main>
@@ -246,13 +266,94 @@
 
     import CONFIG from '/static/js/config.js';
 
+    const url = CONFIG.API.BASE_URL
+
+    const changeProfileBtn = document.getElementById('change-profile-btn');
+    const profileImageInput = document.getElementById('profile-image-input');
+    const profilePicture = document.getElementById('profile-picture');
+
     document.addEventListener('DOMContentLoaded', function () {
+        fetchAndDisplayProfile();
         fetchAndDisplayBadges();
         fetchNickname();
     });
 
+    async function fetchAndDisplayProfile() {
+        console.log("fetchAndDisplayProfile 실행됨")
+        try {
+            const response = await fetchWithAuth(url + '/api/users/profile',
+                {
+                    method: 'GET'
+                });
+            const data = await response.json();
+            profilePicture.src = data.data.profileImageUrl || '/images/basic-profile.png';
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+            alert('프로필 정보를 불러오는 중 문제가 발생했습니다.');
+        }
+    }
 
-    const url = CONFIG.API.BASE_URL
+    const deleteProfileBtn = document.getElementById('delete-profile-btn');
+
+    // 삭제 버튼 클릭 이벤트 처리
+    deleteProfileBtn.addEventListener('click', async () => {
+        if (confirm('정말로 프로필 사진을 삭제하시겠습니까?')) {
+            try {
+                const defaultImageUrl = '/images/basic-profile.png';
+
+                // 서버에 기본 이미지로 업데이트 요청
+                await fetchWithAuth(url + '/api/users/profile-image', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageUrl: defaultImageUrl })
+                });
+
+                // 클라이언트에서 기본 이미지로 변경
+                profilePicture.src = defaultImageUrl;
+                alert('프로필 사진이 기본 이미지로 변경되었습니다.');
+            } catch (error) {
+                console.error('Error deleting profile image:', error);
+                alert('프로필 사진을 삭제하는 중 문제가 발생했습니다.');
+            }
+        }
+    });
+
+    // 프로필 변경 버튼 클릭 시 파일 선택 열기
+    changeProfileBtn.addEventListener('click', () => {
+        profileImageInput.click();
+    });
+
+    // 이미지 업로드
+    profileImageInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                profilePicture.src = e.target.result; // Preview
+            };
+            reader.readAsDataURL(file);
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const uploadResponse = await fetchWithAuth(url + '/api/images', {
+                    method: 'POST',
+                    body: formData
+                });
+                const uploadData = await uploadResponse.json();
+                const imageUrl = uploadData.data;
+
+                await fetchWithAuth(url + '/api/users/profile-image', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageUrl })
+                });
+            } catch (error) {
+                console.error('Error uploading image:', error);
+            }
+        }
+    });
 
     // 배지 데이터를 가져와서 표시하는 함수
     function fetchAndDisplayBadges() {

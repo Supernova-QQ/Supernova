@@ -215,6 +215,7 @@ public class QuestionService extends AbstractValidateService {
                 findQuestion.getTitle(),
                 findQuestion.getContent(),
                 findQuestion.getImgUrl(),
+                findUser.getProfileImageUrl(),
                 findQuestion.isResolved(),
                 findQuestion.getCreatedAt(),
                 findQuestion.getModifiedAt(),

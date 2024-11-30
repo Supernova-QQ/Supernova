@@ -10,6 +10,8 @@ import com.hanshin.supernova.user.dto.request.*;
 import com.hanshin.supernova.user.dto.response.ChangeNicknameResponse;
 import com.hanshin.supernova.user.dto.response.ChangePasswordResponse;
 import com.hanshin.supernova.user.dto.response.ResetPasswordResponse;
+import com.hanshin.supernova.user.dto.response.UserProfileResponse;
+import com.hanshin.supernova.user.infrastructure.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 @Slf4j
 @RestController
 @RequestMapping(path = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -31,6 +32,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UserRegisterRequest request) {
@@ -101,6 +103,19 @@ public class UserController {
                 request.getNewNickname());
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile(AuthUser authUser) {
+        UserProfileResponse profile = userService.getUserProfile(authUser);
+        return ResponseDto.ok(profile);
+    }
+
+    @PutMapping("/profile-image")
+    public ResponseEntity<?> updateProfileImage(@RequestBody Map<String, String> payload, AuthUser authUser) {
+        String imageUrl = payload.get("imageUrl");
+        userService.updateProfileImage(imageUrl, authUser);
+        return ResponseDto.ok("프로필 이미지가 성공적으로 업데이트되었습니다.");
     }
 
 //    // 특정 회원의 이름 업데이트

@@ -62,6 +62,7 @@ public class MypageService {
         AnswerResponse answerResponse = AnswerResponse.toResponse(
                 savedAnswer.getId(),
                 findUser.getNickname(),
+                findUser.getProfileImageUrl(),
                 savedAnswer.getAnswer(),
                 savedAnswer.getCreatedAt(),
                 savedAnswer.getRecommendationCnt(),
@@ -85,6 +86,7 @@ public class MypageService {
                     AnswerResponse answerResponse = AnswerResponse.toResponse(
                             answer.getId(),
                             getUserOrThrowIfNotExist(authUser.getId()).getNickname(),
+                            getUserOrThrowIfNotExist(authUser.getId()).getProfileImageUrl(),
                             answer.getAnswer(),
                             answer.getCreatedAt(),
                             answer.getRecommendationCnt(),
@@ -142,6 +144,8 @@ public class MypageService {
 
                     // QuestionResponse 생성 및 반환
                     MyQuestionResponse response = new MyQuestionResponse(
+                            question.getId(),
+                            question.getCommId(),
                             question.getTitle(),
                             communityImg
                     );

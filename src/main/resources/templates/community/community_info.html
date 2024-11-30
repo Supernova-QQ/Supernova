@@ -344,6 +344,15 @@
         fetchCommunityVisitCnt(communityId);
         fetchUnansweredQuestions(communityId);
         fetchPopularQuestions(communityId);
+
+        const params = new URLSearchParams(window.location.search); // URL 파라미터 가져오기
+        const redirectTo = params.get('redirectTo'); // redirectTo 값 읽기
+
+        if (redirectTo) {
+            // redirectTo 파라미터가 있으면 해당 경로로 리다이렉트
+            window.location.href = `/${redirectTo}`;
+        }
+
     })
 
     // const url = `http://localhost:8080/api/communities`

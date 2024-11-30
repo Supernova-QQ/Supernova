@@ -31,7 +31,13 @@ public class User extends BaseEntity {
     @Embedded
     private Activity activity;
 
+    private String profileImageUrl; // 프로필 이미지 URL
+
     public void updatePassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public void updateProfileImage(String newImageUrl) {
+        this.profileImageUrl = newImageUrl;
     }
 }
