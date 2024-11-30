@@ -63,7 +63,7 @@ function fetchNews() {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'X-QQ-AUTH-TOKEN': newsToken
+      'X-QQ-ACCESS-TOKEN': newsToken
     }
   })
   .then(response => {
@@ -101,7 +101,7 @@ function fetchNewsDetails(newsId) {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'X-QQ-AUTH-TOKEN': newsToken
+      'X-QQ-ACCESS-TOKEN': newsToken
     }
   })
   .then(response => {

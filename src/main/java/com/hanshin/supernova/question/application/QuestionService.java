@@ -226,4 +226,8 @@ public class QuestionService extends AbstractValidateService {
                 findUser.getNickname());
     }
 
+    // questionId를 통해 communityId 조회
+    public Long findCommunityIdByQuestionId(Long questionId) {
+        return questionRepository.findCommunityIdByQuestionId(questionId);
+    }
 }

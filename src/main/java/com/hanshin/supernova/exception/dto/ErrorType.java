@@ -27,16 +27,24 @@ public enum ErrorType {
     // auth 예외
     NON_IDENTICAL_USER_ERROR(HttpStatus.FORBIDDEN, "작성자와 접근자가 일치하지 않습니다."),
     WRITER_CANNOT_RECOMMEND_ERROR(HttpStatus.FORBIDDEN, "자신의 게시물은 추천할 수 없습니다."),
+    USED_ACCESS_TOKEN_ERROR(HttpStatus.FORBIDDEN, "이미 사용된 엑세스 토큰입니다"),
+    USED_REFRESH_TOKEN_ERROR(HttpStatus.FORBIDDEN, "이미 사용된 리프레시 토큰입니다"),
+    REFRESH_ACCESS_TOKEN_NOT_MATCH_ERROR(HttpStatus.FORBIDDEN, "엑세스 토큰이 일치하지 않습니다"),
+    INVALID_ACCESS_TOKEN_ERROR(HttpStatus.FORBIDDEN, "잘못된 액세스 토큰입니다"),
+    WRONG_PASSWORD_ERROR(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호입니다"),
+
 
     // notice 예외
     NOTICE_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "공지사항을 찾을 수 없습니다."),
 
     // user 예외
     SYSTEM_USER_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "시스템 유저를 찾을 수 없습니다."),
+    PASSWORD_NOT(HttpStatus.BAD_REQUEST, "패스워드가 확인 패스워드랑 일치하지 않습니다."),
+
 
     // 토큰 오류
     AUTHORIZATION_ERROR(HttpStatus.UNAUTHORIZED, "인증, 인가 오류"),
-    EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, "해당 토큰은 만료된 토큰입니다."),
+    EXPIRED_ACCESS_TOKEN(HttpStatus.BAD_REQUEST, "해당 액세스 토큰은 만료된 토큰입니다."),
     NULL_TOKEN(HttpStatus.UNAUTHORIZED, "access token 이 존재하지 않습니다."),
     TOKEN_BLACKLISTED(HttpStatus.BAD_REQUEST, "해당 토큰은 이미 로그아웃 되었습니다."),
 
@@ -75,7 +83,10 @@ public enum ErrorType {
     JSON_PARSE_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "파싱 과정에서 문제가 생겼습니다."),
     GPT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인가되지 않은 요청입니다."),
     GPT_RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "요청이 너무 많습니다."),
-    GPT_REQUEST_FAILED(HttpStatus.BAD_REQUEST, "요청이 실패하였습니다.");
+    GPT_REQUEST_FAILED(HttpStatus.BAD_REQUEST, "요청이 실패하였습니다."),
+
+    // 북마크 예외
+    BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "북마크를 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;
