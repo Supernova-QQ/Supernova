@@ -91,24 +91,13 @@
 
 <main>
     <div class="container">
-        <h2>비밀번호 변경</h2>
-        <form id="change-password-form">
+        <h2>닉네임 변경</h2>
+        <form id="change-nickname-form">
             <div class="form-group">
-                <label for="currentPassword">Current Password</label>
-                <input type="password" id="currentPassword" name="currentPassword" required>
+                <label for="newNickname">New Nickname</label>
+                <input type="text" id="newNickname" name="newNickname" required>
             </div>
-
-            <div class="form-group">
-                <label for="newPassword">New Password</label>
-                <input type="password" id="newPassword" name="newPassword" required>
-            </div>
-
-            <div class="form-group">
-                <label for="confirmNewPassword">Confirm New Password</label>
-                <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
-            </div>
-
-            <button type="submit" class="btn-change">Change Password</button>
+            <button type="submit" class="btn-change">Change Nickname</button>
         </form>
     </div>
 </main>
@@ -124,20 +113,21 @@
 
     // JavaScript 코드
     document.addEventListener('DOMContentLoaded', function () {
-        const changePasswordForm = document.getElementById('change-password-form');
+        const changeNicknameForm = document.getElementById('change-nickname-form');
 
-        changePasswordForm.addEventListener('submit', function (event) {
+        changeNicknameForm.addEventListener('submit', function (event) {
             event.preventDefault(); // 기본 폼 제출 방지
 
             // 입력값 가져오기
             const formData = {
-                currentPassword: document.getElementById('currentPassword').value,
-                newPassword: document.getElementById('newPassword').value,
-                confirmNewPassword: document.getElementById('confirmNewPassword').value
+                newNickname: document.getElementById('newNickname').value
+
             };
 
-            // 비밀번호 재설정 엔드포인트로 데이터 전송
-            fetchWithAuth(url+ '/api/users/change-password', {
+            console.log("console newNickname:", formData)
+
+            // 닉네임 재설정 엔드포인트로 데이터 전송
+            fetchWithAuth(url+ '/api/users/change-nickname', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -146,17 +136,17 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        alert('비밀번호가 성공적으로 변경되었습니다!');
+                        alert('닉네임 성공적으로 변경되었습니다!');
                         window.location.href = '/my'; // 성공 시 리다이렉트
                     } else {
                         return response.json().then(errorData => {
-                            alert(`오류: ${errorData.message || '비밀번호 변경 실패'}`);
+                            alert(`오류: ${errorData.message || '닉네임 변경 실패'}`);
                         });
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('비밀번호 변경 중 오류가 발생했습니다.');
+                    alert('닉네임 변경 중 오류가 발생했습니다.');
                 });
         });
     });

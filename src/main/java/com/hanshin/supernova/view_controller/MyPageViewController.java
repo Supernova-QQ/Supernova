@@ -34,4 +34,8 @@ public class MyPageViewController {
 
     @GetMapping("/change-password")
     public String changePassword() {return "my/change_password";} // change_password.html을 렌더링
+
+
+    @GetMapping("/change-nickname")
+    public String changeNickname() {return "my/change_nickname";} // change_password.html을 렌더링
 }

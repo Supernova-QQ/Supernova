@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ChangePasswordResponse {
+public class ChangeNicknameResponse {
     private String message;
+    private String newNickname;
 }

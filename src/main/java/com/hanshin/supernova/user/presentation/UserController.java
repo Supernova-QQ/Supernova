@@ -7,6 +7,7 @@ import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.user.application.UserService;
 import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.user.dto.request.*;
+import com.hanshin.supernova.user.dto.response.ChangeNicknameResponse;
 import com.hanshin.supernova.user.dto.response.ChangePasswordResponse;
 import com.hanshin.supernova.user.dto.response.ResetPasswordResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -74,7 +75,6 @@ public class UserController {
         return ResponseEntity.ok("유저가 성공적으로 삭제되었습니다.");
     }
 
-
     @GetMapping("/nickname")
     public ResponseEntity<Map<String, String>> getNickname(@RequestBody(required = false) Map<String, Object> request, AuthUser authUser) {
         if (authUser == null) {
@@ -85,6 +85,20 @@ public class UserController {
         String nickname = userService.getNicknameById(authUser.getId());
         Map<String, String> response = new HashMap<>();
         response.put("nickname", nickname);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/change-nickname")
+    public ResponseEntity<ChangeNicknameResponse> getNickname(@RequestBody @Valid ChangeNicknameRequest request, AuthUser authUser) {
+        if (authUser == null) {
+            throw new AuthInvalidException(ErrorType.USER_NOT_FOUND_ERROR);
+        }
+
+        log.info("controller new Nickname:{}",request.getNewNickname());
+        ChangeNicknameResponse response = userService.changeNickname(
+                authUser.getId(),
+                request.getNewNickname());
 
         return ResponseEntity.ok(response);
     }
