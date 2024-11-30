@@ -206,15 +206,13 @@
 
   // const url = `http://localhost:8080/api/news`
   const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.NEWS;
-  const token = CONFIG.AUTH.DEFAULT_TOKEN;
 
   function fetchNews() {
 
     fetch(url, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'Content-Type': 'application/json'
       }
     })
     .then(response => {
@@ -250,8 +248,7 @@
     fetch(url + `/${newsId}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'Content-Type': 'application/json'
       }
     })
     .then(response => {

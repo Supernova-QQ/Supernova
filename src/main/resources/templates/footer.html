@@ -11,18 +11,18 @@
         <a th:href="@{/}">Home</a>
         <a th:href="@{/communities/main}">Community</a>
         <a href="#">일반게시판</a>
-        <a href="#">My Page</a>
+        <a th:href="@{/my}">My Page</a>
         <a href="#">About Us</a>
       </nav>
     </div>
     <div class="footer-right">
-      <img src="https://via.placeholder.com/24" alt="globe icon">
-      <img src="https://via.placeholder.com/24" alt="instagram icon">
-      <img src="https://via.placeholder.com/24" alt="linkedin icon">
+      <img th:src="@{/images/park.png}" alt="globe icon">
+      <img th:src="@{/images/oh.png}" alt="globe icon">
+      <img th:src="@{/images/hong.png}" alt="globe icon">
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2024 Inseon Hong, All Rights Reserved.</p>
+    <p>© 2024 Supernova, All Rights Reserved.</p>
   </div>
 
   <style>
