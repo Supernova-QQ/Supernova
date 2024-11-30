@@ -457,7 +457,7 @@
             <div class="list-item-number">${index + 1}</div>
             <div class="list-item-text">
                 <h4>${truncateText(question.title || '제목 없음', 20)}</h4>
-                <p>${truncateText(question.content || '요약 없음', 50)}</p>
+                <p>${truncateText(question.content || '요약 없음', 35)}</p>
             </div>
         `;
             item.addEventListener('click', () => {
@@ -466,8 +466,6 @@
             container.appendChild(item);
         });
     }
-
-
 
     // 북마크된 답변 가져오기
     function fetchBookmarkedAnswers(communityId) {
@@ -504,7 +502,7 @@
             <div class="list-item-number">${index + 1}</div>
             <div class="list-item-text">
                 <h4>${truncateText(answer.title || '질문 제목 없음', 20)}</h4>
-                <p>${truncateText(answer.content || '내용 없음', 50)}</p>
+                <p>${truncateText(answer.content || '내용 없음', 35)}</p>
             </div>
         `;
             item.addEventListener('click', () => {
