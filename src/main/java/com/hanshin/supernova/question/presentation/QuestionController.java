@@ -84,4 +84,11 @@ public class QuestionController {
         List<CommunityInfoResponse> responses = questionService.getMyCommunities(user);
         return ResponseDto.ok(responses);
     }
+
+    // questionId로 communityId 조회
+    @GetMapping("/{q_id}/c_id")
+    public ResponseEntity<Long> getCommunityIdByQuestionId(@PathVariable Long q_id) {
+        Long communityId = questionService.findCommunityIdByQuestionId(q_id);
+        return ResponseEntity.ok(communityId);
+    }
 }

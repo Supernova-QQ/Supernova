@@ -66,4 +66,11 @@ public class CommunityViewController {
         model.addAttribute("communityId", communityId);
         return "community/all_question_list";
     }
+
+    @GetMapping("/my-note/{id}")
+    public String communityMyNote(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("communityId", id);
+        return "my/community_my_note";
+    }
+
 }

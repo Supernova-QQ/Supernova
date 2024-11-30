@@ -21,6 +21,7 @@ import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
 import com.hanshin.supernova.question.dto.response.QuestionSaveResponse;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

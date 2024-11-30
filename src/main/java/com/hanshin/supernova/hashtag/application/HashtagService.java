@@ -38,7 +38,7 @@ public class HashtagService {
 
     @Transactional
     public HashtagSaveResponse saveQuestionHashtag(Long qId, HashtagRequest request,
-            AuthUser authUser) {
+                                                   AuthUser authUser) {
 
         List<String> hashtagNames = request.getHashtagNames();
         List<String> savedHashtagNames = new ArrayList<>();
