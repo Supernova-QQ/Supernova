@@ -37,7 +37,6 @@ public class MypageService {
     private final QuestionRepository questionRepository;
     private final CommunityRepository communityRepository;
     private final CommunityMemberRepository communityMemberRepository;
-    private final CommunityService communityService;
     private final UserRepository userRepository;
 
     @Transactional
@@ -72,8 +71,13 @@ public class MypageService {
                 savedAnswer.isAccepted()
         );
 
-        // 질문 제목 포함한 새로운 DTO 생성
-        return new AnswerWithQuestionResponse(answerResponse, findQuestion.getTitle(), communityImg);
+        return new AnswerWithQuestionResponse(
+                answerResponse,
+                findQuestion.getTitle(),
+                communityImg,
+                findQuestion.getId(),
+                findQuestion.getCommId()
+        );
     }
 
     public List<AnswerWithQuestionResponse> getAnswersByUserWithQuestionTitle(AuthUser authUser) {
@@ -95,7 +99,13 @@ public class MypageService {
                             answer.isAi(),
                             answer.isAccepted()
                     );
-                    return new AnswerWithQuestionResponse(answerResponse, question.getTitle(), communityImg);
+                    return new AnswerWithQuestionResponse(
+                            answerResponse,
+                            question.getTitle(),
+                            communityImg,
+                            question.getId(),
+                            question.getCommId()
+                    );
                 })
                 .collect(Collectors.toList());
     }

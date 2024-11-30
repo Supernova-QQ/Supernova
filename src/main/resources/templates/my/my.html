@@ -401,7 +401,7 @@
         }
 
         // 각 답변과 관련된 질문 제목 렌더링
-        answers.forEach(({answerResponse, questionTitle, communityImg}) => {
+        answers.forEach(({answerResponse, questionTitle, communityImg, questionId, communityId}) => {
             const item = document.createElement('div');
             item.className = 'item';
 
@@ -412,6 +412,20 @@
                 <img src="${communityImg}" alt="Community Image" class="item-icon">
             <div>
             `;
+
+            item.addEventListener('click', () => {
+                if (communityId && questionId) {
+                    console.log("answer communityId", communityId);
+                    console.log("answer's question id", questionId);
+                    window.location.href = `/communities/info/${communityId}?redirectTo=questions/info/${questionId}`;
+                } else {
+                    console.error("Community ID or Question ID is missing for this answer:", {
+                        communityId,
+                        questionId
+                    });
+                }
+            });
+
             answerList.appendChild(item);
         });
     }

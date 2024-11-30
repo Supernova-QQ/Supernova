@@ -10,5 +10,6 @@ public class AnswerWithQuestionResponse {
     private AnswerResponse answerResponse;
     private String questionTitle; // 질문 제목
     private String communityImg;  // 커뮤니티 이미지 URL
-
+    private Long questionId;    // 질문 ID
+    private Long communityId;   // 커뮤니티 ID
 }
