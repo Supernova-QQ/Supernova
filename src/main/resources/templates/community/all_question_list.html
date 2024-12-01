@@ -1,119 +1,142 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head th:replace="~{header :: head(additionalStyles=~{::style})}">
-  <style>
-    .container {
-      width: 70%;
-      margin: 20px auto;
-      padding: 20px;
-    }
+    <style>
+        html {
+            height: 100%;
+        }
 
-    .page-header {
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #eee;
-    }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .sort-options {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .sort-option {
-      padding: 5px 10px;
-      border: none;
-      background: none;
-      cursor: pointer;
-      color: #666;
-    }
+        .container {
+            width: 70%;
+            margin: 20px auto;
+            padding: 20px;
+        }
 
-    .sort-option.active {
-      color: #007bff;
-      font-weight: bold;
-    }
+        .page-header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
 
-    /* 질문 내용 */
-    .question-item {
-      padding: 20px;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      background-color: white;
-      cursor: pointer;
-      transition: box-shadow 0.3s ease;
-      margin-bottom: 15px;
-    }
+        .sort-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
 
-    .question-item:hover {
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
+        .sort-option {
+            padding: 5px 10px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #666;
+        }
 
-    .no-results {
-      text-align: center;
-      padding: 30px;
-      color: #666;
-      background-color: #f9f9f9;
-      border-radius: 8px;
-      border: 1px solid #eee;
-    }
+        .sort-option.active {
+            color: #007bff;
+            font-weight: bold;
+        }
 
-    .item-meta {
-      margin-top: 10px;
-      color: #666;
-      font-size: 12px;
-    }
+        /* 질문 내용 */
+        .question-item {
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background-color: white;
+            cursor: pointer;
+            transition: box-shadow 0.3s ease;
+            margin-bottom: 15px;
+        }
 
-    .item-title {
-      font-size: 16px;
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 8px;
-    }
+        .question-item:hover {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
 
-    .item-content {
-      font-size: 14px;
-      color: #666;
-      line-height: 1.5;
-      margin-bottom: 10px;
-    }
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
 
-    .pagination {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 20px;
-    }
+        .item-meta {
+            margin-top: 10px;
+            color: #666;
+            font-size: 12px;
+        }
 
-    .page-button {
-      padding: 5px 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      cursor: pointer;
-      background-color: white;
-    }
+        .item-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
 
-    .page-button.active {
-      background-color: #007bff;
-      color: white;
-      border-color: #007bff;
-    }
-  </style>
+        .item-content {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .page-button {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: white;
+        }
+
+        .page-button.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+    </style>
 </head>
 <body>
 <header th:replace="~{header :: header}"></header>
+<div th:insert="~{header :: headerScripts}"></div>
 
-<div class="container">
-  <div class="page-header">
-    <h2>전체 질문</h2>
-    <div class="sort-options">
-      <button class="sort-option active" data-sort="latest">최신순</button>
-      <button class="sort-option" data-sort="oldest">오래된순</button>
+<main>
+    <div class="container">
+        <div class="page-header">
+            <h2>전체 질문</h2>
+            <div class="sort-options">
+                <button class="sort-option active" data-sort="latest">최신순</button>
+                <button class="sort-option" data-sort="oldest">오래된순</button>
+            </div>
+        </div>
+        <div id="question-list"></div>
+        <div id="pagination" class="pagination"></div>
     </div>
-  </div>
-  <div id="question-list"></div>
-  <div id="pagination" class="pagination"></div>
-</div>
-
+</main>
 <footer th:replace="~{footer :: footer}"></footer>
 
 <script type="module" src="/js/config.js"></script>
@@ -122,50 +145,49 @@
 <script type="module" src="/js/search.js"></script>
 
 <script type="module">
-  import CONFIG from '/static/js/config.js';
-  let questionCurrentPage = 0;
-  const communityId = [[${communityId}]];
-  let currentSort = 'latest';
+    import CONFIG from '/static/js/config.js';
 
-  document.addEventListener('DOMContentLoaded', () => {
-    fetchQuestions(0);
-  });
+    let questionCurrentPage = 0;
+    const communityId = [[${communityId}]];
+    let currentSort = 'latest';
 
-  // const url = `http://localhost:8080/api/communities`;
-  // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
-  const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
-  const token = CONFIG.AUTH.DEFAULT_TOKEN;
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchQuestions(0);
+    });
+
+    // const url = `http://localhost:8080/api/communities`;
+    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+    const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
 
 
-  function fetchQuestions(page = 0) {
-    const endpoint = currentSort === 'latest' ? 'all-latest-questions' : 'all-old-questions';
+    function fetchQuestions(page = 0) {
+        const endpoint = currentSort === 'latest' ? 'all-latest-questions' : 'all-old-questions';
 
-    fetch(url + `/${communityId}/${endpoint}?page=${page}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
-      }
-    })
-    .then(response => response.json())
-    .then(result => {
-      console.log('Received questions:', result);
-      if (result.data) {
-        displayQuestions(result.data.content);
-        displayPagination(result.data);
-        questionCurrentPage = page;  // 변수명 변경
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
+        fetch(url + `/${communityId}/${endpoint}?page=${page}`, {
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.json())
+            .then(result => {
+                console.log('Received questions:', result);
+                if (result.data) {
+                    displayQuestions(result.data.content);
+                    displayPagination(result.data);
+                    questionCurrentPage = page;  // 변수명 변경
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
-  function displayQuestions(results) {
-    const container = document.getElementById('question-list');
-    container.innerHTML = '';
+    function displayQuestions(results) {
+        const container = document.getElementById('question-list');
+        container.innerHTML = '';
 
-    results.forEach(result => {
-      const resultElement = document.createElement('div');
-      resultElement.className = 'question-item';  // search-result-item -> question-item
-      resultElement.innerHTML = `
+        results.forEach(result => {
+            const resultElement = document.createElement('div');
+            resultElement.className = 'question-item';  // search-result-item -> question-item
+            resultElement.innerHTML = `
             <div class="item-title">${result.title}</div>
             <div class="item-content">${truncateText(result.content, 200)}</div>
             <div class="item-meta">
@@ -175,87 +197,87 @@
             </div>
         `;
 
-      // questionId가 아닌 id 사용
-      resultElement.addEventListener('click', () => {
-        window.location.href = `/questions/info/${result.id}`;
-      });
+            // questionId가 아닌 id 사용
+            resultElement.addEventListener('click', () => {
+                window.location.href = `/questions/info/${result.id}`;
+            });
 
-      container.appendChild(resultElement);
-    });
+            container.appendChild(resultElement);
+        });
 
-    // 결과가 없는 경우 처리
-    if (results.length === 0) {
-      container.innerHTML = `
+        // 결과가 없는 경우 처리
+        if (results.length === 0) {
+            container.innerHTML = `
             <div class="no-results">
                 질문이 없습니다.
             </div>
         `;
-    }
-  }
-
-  function displayPagination(pageData) {
-    const paginationContainer = document.getElementById('pagination');
-    paginationContainer.innerHTML = '';
-
-    // 이전 페이지 버튼
-    if (!pageData.first) {
-      addPageButton('이전', questionCurrentPage - 1, false, paginationContainer);  // 변수명 변경
+        }
     }
 
-    // 페이지 번호 버튼들
-    for (let i = 0; i < pageData.totalPages; i++) {
-      addPageButton(i + 1, i, i === questionCurrentPage, paginationContainer);  // 변수명 변경
+    function displayPagination(pageData) {
+        const paginationContainer = document.getElementById('pagination');
+        paginationContainer.innerHTML = '';
+
+        // 이전 페이지 버튼
+        if (!pageData.first) {
+            addPageButton('이전', questionCurrentPage - 1, false, paginationContainer);  // 변수명 변경
+        }
+
+        // 페이지 번호 버튼들
+        for (let i = 0; i < pageData.totalPages; i++) {
+            addPageButton(i + 1, i, i === questionCurrentPage, paginationContainer);  // 변수명 변경
+        }
+
+        // 다음 페이지 버튼
+        if (!pageData.last) {
+            addPageButton('다음', questionCurrentPage + 1, false, paginationContainer);  // 변수명 변경
+        }
     }
 
-    // 다음 페이지 버튼
-    if (!pageData.last) {
-      addPageButton('다음', questionCurrentPage + 1, false, paginationContainer);  // 변수명 변경
-    }
-  }
-
-  function addPageButton(text, page, isActive, container) {
-    const button = document.createElement('button');
-    button.className = `page-button${isActive ? ' active' : ''}`;
-    button.textContent = text;
-    button.addEventListener('click', () => {
-      questionCurrentPage = page;  // 변수명 변경
-      fetchQuestions(page);
-    });
-    container.appendChild(button);
-  }
-
-  // 정렬 버튼 이벤트 리스너
-  document.querySelectorAll('.sort-option').forEach(button => {
-    button.addEventListener('click', () => {
-      const sort = button.dataset.sort;
-      if (sort !== currentSort) {
-        currentSort = sort;
-        questionCurrentPage = 0;  // 변수명 변경
-        document.querySelectorAll('.sort-option').forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.sort === sort);
+    function addPageButton(text, page, isActive, container) {
+        const button = document.createElement('button');
+        button.className = `page-button${isActive ? ' active' : ''}`;
+        button.textContent = text;
+        button.addEventListener('click', () => {
+            questionCurrentPage = page;  // 변수명 변경
+            fetchQuestions(page);
         });
-        fetchQuestions(0);
-      }
-    });
-  });
-
-  function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).replace(/\./g, '.');
-  }
-
-  function truncateText(text, maxLength) {
-    if (text.length > maxLength) {
-      return text.substring(0, maxLength) + '...';
+        container.appendChild(button);
     }
-    return text;
-  }
+
+    // 정렬 버튼 이벤트 리스너
+    document.querySelectorAll('.sort-option').forEach(button => {
+        button.addEventListener('click', () => {
+            const sort = button.dataset.sort;
+            if (sort !== currentSort) {
+                currentSort = sort;
+                questionCurrentPage = 0;  // 변수명 변경
+                document.querySelectorAll('.sort-option').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.sort === sort);
+                });
+                fetchQuestions(0);
+            }
+        });
+    });
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).replace(/\./g, '.');
+    }
+
+    function truncateText(text, maxLength) {
+        if (text.length > maxLength) {
+            return text.substring(0, maxLength) + '...';
+        }
+        return text;
+    }
 </script>
 </body>
 </html>

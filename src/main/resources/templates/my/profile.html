@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{header :: head(additionalStyles=~{::style})}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My profile</title>
+    <style>
+        /* CSS 스타일 */
+        html {
+            height: 100%;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h3 {
+            margin-top: 0;
+        }
+
+        .container {
+            width: 60%;
+            display: flex;
+            justify-content: space-between;
+            margin: 0 auto;
+            padding: 20px 80px;
+            gap: 20px;
+        }
+
+        .left-column, .setting-element {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            justify-content: center;
+        }
+
+        /* 왼쪽 섹션 */
+        .left-column {
+            width: 30%;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .profile {
+            width: 125px;
+            height: 125px;
+            border-radius: 50%;
+            margin: 20px;
+        }
+
+        .username {
+            font-size: 25px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            margin-right: auto;
+            text-align: left;
+        }
+
+        .badge-section {
+            padding: 20px;
+            text-align: left;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 87%;
+        }
+
+        .badge-section h4 {
+            margin-top: 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .badge-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .badge {
+            width: 25%; /* 부모 요소의 50%를 기본 너비로 설정 */
+            min-width: max-content;
+            text-align: center;
+            font-size: 12px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .badge > p {
+            margin-bottom: 0;
+        }
+
+        .badge-icon {
+            width: 40px;
+            height: 40px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .item img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+        }
+
+        .setting-list {
+            margin-top: 20px;
+            flex: 1;
+            gap: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .setting-list a {
+            font-size: large;
+            font-weight: 700;
+        }
+
+        .setting-list-profile {
+            text-decoration-line: underline;
+            text-decoration-color: black;
+            text-decoration-thickness: 2px;
+            text-underline-position: under;
+        }
+
+        /* 오른쪽 섹션 */
+        .right-column {
+            width: 65%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .setting-element {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            align-items: center;
+        }
+
+        .setting-element img {
+            width: 24px;
+            height: 24px;
+            margin-right: 7px;
+        }
+
+        .setting-element h3 {
+            font-size: 16px;
+            margin-bottom: 0;
+            margin-top: 2px;
+        }
+
+        .change-setting {
+            flex-grow: 1;
+            display: inline-block;
+        }
+
+        .delete-setting-btn {
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            margin-right: 15px;
+        }
+
+        .change-setting-btn {
+            border: 1px solid #007bff;
+            color: #007bff;
+        }
+
+        .delete-setting-btn,
+        .change-setting-btn {
+            margin-left: auto;
+            display: inline-block;
+            padding: 7px 10px;
+            background-color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .delete-setting-btn:hover{
+            background-color: #dc3545;
+            color: white;
+        }
+        .change-setting-btn:hover {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+<header th:replace="~{header :: header}"></header>
+<div th:insert="~{header :: headerScripts}"></div>
+
+<main>
+    <div class="container">
+        <!-- 왼쪽 섹션: 사용자 정보 및 배지 -->
+        <div class="left-column">
+            <img th:src="@{/images/basic-profile.png}" alt="Profile Picture" class="profile" id="profile-picture">
+            <p class="username" id="username" style="white-space: pre-line"
+               th:text="'안녕하세요,'+ ${nickname} + '님!'"></p>
+
+            <div class="badge-section">
+                <h4>배지 보유 현황</h4>
+                <div class="badge-list" id="badge-list">
+                    <!-- 배지가 여기에 동적으로 추가될 예정 -->
+                </div>
+            </div>
+            <div class="setting-list">
+                <a class="setting-list-profile" th:href="@{/my/profile}">내프로필</a>
+                <a class="setting-list-community" th:href="@{/my/community}">커뮤니티</a>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="setting-element">
+                <img th:src="@{/images/nickname.png}" alt="닉네임">
+                <div class="change-setting"><h3>닉네임</h3></div>
+                <a th:href="@{/my/change-nickname}">
+                    <button class="change-setting-btn">수정</button>
+                </a>
+            </div>
+            <div class="setting-element">
+                <img th:src="@{/images/profile.png}" alt="프로필">
+                <div class="change-setting"><h3>프로필 사진</h3></div>
+                <button id="delete-profile-btn" class="delete-setting-btn">삭제</button>
+                <button id="change-profile-btn" class="change-setting-btn">변경</button>
+                <input type="file" id="profile-image-input" accept="image/*" hidden>
+            </div>
+            <div class="setting-element">
+                <img th:src="@{/images/lock.png}" alt="비밀번호">
+                <div class="change-setting"><h3>비밀번호</h3></div>
+                <a th:href="@{/my/change-password}">
+                    <button class="change-setting-btn">변경</button>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</main>
+<footer th:replace="~{footer :: footer}"></footer>
+
+<script type="module" src="/js/config.js"></script>
+
+<script type="module">
+
+    import CONFIG from '/static/js/config.js';
+
+    const url = CONFIG.API.BASE_URL
+
+    const changeProfileBtn = document.getElementById('change-profile-btn');
+    const profileImageInput = document.getElementById('profile-image-input');
+    const profilePicture = document.getElementById('profile-picture');
+
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchAndDisplayProfile();
+        fetchAndDisplayBadges();
+        fetchNickname();
+    });
+
+    async function fetchAndDisplayProfile() {
+        console.log("fetchAndDisplayProfile 실행됨")
+        try {
+            const response = await fetchWithAuth(url + '/api/users/profile',
+                {
+                    method: 'GET'
+                });
+            const data = await response.json();
+            profilePicture.src = data.data.profileImageUrl || '/images/basic-profile.png';
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+            alert('프로필 정보를 불러오는 중 문제가 발생했습니다.');
+        }
+    }
+
+    const deleteProfileBtn = document.getElementById('delete-profile-btn');
+
+    // 삭제 버튼 클릭 이벤트 처리
+    deleteProfileBtn.addEventListener('click', async () => {
+        if (confirm('정말로 프로필 사진을 삭제하시겠습니까?')) {
+            try {
+                const defaultImageUrl = '/images/basic-profile.png';
+
+                // 서버에 기본 이미지로 업데이트 요청
+                await fetchWithAuth(url + '/api/users/profile-image', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageUrl: defaultImageUrl })
+                });
+
+                // 클라이언트에서 기본 이미지로 변경
+                profilePicture.src = defaultImageUrl;
+                alert('프로필 사진이 기본 이미지로 변경되었습니다.');
+            } catch (error) {
+                console.error('Error deleting profile image:', error);
+                alert('프로필 사진을 삭제하는 중 문제가 발생했습니다.');
+            }
+        }
+    });
+
+    // 프로필 변경 버튼 클릭 시 파일 선택 열기
+    changeProfileBtn.addEventListener('click', () => {
+        profileImageInput.click();
+    });
+
+    // 이미지 업로드
+    profileImageInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                profilePicture.src = e.target.result; // Preview
+            };
+            reader.readAsDataURL(file);
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const uploadResponse = await fetchWithAuth(url + '/api/images', {
+                    method: 'POST',
+                    body: formData
+                });
+                const uploadData = await uploadResponse.json();
+                const imageUrl = uploadData.data;
+
+                await fetchWithAuth(url + '/api/users/profile-image', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageUrl })
+                });
+            } catch (error) {
+                console.error('Error uploading image:', error);
+            }
+        }
+    });
+
+    // 배지 데이터를 가져와서 표시하는 함수
+    function fetchAndDisplayBadges() {
+        console.log("fetchAndDisplayBadges 실행됨")
+        fetchWithAuth(url + '/api/badges', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("API 응답 데이터:", data); // 전체 데이터 출력
+                displayBadges(data);
+            })
+            .catch(error => {
+                console.error('Error fetching badge data:', error);
+            });
+    }
+
+    // 배지 정보를 동적으로 렌더링하는 함수
+    function displayBadges(badgeData) {
+        console.log("badgeData: ", badgeData);
+
+        const badgeList = document.getElementById('badge-list');
+        badgeList.innerHTML = ''; // 기존 배지 초기화
+
+        if (badgeData.markedQuestionBadge) {
+            badgeList.innerHTML += `
+        <div class="badge">
+          <img src="/images/markedQuestionBadge.png" alt="멋진 질문자" class="badge-icon">
+          <p>멋진 질문자</p>
+        </div>`;
+        }
+        if (badgeData.popularQuestionBadge) {
+            badgeList.innerHTML += `
+        <div class="badge">
+          <img src="/images/popularQuestionBadge.png" alt="인기 질문자" class="badge-icon">
+          <p>인기 질문자</p>
+        </div>`;
+        }
+        if (badgeData.acceptedAnswerBadge) {
+            badgeList.innerHTML += `
+        <div class="badge">
+          <img src="/images/acceptedAnswerBadge.png" alt="정확한 답변자" class="badge-icon">
+          <p>정확한 답변자</p>
+        </div>`;
+        }
+        if (badgeData.popularAnswerBadge) {
+            badgeList.innerHTML += `
+        <div class="badge">
+          <img src="/images/popularAnswerBadge.png" alt="인기 답변자" class="badge-icon">
+          <p>인기 답변자</p>
+        </div>`;
+        }
+
+        if (badgeList.innerHTML.trim() === '') {
+            badgeList.innerHTML = '<p>보유한 배지가 없습니다.</p>';
+        }
+    }
+
+    // 유저 정보가 있다면 회원 닉네임이 출력되도록 함.
+    // 유저 정보를 불러오는 데에 오류가 있다면 "회원님"으로 출력되도록 오류 처리
+    function fetchNickname() {
+        fetchWithAuth(url + '/api/users/nickname', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Fetched nickname:", data.nickname);
+                const usernameElement = document.getElementById('username');
+                usernameElement.textContent = `안녕하세요,\n${data.nickname}님!`;
+            })
+            .catch(error => {
+                console.error('Error fetching nickname:', error);
+                const usernameElement = document.getElementById('username');
+                usernameElement.textContent = '안녕하세요,\n회원님!';
+            });
+    }
+</script>
+</body>
+</html>

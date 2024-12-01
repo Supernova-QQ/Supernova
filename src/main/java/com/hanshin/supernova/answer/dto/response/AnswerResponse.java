@@ -1,7 +1,9 @@
 package com.hanshin.supernova.answer.dto.response;
 
 import com.hanshin.supernova.answer.domain.Tag;
+
 import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -11,6 +13,7 @@ public class AnswerResponse {
 
     private Long id;
     private String nickname;
+    private String profileImageUrl;
     private String answer;
     private LocalDateTime createdAt;
     private int recCnt;
@@ -19,10 +22,9 @@ public class AnswerResponse {
     private boolean isAi;
     private boolean isAccepted;
 
-    public static AnswerResponse toResponse(Long id, String nickname, String answer,
-            LocalDateTime createdAt, int recCnt,
-            Tag tag, String source, boolean isAi, boolean isAccepted) {
-        return new AnswerResponse(id, nickname, answer, createdAt, recCnt, tag, source, isAi,
-                isAccepted);
+    public static AnswerResponse toResponse(Long id, String nickname, String profileImageUrl, String answer,
+                                            LocalDateTime createdAt, int recCnt, Tag tag, String source,
+                                            boolean isAi, boolean isAccepted) {
+        return new AnswerResponse(id, nickname, profileImageUrl, answer, createdAt, recCnt, tag, source, isAi, isAccepted);
     }
 }

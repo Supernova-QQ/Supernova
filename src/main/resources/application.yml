@@ -1,0 +1,51 @@
+#spring:
+#  profiles:
+#    active: dev
+#  application:
+#    name: supernova
+#  servlet:
+#    multipart:
+#      enabled: true
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/supernova
+#    username: root
+#    password: 1234
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#  mvc:
+#    pathmatch:
+#      matching-strategy: ant_path_matcher
+#
+#
+#  jpa:
+#    open-in-view: true
+#    hibernate:
+#      ddl-auto: update
+#      format_sql: true
+#    show-sql: true
+#    properties:
+#      dialect: org.hibernate.dialect.MySQL8InnoDBDialect
+#  #    database-platform: org.hibernate.dialect.MySQL8InnoDBDialect
+#
+#  data:
+#    redis:
+#      repositories:
+#        enabled: false
+#
+#  thymeleaf:
+#    prefix: classpath:/templates/
+#    suffix: .html
+#
+#server:
+#  port: 8080
+#  tomcat:
+#    connection-timeout: 30000
+#    #    max-threads: 100
+#    #    min-spare-threads: 50
+#    #    accept-count: 50
+#    uri-encoding: UTF-8
+#  forward-headers-strategy: framework
+#
+#logging:
+#  level:
+#    org.hibernate.SQL: debug
+#    org.hibernate.type: trace

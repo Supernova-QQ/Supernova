@@ -52,7 +52,6 @@ public class AnswerService extends AbstractValidateService {
 
         return getAnswerResponse(savedAnswer, findUser);
     }
-
     /**
      * 답변 조회
      */
@@ -187,6 +186,7 @@ public class AnswerService extends AbstractValidateService {
         return AnswerResponse.toResponse(
                 findAnswer.getId(),
                 findUser.getNickname(),
+                findUser.getProfileImageUrl(),
                 findAnswer.getAnswer(),
                 findAnswer.getCreatedAt(),
                 findAnswer.getRecommendationCnt(),
@@ -217,6 +217,7 @@ public class AnswerService extends AbstractValidateService {
         return AnswerResponse.toResponse(
                 answer.getId(),
                 user.getNickname(),
+                user.getProfileImageUrl(),
                 answer.getAnswer(),
                 answer.getCreatedAt(),
                 answer.getRecommendationCnt(),

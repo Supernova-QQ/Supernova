@@ -215,6 +215,7 @@ public class QuestionService extends AbstractValidateService {
                 findQuestion.getTitle(),
                 findQuestion.getContent(),
                 findQuestion.getImgUrl(),
+                findUser.getProfileImageUrl(),
                 findQuestion.isResolved(),
                 findQuestion.getCreatedAt(),
                 findQuestion.getModifiedAt(),
@@ -226,4 +227,8 @@ public class QuestionService extends AbstractValidateService {
                 findUser.getNickname());
     }
 
+    // questionId를 통해 communityId 조회
+    public Long findCommunityIdByQuestionId(Long questionId) {
+        return questionRepository.findCommunityIdByQuestionId(questionId);
+    }
 }
