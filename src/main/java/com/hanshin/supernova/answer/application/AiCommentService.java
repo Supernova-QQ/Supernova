@@ -39,7 +39,7 @@ public class AiCommentService extends AbstractValidateService {
     public AiCommentResponse getAiComment(Long questionId) {
         getQuestionOrThrowIfNotExist(questionId);
 
-        AiComment findAiComment = aiCommentRepository.findByQuestionId(questionId);
+        AiComment findAiComment = aiCommentRepository.findByQuestionId(questionId).orElse(null);
         if (findAiComment == null) {
             return null;
         }
@@ -52,7 +52,7 @@ public class AiCommentService extends AbstractValidateService {
     public AiCommentResponse updateAiComment(AuthUser user, AiCommentRequest request) {
         Question findQuestion = getQuestionOrThrowIfNotExist(request.getQuestionId());
 
-        AiComment findAiComment = aiCommentRepository.findByQuestionId(request.getQuestionId());
+        AiComment findAiComment = aiCommentRepository.findByQuestionId(request.getQuestionId()).orElse(null);
 
         verifySameUser(user, findQuestion.getQuestionerId());
 

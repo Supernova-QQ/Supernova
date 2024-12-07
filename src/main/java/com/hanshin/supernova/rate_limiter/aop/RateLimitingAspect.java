@@ -39,19 +39,7 @@ public class RateLimitingAspect {
                 rateLimit.period());
 
         if (remainingTokens >= 0) {
-            Object result = joinPoint.proceed();
-            log.debug("Method execution result: {}", result);
-
-            // 현재 실행 컨텍스트에서 HttpServletResponse 얻기
-            HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
-            if (response != null) {
-                response.setHeader("X-RateLimit-Remaining", String.valueOf(remainingTokens));
-                log.debug("Added X-RateLimit-Remaining header: {}", remainingTokens);
-            } else {
-                log.warn("Unable to set X-RateLimit-Remaining header: HttpServletResponse is null");
-            }
-
-            return result;
+            return joinPoint.proceed();
         } else {
             throw rateLimit.exceptionClass().getDeclaredConstructor(String.class)
                     .newInstance("Rate limit exceeded for key: " + key);
