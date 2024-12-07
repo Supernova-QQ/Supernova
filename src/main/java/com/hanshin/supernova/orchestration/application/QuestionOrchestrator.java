@@ -8,9 +8,9 @@ import com.hanshin.supernova.ai_comment.dto.response.AiAnswerResponse;
 import com.hanshin.supernova.answer.dto.response.AiCommentResponse;
 import com.hanshin.supernova.answer.infrastructure.AiCommentRepository;
 import com.hanshin.supernova.auth.model.AuthUser;
-import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
+import com.hanshin.supernova.exception.rate_limit.RateLimitExceededException;
 import com.hanshin.supernova.hashtag.application.HashtagService;
 import com.hanshin.supernova.hashtag.dto.request.HashtagRequest;
 import com.hanshin.supernova.news.application.NewsService;
@@ -21,8 +21,10 @@ import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
 import com.hanshin.supernova.question.dto.response.QuestionSaveResponse;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -52,16 +54,10 @@ public class QuestionOrchestrator {
         hashtagRequest.setHashtagNames(request.getHashtags());
         hashtagService.saveQuestionHashtag(savedQuestion.getId(), hashtagRequest, user);
 
-        // AI 답변 요청
-        AiAnswerResponse aiAnswerResponse = aiAnswerService.generateAiAnswer(
-                user, savedQuestion.getTitle(), savedQuestion.getContent());
-
-        // 답변 등록
-        aiCommentService.createAiComment(
-                buildAiCommentRequest(savedQuestion.getId(), aiAnswerResponse.getAnswer()));
-
-        // 알림 등록
-        newsService.createNews(buildNewsRequest(savedQuestion));
+        // AI 답변이 요청되었을 경우 비동기적으로 생성
+        if (request.isAiAnswerRequested()) {
+            asynchronouslyCreateAiAnswerAndCommentAndNews(user, savedQuestion);
+        }
 
         return questionSaveResponse;
     }
@@ -78,7 +74,29 @@ public class QuestionOrchestrator {
         hashtagRequest.setHashtagNames(request.getHashtags());
         hashtagService.saveQuestionHashtag(savedQuestion.getId(), hashtagRequest, user);
 
+        // AI 답변이 요청되었을 경우 비동기적으로 생성
+        if (request.isAiAnswerRequested()) {
+            asynchronouslyCreateAiAnswerAndCommentAndNews(user, savedQuestion);
+        }
+
         return questionUpdateResponse;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void asynchronouslyCreateAiAnswerAndCommentAndNews(AuthUser user, Question savedQuestion) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                AiAnswerResponse aiAnswerResponse = aiAnswerService.generateAiAnswer(
+                        user, savedQuestion.getTitle(), savedQuestion.getContent());
+
+                aiCommentService.createAiComment(
+                        buildAiCommentRequest(savedQuestion.getId(), aiAnswerResponse.getAnswer()));
+
+                newsService.createNews(buildNewsRequest(savedQuestion));
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        });
     }
 
     /*
@@ -87,17 +105,18 @@ public class QuestionOrchestrator {
     @Transactional
     public AiCommentResponse updateAiAnswer(AuthUser user, Long questionId) {
         Question findQuestion = getQuestionOrThrowIfNotExist(questionId);
-        AiComment findAiComment = aiCommentRepository.findByQuestionId(findQuestion.getId());
+        AiComment findAiComment = aiCommentRepository.findByQuestionId(findQuestion.getId())
+                .orElse(null);
 
         // AI 답변 재신청
         AiAnswerResponse regenerationResponse = aiAnswerService.regenerateAiAnswer(
-                user, findQuestion.getTitle(), findQuestion.getContent(), findAiComment.getAiComment());
+                user, findQuestion.getTitle(), findQuestion.getContent(),
+                findAiComment.getAiComment());
 
         // 답변 등록
         return aiCommentService.updateAiComment(
                 user, buildAiCommentRequest(questionId, regenerationResponse.getAnswer()));
     }
-
 
     private Question getQuestionOrThrowIfNotExist(Long questionId) {
         return questionRepository.findById(questionId).orElseThrow(
@@ -114,8 +133,14 @@ public class QuestionOrchestrator {
     }
 
     private static NewsRequest buildNewsRequest(Question question) {
+
+        // 알림에 제목 포함시키기
+        String title = question.getTitle();
+        if (title.length() > 8) {
+            title = title.substring(0, 8);
+        }
         return NewsRequest.builder()
-                .title("인공지능 댓글이 등록되었습니다.")
+                .title("\"" + title + "...\"" + " 게시글에 인공지능 댓글이 등록되었습니다.")
                 .content("지금 바로 확인해보세요!")
                 .type(Type.ANSWER)
                 .hasRelatedContent(true)
