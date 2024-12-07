@@ -260,6 +260,13 @@
       margin-right: 20px;
     }
 
+    .regeneration-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
     #regenerationBtn {
       min-width: 120px;
       width: 120px;
@@ -270,6 +277,22 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
+    .remaining-count {
+      font-size: 12px;
+      color: #666;
+    }
+
+    /*#regenerationBtn {*/
+    /*  min-width: 120px;*/
+    /*  width: 120px;*/
+    /*  padding: 10px 20px;*/
+    /*  background-color: #007bff;*/
+    /*  color: white;*/
+    /*  border: none;*/
+    /*  border-radius: 5px;*/
+    /*  cursor: pointer;*/
+    /*}*/
 
     /* 답변 확인하기 */
 
@@ -641,9 +664,17 @@
   </div>
 
   <!-- AI 답변 섹션 -->
+<!--  <div class="ai-answer-container">-->
+<!--    <div id="ai-answer-section"></div>-->
+<!--    <button id="regenerationBtn">답변 새로 받기</button>-->
+<!--  </div>-->
+
   <div class="ai-answer-container">
     <div id="ai-answer-section"></div>
-    <button id="regenerationBtn">답변 새로 받기</button>
+    <div class="regeneration-container">
+      <button id="regenerationBtn">답변 새로 받기</button>
+      <span id="remaining-count" class="remaining-count">남은 횟수: -회</span>
+    </div>
   </div>
 
 
@@ -696,6 +727,7 @@
 <script type="module">
   import CONFIG from '/static/js/config.js';
   let questionId = null;
+
   document.addEventListener('DOMContentLoaded', function () {
     questionId = [[${questionId}]];
     console.log('Initializing with question ID:', questionId);
@@ -733,8 +765,28 @@
   // const url = `http://localhost:8080/api/questions`;
   // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
   const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.QUESTIONS;
-  // const baseURL = CONFIG.API.BASE_URL;
+  const baseURL = CONFIG.API.BASE_URL;
   const token = CONFIG.AUTH.DEFAULT_TOKEN;
+
+  // 페이지 로드 시와 재생성 버튼 클릭 시 남은 횟수를 조회하는 함수
+  async function fetchRemainingCount() {
+    try {
+      const response = await fetch(baseURL + '/api/rate-limit/ai-answers', {
+        headers: {
+          'X-QQ-AUTH-TOKEN': token
+        }
+      });
+      const data = await response.json();
+
+      // 남은 횟수 업데이트
+      const remainingCountElement = document.getElementById('remaining-count');
+      remainingCountElement.textContent = `남은 횟수: ${data.remainingGenerateCount}회`;
+    } catch (error) {
+      console.error('Error fetching remaining count:', error);
+      const remainingCountElement = document.getElementById('remaining-count');
+      remainingCountElement.textContent = '남은 횟수: -회';
+    }
+  }
 
   // 해시태그 정보
   function fetchHashtagInfo(questionId) {
@@ -1055,6 +1107,26 @@
   }
 
   // AI 답변
+  // function fetchAiComment(questionId) {
+  //   fetch(url + `/${questionId}/ai-answers`, {
+  //     method: 'GET',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'X-QQ-AUTH-TOKEN': token
+  //     }
+  //   })
+  //   .then(response => response.json())
+  //   .then(data => {
+  //     console.log('Received AI answers data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+  //
+  //     if (data.data) {
+  //       displayAiComment(data.data);
+  //     } else {
+  //       console.error('Error loading answers:', data);
+  //     }
+  //   })
+  //   .catch(error => console.error('Error:', error));
+  // }
   function fetchAiComment(questionId) {
     fetch(url + `/${questionId}/ai-answers`, {
       method: 'GET',
@@ -1065,16 +1137,31 @@
     })
     .then(response => response.json())
     .then(data => {
-      console.log('Received AI answers data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+      console.log('Received AI answers data:', JSON.stringify(data, null, 2));
+
+      // AI 답변 컨테이너 가져오기
+      const aiAnswerContainer = document.querySelector('.ai-answer-container');
 
       if (data.data) {
+        // AI 답변이 있는 경우
+        aiAnswerContainer.style.display = 'flex';  // 컨테이너 보이기
         displayAiComment(data.data);
+        // 남은 횟수 조회
+        fetchRemainingCount();
       } else {
-        console.error('Error loading answers:', data);
+        // AI 답변이 없는 경우
+        aiAnswerContainer.style.display = 'none';  // 컨테이너 숨기기
+        console.log('No AI answer available');
       }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+      console.error('Error:', error);
+      // 에러 발생 시 컨테이너 숨기기
+      const aiAnswerContainer = document.querySelector('.ai-answer-container');
+      aiAnswerContainer.style.display = 'none';
+    });
   }
+
 
   function displayAiComment(aiAnswer) {
     const container = document.getElementById('ai-answer-section');
@@ -1093,40 +1180,41 @@
     const regenerationBtn = document.getElementById('regenerationBtn');
     const originalText = regenerationBtn.textContent;
 
-    regenerationBtn.addEventListener('click', () => {
-      // 버튼 텍스트 변경 및 비활성화
+    // 페이지 로드 시 남은 횟수 조회
+    fetchRemainingCount();
+
+    regenerationBtn.addEventListener('click', async () => {
       regenerationBtn.textContent = '...';
       regenerationBtn.disabled = true;
 
-      fetch(url + `/${questionId}/ai-answers`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-QQ-AUTH-TOKEN': token
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Received AI answers data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+      try {
+        const response = await fetch(url + `/${questionId}/ai-answers`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-QQ-AUTH-TOKEN': token
+          }
+        });
+        const data = await response.json();
 
         if (data.data) {
           displayAiComment(data.data);
+          // 답변 생성 후 남은 횟수 다시 조회
+          await fetchRemainingCount();
         } else {
-          console.error('Error re-generating ai answers:', data);
           let errorMessage = 'AI 답변을 생성 중 오류가 발생했습니다.';
           if (data.reason) {
             errorMessage += `\n이유: ${data.reason}`;
           }
           alert(errorMessage);
         }
-      })
-      .catch(error => console.error('Error:', error))
-      .finally(() => {
-        // 요청 완료 후 버튼 텍스트 복원 및 활성화
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
         regenerationBtn.textContent = originalText;
         regenerationBtn.disabled = false;
-      });
-    })
+      }
+    });
   }
 
   function fetchComments(questionId) {
