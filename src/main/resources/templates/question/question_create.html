@@ -226,20 +226,24 @@
             border-color: #007bff;
         }
 
-        /* 무엇이든 물어보세요 버튼 */
-        .chat-widget {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            width: 150px;
-            text-align: center;
-            z-index: 1000; /* 화면에서 항상 보이게 z-index 설정 */
-        }
+    .ai-answer-request {
+      padding-top: 10px;
+    }
+
+    /* 무엇이든 물어보세요 버튼 */
+    .chat-widget {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      width: 150px;
+      text-align: center;
+      z-index: 1000; /* 화면에서 항상 보이게 z-index 설정 */
+    }
 
         .chat-widget img {
             width: 50px;
@@ -294,11 +298,22 @@
             <option value="">커뮤니티를 선택하세요</option>
         </select>
 
-        <!-- 태그 입력 -->
-        <label for="tag-container">#태그 (최대 10개)</label>
-        <div id="tag-container" class="tag-container">
-            <input type="text" class="tag-input" placeholder="#" onkeyup="validateHashtag(this)">
-        </div>
+  <!-- 태그 입력 -->
+  <label for="tag-container">#태그 (최대 10개)</label>
+  <div id="tag-container" class="tag-container">
+    <input type="text" class="tag-input" placeholder="#" onkeyup="validateHashtag(this)">
+  </div>
+
+  <!-- AI 답변 선택 및 남은 요청 가능 횟수 조회 -->
+  <div style="display: flex; align-items: center; margin: 20px 0;">
+    <div style="display: flex; align-items: center;">
+      <input type="checkbox" id="ai-answer-checkbox" style="margin-right: 8px;">
+      <label for="ai-answer-checkbox" class="ai-answer-request">AI 답변 요청하기</label>
+    </div>
+    <div id="remaining-count" style="margin-left: 30px; color: #666;">
+      남은 요청 가능 횟수: <span id="remaining-count-value">-</span>회
+    </div>
+  </div>
 
         <!-- 답변 설정 -->
         <!--  <div class="settings-wrapper">-->
@@ -353,6 +368,7 @@
   // 페이지 로드 시 커뮤니티 목록을 가져오는 함수
   document.addEventListener('DOMContentLoaded', function () {
     fetchMyCommunities();
+    fetchRemainingCount(); // 남은 횟수 조회 추가
     initializeTagInput();
   });
 
@@ -430,7 +446,37 @@
         }
     }
 
-    /* 해시태그 */
+  // 남은 횟수 조회 함수
+  function fetchRemainingCount() {
+    fetch(baseURL + '/api/rate-limit/ai-answers', {
+      headers: {
+        'X-QQ-AUTH-TOKEN': token
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      const remainingCountElement = document.getElementById('remaining-count-value');
+      remainingCountElement.textContent = data.remainingGenerateCount;
+
+      // 체크박스 상태 제어
+      const checkbox = document.getElementById('ai-answer-checkbox');
+      if (data.remainingGenerateCount <= 0) {
+        checkbox.disabled = true;  // 체크박스 비활성화
+        checkbox.checked = false;  // 체크 해제
+        checkbox.title = "남은 AI 답변 요청 횟수가 없습니다";  // 마우스 오버 시 툴팁
+      } else {
+        checkbox.disabled = false;
+        checkbox.title = "";
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching remaining count:', error);
+      const remainingCountElement = document.getElementById('remaining-count-value');
+      remainingCountElement.textContent = '-';
+    });
+  }
+
+  /* 해시태그 */
 
   function initializeTagInput() {
     const container = document.getElementById('tag-container');
@@ -536,14 +582,15 @@
                 console.log('Uploaded image URL:', imageUrl);
             }
 
-            // 2. 질문 생성
-            const questionData = {
-                title: title,
-                content: content,
-                imgUrl: imageUrl || '', // 이미지 URL이 있으면 사용, 없으면 빈 문자열
-                commId: parseInt(commId),
-                hashtags: hashtags
-            };
+      // 2. 질문 생성
+      const questionData = {
+        title: title,
+        content: content,
+        imgUrl: imageUrl || '', // 이미지 URL이 있으면 사용, 없으면 빈 문자열
+        commId: parseInt(commId),
+        hashtags: hashtags,
+        isAiAnswerRequested: document.getElementById('ai-answer-checkbox').checked
+      };
 
             // 질문 등록 API 호출
             const response = await fetchWithAuth(url, {

@@ -1,5 +1,6 @@
 package com.hanshin.supernova.question.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -22,4 +23,7 @@ public class QuestionRequest {
 
     @Size(max = 10, message = "해시태그는 최대 10개까지 등록이 가능합니다.")
     private List<String> hashtags;
+
+    @JsonProperty("isAiAnswerRequested")
+    private boolean isAiAnswerRequested;
 }
