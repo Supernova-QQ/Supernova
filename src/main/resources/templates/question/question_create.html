@@ -516,30 +516,27 @@
         }
     }
 
-    function getHashtags() {
-        const container = document.getElementById('tag-container');
-        const inputs = container.getElementsByClassName('tag-input');
-        const hashtags = [];
+  function getHashtags() {
+    const container = document.getElementById('tag-container');
+    const inputs = container.getElementsByClassName('tag-input');
+    const hashtags = [];
 
-        for (let input of inputs) {
-            if (input.value) {
-                // #이 없는 경우 추가
-                // const tag = input.value.startsWith('#') ? input.value : '#' + input.value;
-                // hashtags.push(tag);
-                hashtags.push(input.value);
-            }
-        }
-
-        return hashtags;
+    for (let input of inputs) {
+      if (input.value) {
+        hashtags.push(input.value);
+      }
     }
 
-    // 폼 제출 처리
-    document.querySelector('.submit-btn').addEventListener('click', async function () {
-        const title = document.getElementById('question-title').value;
-        const content = document.getElementById('question-description').value.replace(/\n/g, '<br>');
-        const commId = document.getElementById('community-select').value;
-        const hashtags = getHashtags();
-        const imageFile = document.getElementById('question-image').files[0];
+    return hashtags;
+  }
+
+  // 폼 제출 처리
+  document.querySelector('.submit-btn').addEventListener('click', async function () {
+    const title = document.getElementById('question-title').value;
+    const content = document.getElementById('question-description').value;
+    const commId = document.getElementById('community-select').value;
+    const hashtags = getHashtags();
+    const imageFile = document.getElementById('question-image').files[0];
 
         // 필수 필드 검증
         if (!title.trim()) {
