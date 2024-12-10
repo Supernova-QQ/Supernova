@@ -457,7 +457,7 @@
   // 폼 제출 처리
   document.querySelector('.submit-btn').addEventListener('click', async function () {
     const title = document.getElementById('question-title').value;
-    const content = document.getElementById('question-description').value.replace(/\n/g, '<br>');
+    const content = document.getElementById('question-description').value;
     const commId = document.getElementById('community-select').value;
     const hashtags = getHashtags();
     const imageFile = document.getElementById('question-image').files[0];
