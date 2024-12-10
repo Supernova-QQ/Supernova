@@ -350,10 +350,11 @@
 <script type="module">
     import CONFIG from '/static/js/config.js';
 
-    // 페이지 로드 시 커뮤니티 목록을 가져오는 함수
-    document.addEventListener('DOMContentLoaded', function () {
-        fetchMyCommunities();
-    });
+  // 페이지 로드 시 커뮤니티 목록을 가져오는 함수
+  document.addEventListener('DOMContentLoaded', function () {
+    fetchMyCommunities();
+    initializeTagInput();
+  });
 
     // 이미지 업로드 관련 코드
     document.getElementById('upload-button').addEventListener('click', function () {
@@ -431,8 +432,20 @@
 
     /* 해시태그 */
 
-    // 특수문자 체크를 위한 정규식
-    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+  function initializeTagInput() {
+    const container = document.getElementById('tag-container');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'tag-input';
+    input.placeholder = '#';
+    input.onkeyup = function() {
+      validateHashtag(this);
+    };
+    container.appendChild(input);
+  }
+
+  // 특수문자 체크를 위한 정규식
+  const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
 
     function validateHashtag(input) {
         // 특수문자 체크
@@ -445,17 +458,17 @@
         const container = document.getElementById('tag-container');
         const inputs = container.getElementsByClassName('tag-input');
 
-        if (input.value && input === inputs[inputs.length - 1] && inputs.length < 10) {
-            const newInput = document.createElement('input');
-            newInput.type = 'text';
-            newInput.className = 'tag-input';
-            newInput.placeholder = '#';
-            newInput.onkeyup = function () {
-                validateHashtag(this);
-            };
-            container.appendChild(newInput);
-        }
+    if (input.value && input === inputs[inputs.length - 1] && inputs.length < 10) {
+      const newInput = document.createElement('input');
+      newInput.type = 'text';
+      newInput.className = 'tag-input';
+      newInput.placeholder = '#';
+      newInput.onkeyup = function() {
+        validateHashtag(this);
+      };
+      container.appendChild(newInput);
     }
+  }
 
     function getHashtags() {
         const container = document.getElementById('tag-container');
@@ -464,9 +477,6 @@
 
         for (let input of inputs) {
             if (input.value) {
-                // #이 없는 경우 추가
-                // const tag = input.value.startsWith('#') ? input.value : '#' + input.value;
-                // hashtags.push(tag);
                 hashtags.push(input.value);
             }
         }
@@ -541,40 +551,17 @@
                 body: JSON.stringify(questionData)
             });
 
-            const data = await response.json();
-            if (data.data) {
-                window.location.href = `/questions/info/${data.data.questionId}`;
-            } else {
-                throw new Error(data.reason || '질문 등록 실패');
-            }
-            // API 요청
-            // fetch(url, {
-            //   method: 'POST',
-            //   headers: {
-            //     'Content-Type': 'application/json',
-            //     'X-QQ-ACCESS-TOKEN': token
-            //   },
-            //   body: JSON.stringify(questionData)
-            // })
-            // .then(response => response.json())
-            // .then(data => {
-            //   console.log('Received question data:', JSON.stringify(data, null, 2));
-            //   if (data.data) {
-            //     // 성공 시 질문 상세 페이지로 이동
-            //     window.location.href = `/questions/info/${data.data.questionId}`;
-            //   } else {
-            //     alert('질문 등록에 실패했습니다: ' + data.message);
-            //   }
-            // })
-            // .catch(error => {
-            //   console.error('Error:', error);
-            //   alert('질문 등록 중 오류가 발생했습니다.');
-            // });
-        } catch (error) {
-            console.error('Error:', error);
-            alert(error.message || '질문 등록 중 오류가 발생했습니다.');
-        }
-    });
+      const data = await response.json();
+      if (data.data) {
+        window.location.href = `/questions/info/${data.data.questionId}`;
+      } else {
+        throw new Error(data.reason || '질문 등록 실패');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert(error.message || '질문 등록 중 오류가 발생했습니다.');
+    }
+  });
 
     // 취소 버튼 처리
     document.querySelector('.cancel-btn').addEventListener('click', function () {
