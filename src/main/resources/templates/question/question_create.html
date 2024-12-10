@@ -500,6 +500,20 @@
     }
   }
 
+  function getHashtags() {
+    const container = document.getElementById('tag-container');
+    const inputs = container.getElementsByClassName('tag-input');
+    const hashtags = [];
+
+    for (let input of inputs) {
+      if (input.value) {
+        hashtags.push(input.value);
+      }
+    }
+
+    return hashtags;
+  }
+
   // 폼 제출 처리
   document.querySelector('.submit-btn').addEventListener('click', async function () {
     const title = document.getElementById('question-title').value;
