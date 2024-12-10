@@ -1,15 +1,10 @@
 package com.hanshin.supernova.question.infrastructure;
 
 import com.hanshin.supernova.question.domain.Question;
-
 import java.time.LocalDate;
-import java.util.Collection;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +14,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional(readOnly = true)
 public interface QuestionRepository extends JpaRepository<Question, Long> {
+
+    @Query("SELECT q FROM Question q " +
+            "WHERE q.commId > 1" +
+            "ORDER BY q.createdAt DESC " +
+            "LIMIT :N")
+    List<Question> findNLatestQuestionsByCreatedAtDesc(@Param("N") Integer limitNumber, Pageable pageable);
+
+    @Query("SELECT q FROM Question q " +
+            "WHERE q.commId > 1" +
+            "ORDER BY q.createdAt DESC")
+    Page<Question> findAllOrderByCreatedAtDesc(Pageable pageable);
+
+    @Query("SELECT q FROM Question q " +
+            "WHERE q.commId = 1" +
+            "ORDER BY q.createdAt DESC " +
+            "LIMIT :N")
+    List<Question> findNLatestQuestionsFromGeneralCommunityByCreatedAtDesc(@Param("N") Integer limitNumber, Pageable pageable);
+
+    @Query("SELECT q FROM Question q " +
+            "WHERE q.commId = 1" +
+            "ORDER BY q.createdAt DESC")
+    Page<Question> findAllFromGeneralCommunityOrderByCreatedAtDesc(Pageable pageable);
 
     @Query("SELECT q FROM Question q WHERE q.commId=:commId AND q.isResolved=:isResolved ORDER BY q.createdAt ASC")
     Page<Question> findAllByCommIdAndIsResolvedOrderByCreatedAtAsc(@Param("commId") Long c_id, @Param("isResolved") boolean isResolved, Pageable pageable);
