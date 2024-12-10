@@ -285,6 +285,11 @@
             cursor: pointer;
         }
 
+        .remaining-count {
+            font-size: 12px;
+            color: #666;
+        }
+
         /* 답변 확인하기 */
         #answer-section, #ai-answer-section {
             margin-bottom: 20px;
@@ -797,6 +802,38 @@
             .then(response => response.json())
             .then(data => {
                 console.log('Received hashtag data:', JSON.stringify(data, null, 2));
+  // 페이지 로드 시와 재생성 버튼 클릭 시 남은 횟수를 조회하는 함수
+  async function fetchRemainingCount() {
+    try {
+      const response = await fetch(baseURL + '/api/rate-limit/ai-answers', {
+        headers: {
+          'X-QQ-AUTH-TOKEN': token
+        }
+      });
+      const data = await response.json();
+
+      // 남은 횟수 업데이트
+      const remainingCountElement = document.getElementById('remaining-count');
+      remainingCountElement.textContent = `남은 횟수: ${data.remainingGenerateCount}회`;
+    } catch (error) {
+      console.error('Error fetching remaining count:', error);
+      const remainingCountElement = document.getElementById('remaining-count');
+      remainingCountElement.textContent = '남은 횟수: -회';
+    }
+  }
+
+  // 해시태그 정보
+  function fetchHashtagInfo(questionId) {
+    fetch(url + `/${questionId}/hashtags`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-QQ-AUTH-TOKEN': token
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Received hashtag data:', JSON.stringify(data, null, 2));
 
                 if (data.data) {
                     displayHashtagsWithStyle(data.data);
@@ -1105,26 +1142,61 @@
             });
     }
 
-    // AI 답변
-    function fetchAiComment(questionId) {
-        fetchWithAuth(url + `/${questionId}/ai-answers`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Received AI answers data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+  // AI 답변
+  // function fetchAiComment(questionId) {
+  //   fetch(url + `/${questionId}/ai-answers`, {
+  //     method: 'GET',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'X-QQ-AUTH-TOKEN': token
+  //     }
+  //   })
+  //   .then(response => response.json())
+  //   .then(data => {
+  //     console.log('Received AI answers data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+  //
+  //     if (data.data) {
+  //       displayAiComment(data.data);
+  //     } else {
+  //       console.error('Error loading answers:', data);
+  //     }
+  //   })
+  //   .catch(error => console.error('Error:', error));
+  // }
+  function fetchAiComment(questionId) {
+      fetchWithAuth(url + `/${questionId}/ai-answers`, {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json'
+          }
+      })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Received AI answers data:', JSON.stringify(data, null, 2));
 
-                if (data.data) {
-                    displayAiComment(data.data);
-                } else {
-                    console.error('Error loading answers:', data);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    }
+      // AI 답변 컨테이너 가져오기
+      const aiAnswerContainer = document.querySelector('.ai-answer-container');
+
+      if (data.data) {
+        // AI 답변이 있는 경우
+        aiAnswerContainer.style.display = 'flex';  // 컨테이너 보이기
+        displayAiComment(data.data);
+        // 남은 횟수 조회
+        fetchRemainingCount();
+      } else {
+        // AI 답변이 없는 경우
+        aiAnswerContainer.style.display = 'none';  // 컨테이너 숨기기
+        console.log('No AI answer available');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      // 에러 발생 시 컨테이너 숨기기
+      const aiAnswerContainer = document.querySelector('.ai-answer-container');
+      aiAnswerContainer.style.display = 'none';
+    });
+  }
+
 
     function displayAiComment(aiAnswer) {
         const container = document.getElementById('ai-answer-section');
@@ -1143,40 +1215,42 @@
         const regenerationBtn = document.getElementById('regenerationBtn');
         const originalText = regenerationBtn.textContent;
 
-        regenerationBtn.addEventListener('click', () => {
-            // 버튼 텍스트 변경 및 비활성화
-            regenerationBtn.textContent = '...';
-            regenerationBtn.disabled = true;
+    // 페이지 로드 시 남은 횟수 조회
+    fetchRemainingCount();
 
-            fetchWithAuth(url + `/${questionId}/ai-answers`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Received AI answers data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+    regenerationBtn.addEventListener('click', async () => {
+        // 버튼 텍스트 변경 및 비활성화
+      regenerationBtn.textContent = '...';
+      regenerationBtn.disabled = true;
 
-                    if (data.data) {
-                        displayAiComment(data.data);
-                    } else {
-                        console.error('Error re-generating ai answers:', data);
-                        let errorMessage = 'AI 답변을 생성 중 오류가 발생했습니다.';
-                        if (data.reason) {
-                            errorMessage += `\n이유: ${data.reason}`;
-                        }
-                        alert(errorMessage);
-                    }
-                })
-                .catch(error => console.error('Error:', error))
-                .finally(() => {
-                    // 요청 완료 후 버튼 텍스트 복원 및 활성화
-                    regenerationBtn.textContent = originalText;
-                    regenerationBtn.disabled = false;
-                });
-        })
-    }
+      try {
+        const response = await fetchWithAuth(url + `/${questionId}/ai-answers`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await response.json();
+
+        if (data.data) {
+          displayAiComment(data.data);
+          // 답변 생성 후 남은 횟수 다시 조회
+          await fetchRemainingCount();
+        } else {
+          let errorMessage = 'AI 답변을 생성 중 오류가 발생했습니다.';
+          if (data.reason) {
+            errorMessage += `\n이유: ${data.reason}`;
+          }
+          alert(errorMessage);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        regenerationBtn.textContent = originalText;
+        regenerationBtn.disabled = false;
+      }
+    });
+  }
 
     function fetchComments(questionId) {
         fetchWithAuth(url + `/${questionId}/answers`, {
