@@ -6,7 +6,7 @@ import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.community.infrastructure.CommunityRepository;
 import com.hanshin.supernova.exception.community.CommunityInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
-import com.hanshin.supernova.security.service.JwtService;
+import com.hanshin.supernova.security.application.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDate;

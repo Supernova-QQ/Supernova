@@ -64,17 +64,11 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    //    @DeleteMapping("/delete")
-//    public ResponseEntity<String> deleteUser(@Validated @RequestBody DeleteUserRequest deleteUserRequest) {
-//        userService.deleteUser(deleteUserRequest.getUserId(), deleteUserRequest.getPassword());
-//        return ResponseEntity.ok("유저가 성공적으로 삭제되었습니다.");
-//    }
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteUser(@Validated @RequestBody DeleteUserRequest deleteUserRequest) {
         userService.deleteUser(deleteUserRequest.getUserId(), deleteUserRequest.getPassword());
         return ResponseEntity.ok("유저가 성공적으로 삭제되었습니다.");
     }
-
 
     @GetMapping("/nickname")
     public ResponseEntity<Map<String, String>> getNickname(@RequestBody(required = false) Map<String, Object> request, AuthUser authUser) {

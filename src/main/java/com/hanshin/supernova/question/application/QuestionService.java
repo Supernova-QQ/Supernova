@@ -20,15 +20,14 @@ import com.hanshin.supernova.question.infrastructure.QuestionRecommendationRepos
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.question.infrastructure.QuestionViewRepository;
 import com.hanshin.supernova.user.domain.User;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -229,8 +228,4 @@ public class QuestionService extends AbstractValidateService {
                 findUser.getNickname());
     }
 
-    // questionId를 통해 communityId 조회
-    public Long findCommunityIdByQuestionId(Long questionId) {
-        return questionRepository.findCommunityIdByQuestionId(questionId);
-    }
 }

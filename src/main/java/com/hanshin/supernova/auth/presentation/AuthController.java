@@ -5,7 +5,7 @@ import com.hanshin.supernova.auth.dto.response.AuthLoginResponse;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.redis.service.RedisService;
-import com.hanshin.supernova.security.service.JwtService;
+import com.hanshin.supernova.security.application.JwtService;
 import com.hanshin.supernova.user.application.UserService;
 import com.hanshin.supernova.user.domain.User;
 import io.jsonwebtoken.ExpiredJwtException;

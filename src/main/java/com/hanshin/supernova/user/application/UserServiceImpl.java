@@ -5,7 +5,7 @@ import com.hanshin.supernova.exception.auth.UserAuthManagementInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.user.UserInvalidException;
 import com.hanshin.supernova.exception.user.UserRegisterInvalidException;
-import com.hanshin.supernova.security.service.JwtService;
+import com.hanshin.supernova.security.application.JwtService;
 import com.hanshin.supernova.user.domain.Activity;
 import com.hanshin.supernova.user.domain.Authority;
 import com.hanshin.supernova.user.domain.User;
