@@ -142,10 +142,9 @@
   function fetchCommunities(page = 0) {
     const endpoint = currentSort === 'latest' ? 'all-latest-communities' : 'all-old-communities';
 
-    fetch(url + `/${endpoint}?page=${page}`, {
+    fetchWithAuth(url + `/${endpoint}?page=${page}`, {
       headers: {
-        'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'Content-Type': 'application/json'
       }
     })
     .then(response => response.json())

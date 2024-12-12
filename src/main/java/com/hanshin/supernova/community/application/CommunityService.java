@@ -18,13 +18,16 @@ import com.hanshin.supernova.exception.community.CommunityInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CommunityService extends AbstractValidateService {
@@ -38,6 +41,8 @@ public class CommunityService extends AbstractValidateService {
      */
     @Transactional
     public CommunityResponse createCommunity(AuthUser user, CommunityRequest request) {
+
+        log.info("createCommunity 호출됨: AuthUser = {}", user);
 
         // 커뮤니티 이름 중복 체크
         isCommunityNameDuplicated(request);

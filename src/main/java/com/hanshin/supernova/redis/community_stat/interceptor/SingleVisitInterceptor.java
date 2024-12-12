@@ -1,13 +1,12 @@
 package com.hanshin.supernova.redis.community_stat.interceptor;
 
-import static com.hanshin.supernova.auth.AuthCostants.AUTH_TOKEN_HEADER_KEY;
+import static com.hanshin.supernova.auth.AuthConstants.ACCESS_TOKEN_HEADER_KEY;
 
-import com.hanshin.supernova.auth.application.TokenService;
-import com.hanshin.supernova.auth.model.AuthToken;
 import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.community.infrastructure.CommunityRepository;
 import com.hanshin.supernova.exception.community.CommunityInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
+import com.hanshin.supernova.security.application.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
@@ -34,7 +33,9 @@ public class SingleVisitInterceptor implements HandlerInterceptor {
     private final CommunityRepository communityRepository;
 
     // TODO 만약 예원이가 한 내용 병합될 경우, TokenService -> SecurityTokenService
-    private final TokenService tokenService;
+//    private final TokenService tokenService;
+//    private final AuthUserResolver authUserResolver;
+    private final JwtService jwtService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
@@ -48,12 +49,13 @@ public class SingleVisitInterceptor implements HandlerInterceptor {
         }
 
         // 토큰에서 AuthUser 정보 추출
-        String accessToken = request.getHeader(AUTH_TOKEN_HEADER_KEY);
+        String accessToken = request.getHeader(ACCESS_TOKEN_HEADER_KEY);
         AuthUser authUser = null;
         if (accessToken != null && !accessToken.isEmpty()) {
-            AuthToken token = new AuthToken(accessToken);
+//            AuthToken token = new AuthToken(accessToken);
             try {
-                authUser = tokenService.getAuthUser(token);
+//                authUser = tokenService.getAuthUser(token);
+                authUser = jwtService.getAuthUserFromToken(accessToken);
             } catch (Exception e) {
                 log.warn("Failed to get AuthUser from token", e);
             }

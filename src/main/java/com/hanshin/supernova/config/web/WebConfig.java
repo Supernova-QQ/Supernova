@@ -2,7 +2,6 @@ package com.hanshin.supernova.config.web;
 
 import com.hanshin.supernova.config.resolver.UserArgumentResolver;
 import com.hanshin.supernova.redis.community_stat.interceptor.SingleVisitInterceptor;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;
@@ -11,6 +10,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor

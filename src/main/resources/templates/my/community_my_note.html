@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{header :: head(additionalStyles=~{::style})}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>커뮤니티</title>
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 70%;
+            margin: 20px auto;
+        }
+
+        .header-buttons {
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .header-buttons button {
+            padding: 10px 20px;
+            border: 2px solid #007bff;
+            background-color: white;
+            color: #007bff;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .header-buttons .active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .main-content {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px; /* 요소 간의 간격 */
+        }
+
+        .card {
+            width: 40%;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* 답변을 기다리는 질문 */
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+
+            h2 {
+                margin-top: 0;
+            }
+        }
+
+        .view-more-btn {
+            padding: 2px 5px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            background-color: white;
+            color: #007bff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 0;
+        }
+
+        .view-more-btn:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* 질문 목록 */
+
+        .list-item {
+            display: flex;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .list-item:hover {
+            cursor: pointer;
+        }
+
+        .list-item-number {
+            min-width: 30px;
+            width: 30px;
+            height: 30px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .list-item-text h4 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .list-item-text p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        /* 커뮤니티 정보 */
+
+        .community-status {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .side-info {
+            width: 20%;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .side-info img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+
+        .side-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .stats {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .stats-item span {
+            font-weight: bold;
+        }
+
+        .since {
+            font-size: 12px;
+            color: gray;
+            margin-top: 20px;
+        }
+
+
+        /* 무엇이든 물어보세요 버튼 */
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            width: 150px;
+            text-align: center;
+            z-index: 1000; /* 화면에서 항상 보이게 z-index를 설정 */
+        }
+
+        .chat-widget img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+
+        .chat-widget p {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{header :: header}"></header>
+<div th:insert="~{header :: headerScripts}"></div>
+
+<main>
+    <div class="container">
+        <!-- Header buttons -->
+        <div class="header-buttons">
+            <button id="qna-button">질의응답</button>
+            <button id="my-note-button" class="active">내 노트</button>
+        </div>
+
+        <div class="main-content">
+
+            <!-- Left card -->
+            <div class="card">
+                <div class="section-header">
+                    <h3>즐겨찾기 한 질문</h3>
+                    <button id="unanswered-view-more-btn" class="view-more-btn">더보기</button>
+                </div>
+                <div id="left-card"></div>
+            </div>
+
+            <!-- Right card -->
+            <div class="card">
+                <div class="section-header">
+                    <h3>즐겨찾기 한 답변</h3>
+                    <button id="all-view-more-btn" class="view-more-btn">더보기</button>
+                </div>
+                <div id="right-card"></div>
+            </div>
+
+            <!-- 커뮤니티 정보 -->
+            <div class="side-info">
+                <div class="community-status">
+                    <span id="active-info" class="status-dot"></span>
+                    <span id="public-info" class="status-dot"></span>
+                </div>
+                <img src="https://via.placeholder.com/120" alt="커뮤니티 로고" style="
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;  /* 이미지 비율 유지 */
+        margin-bottom: 20px;
+      ">
+                <p id="communityName"></p>
+                <p id="communityDescription"></p>
+
+                <!-- 수정 버튼 추가 -->
+                <button id="editButton" class="edit-btn" style="
+        margin: 10px 0;
+        padding: 8px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      ">수정
+                </button>
+
+                <div class="stats">
+                    <div class="stats-item">
+                        <span>회원수</span>
+                        <span id="memberCount"></span>
+                    </div>
+                    <div class="stats-item">
+                        <span>질문수</span>
+                        <span id="questionCount"></span>
+                    </div>
+                    <div class="stats-item">
+                        <span>방문자</span>
+                        <span id="visitorCount"></span>
+                    </div>
+                </div>
+                <p class="since" id="createdAt"></p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{footer :: footer}"></footer>
+
+<script type="module" src="/js/config.js"></script>
+<script type="module" src="/js/news.js"></script>
+<script type="module" src="/js/question.js"></script>
+<script type="module" src="/js/search.js"></script>
+<script type="module" src="/js/community-navigation.js"></script>
+
+<script type="module">
+    import CONFIG from '/static/js/config.js';
+
+    const communityId = [[${communityId}]];
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchCommunityInfo(communityId);
+        fetchCommunityVisitCnt(communityId);
+        fetchBookmarkedQuestions(communityId);
+        fetchBookmarkedAnswers(communityId);
+    })
+
+    // const url = `http://localhost:8080/api/communities`
+    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+    const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
+
+    // 커뮤니티 정보 로딩
+    function fetchCommunityInfo(communityId) {
+        fetch(url + `/${communityId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Received question data:', JSON.stringify(data, null, 2));
+
+                if (data.data) {
+                    updateCommunityInfo(data.data);
+                } else {
+                    console.error('Unexpected data structure:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function updateCommunityInfo(communityInfo) {
+        document.getElementById('communityName').textContent = communityInfo.name;
+        document.getElementById('communityDescription').textContent = communityInfo.description;
+        document.getElementById('memberCount').textContent = communityInfo.commCounter.memberCnt;
+        document.getElementById('questionCount').textContent = communityInfo.commCounter.questionCnt;
+        document.getElementById('createdAt').textContent = 'since ' + new Date(
+            communityInfo.createdAt).toLocaleDateString();
+
+        // 이미지 URL 처리 추가
+        const communityImage = document.querySelector('.side-info img');
+        if (communityInfo.imgUrl) {
+            communityImage.src = communityInfo.imgUrl;
+        } else {
+            communityImage.src = 'https://via.placeholder.com/120';  // 기본 이미지
+        }
+        communityImage.alt = `${communityInfo.name} 커뮤니티 이미지`;
+
+        // 활성 상태 표시
+        const activeInfo = document.getElementById('active-info');
+        activeInfo.style.backgroundColor = communityInfo.isDormant ? 'gray' : 'green';
+        activeInfo.title = communityInfo.isDormant ? '휴면 상태' : '활성 상태';
+
+        // 공개 상태 표시
+        const publicInfo = document.getElementById('public-info');
+        publicInfo.style.backgroundColor = communityInfo.isPublic ? 'blue' : 'red';
+        publicInfo.title = communityInfo.isPublic ? '공개' : '비공개';
+    }
+
+    function fetchCommunityVisitCnt(communityId) {
+        fetch(url + `/${communityId}/visitors/daily`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Received visitor data:', JSON.stringify(data, null, 2));
+
+                if (data) {
+                    updateCommunityVisitor(data);
+                } else {
+                    console.error('Unexpected data structure:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function updateCommunityVisitor(visitInfo) {
+        document.getElementById('visitorCount').textContent = visitInfo.visitorCount;
+    }
+
+    // 원하는 크기로 글자수 제한
+    function truncateText(text, maxLength) {
+        if (text.length > maxLength) {
+            return text.substring(0, maxLength) + '...';
+        }
+        return text;
+    }
+
+    // 북마크된 질문 가져오기
+    function fetchBookmarkedQuestions(communityId) {
+        console.log("fetchBookmarkedQuestions 실행됨");
+
+        fetchWithAuth(`${CONFIG.API.BASE_URL}/api/communities/${communityId}/bookmarks/questions`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    renderBookmarkedQuestions(data); // 데이터를 렌더링
+                } else {
+                    console.error('Error fetching bookmarked questions:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function renderBookmarkedQuestions(questions) {
+        console.log("renderBookmarkedQuestions 실행됨");
+        console.log("Received data:", questions); // 데이터를 로그에 출력
+
+        const container = document.getElementById('left-card');
+        container.innerHTML = ''; // 기존 내용 제거
+
+        questions.forEach((question, index) => {
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            item.innerHTML = `
+            <div class="list-item-number">${index + 1}</div>
+            <div class="list-item-text">
+                <h4>${truncateText(question.title || '제목 없음', 20)}</h4>
+                <p>${truncateText(question.content || '요약 없음', 50)}</p>
+            </div>
+        `;
+            item.addEventListener('click', () => {
+                window.location.href = `/questions/${question.id}`;
+            });
+            container.appendChild(item);
+        });
+    }
+
+
+
+    // 북마크된 답변 가져오기
+    function fetchBookmarkedAnswers(communityId) {
+        console.log("fetchBookmarkedAnswers 실행됨");
+
+        fetchWithAuth(`${CONFIG.API.BASE_URL}/api/communities/${communityId}/bookmarks/answers`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    renderBookmarkedAnswers(data); // 데이터를 렌더링
+                } else {
+                    console.error('Error fetching bookmarked answers:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function renderBookmarkedAnswers(answers) {
+        console.log("renderBookmarkedAnswers 실행됨");
+        console.log("Received data:", answers); // 데이터를 로그에 출력
+
+        const container = document.getElementById('right-card');
+        container.innerHTML = ''; // 기존 내용 제거
+
+        answers.forEach((answer, index) => {
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            item.innerHTML = `
+            <div class="list-item-number">${index + 1}</div>
+            <div class="list-item-text">
+                <h4>${truncateText(answer.title || '질문 제목 없음', 20)}</h4>
+                <p>${truncateText(answer.content || '내용 없음', 50)}</p>
+            </div>
+        `;
+            item.addEventListener('click', () => {
+                window.location.href = `/questions/${answer.questionId}#answer-${answer.id}`;
+            });
+            container.appendChild(item);
+        });
+    }
+
+
+</script>
+
+</body>
+</html>
