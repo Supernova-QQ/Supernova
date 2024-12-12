@@ -78,4 +78,9 @@ public class QuestionController {
         return ResponseDto.ok(responses);
     }
 
+    @GetMapping("/{q_id}/c_id")
+    public ResponseEntity<Long> getCommunityIdByQuestionId(@PathVariable Long q_id) {
+        Long communityId = questionService.findCommunityIdByQuestionId(q_id);
+        return ResponseEntity.ok(communityId);
+    }
 }

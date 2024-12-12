@@ -31,11 +31,6 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
-  data:
-    redis:
-      repositories:
-        enabled: false
-
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
