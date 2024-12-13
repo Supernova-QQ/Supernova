@@ -1,122 +1,157 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head th:replace="~{header :: head(additionalStyles=~{::style})}">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>커뮤니티 및 게시글</title>
-  <style>
-    .main-container {
-      width: 70%;
-      margin: 0 auto;
-    }
+    <meta charset="UTF-8">
+    <title>커뮤니티 및 게시글</title>
+    <style>
+        html {
+            height: 100%;
+        }
 
-    .container {
-      display: flex;
-      justify-content: space-between;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .left-column {
-      width: 25%;
-    }
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .left-column, .middle-column, .right-column {
-      background-color: white;
-      border-radius: 8px;
-      padding: 15px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+        h3 {
+            margin-top: 0;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            margin: 0 auto;
+            padding: 20px 80px;
+            gap: 20px;
+        }
+
+        .left-column, .middle-column, .right-column {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .left-column, .right-column {
+            width: 25%;
+        }
+
+        /* 인기 커뮤니티 */
+
+        .community-card {
+            gap: 15px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .community-card:hover {
+            cursor: pointer;
+        }
+
+        .community-img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .community-info {
+            width: 100%;
+        }
+
+        .community-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .community-info > p:first-child {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .community-info-cnt {
+            float: right;
+        }
+
+        .community-info-cnt p, .community-info-view {
+            text-align: right;
+            color: #888;
+        }
+
+        /* 인기 질문 */
+        .middle-column {
+            width: 45%;
+        }
+
+        .question-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .question-item:hover {
+            cursor: pointer;
+        }
+
+        .index {
+            background-color: #62b1ff;
+            color: #ffffff;
+            width: 38px;
+            height: 38px;
+            margin-top: 10px;
+            margin-right: 15px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16pt;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
 
 
-    /* 인기 커뮤니티 */
+        .create-community-btn {
+            display: inline-block;
+            padding: 15px;
+            width: -webkit-fill-available;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-    .community-card {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-      padding: 10px;
-      border: 1px solid #e0e0e0;
-      border-radius: 4px;
-    }
+        .create-community-btn:hover {
+            background-color: #62b1ff;
+        }
 
-    .community-card:hover {
-      cursor: pointer;
-    }
+        .notice {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
 
-    .star {
-      color: #ffd700;
-      margin-right: 10px;
-      font-size: 24px;
-    }
-
-    .community-info p {
-      margin: 5px 0;
-      font-size: 14px;
-    }
-
-    .community-info p:first-child {
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    /* 인기 질문 */
-
-    .middle-column {
-      width: 45%;
-      background-color: white;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .question-item {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 20px;
-    }
-
-    .question-item:hover {
-      cursor: pointer;
-    }
-
-    .index {
-      background-color: #e6f3ff;
-      color: #0066cc;
-      width: 30px;
-      margin-top: 26px;
-      height: 30px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 15px;
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-
-    .create-community-btn {
-      display: inline-block;
-      padding: 20px;
-      background-color: #007bff;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .create-community-btn:hover {
-      background-color: #0056b3;
-    }
-
-    .notice {
-      background-color: #f9f9f9;
-      padding: 15px;
-      margin-top: 20px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
+        .notice > p:first-child {
+            font-weight: bold;
+            font-size: 16px;
+        }
 
     /**
     커뮤니티 더보기 버튼
@@ -152,10 +187,12 @@
 
   </style>
 </head>
+
 <body>
 <header th:replace="~{header :: header}"></header>
+<div th:insert="~{header :: headerScripts}"></div>
 
-<div class="main-container">
+<main>
   <div class="container">
     <div class="left-column">
       <div class="section-header">
@@ -174,29 +211,29 @@
       </div>
     </div>
 
-    <!-- 커뮤니티 생성 버튼과 공지사항 섹션 -->
-    <div>
-      <a th:href="@{/communities/create}" class="create-community-btn">
-        <div>+ 커뮤니티 만들기</div>
-      </a>
-      <div class="notice">
-        <p>공지사항</p>
-        <p>커뮤니티 생성 가이드 안내입니다...</p>
-        <p>다른 공지 내용을 적으세요.</p>
-      </div>
-      <div class="notice">
-        <p>공지사항</p>
-        <p>커뮤니티 생성 가이드 안내입니다...</p>
-        <p>다른 공지 내용을 적으세요.</p>
-      </div>
-      <div class="notice">
-        <p>공지사항</p>
-        <p>커뮤니티 생성 가이드 안내입니다...</p>
-        <p>다른 공지 내용을 적으세요.</p>
-      </div>
+        <!-- 커뮤니티 생성 버튼과 공지사항 섹션 -->
+        <div class="right-column">
+            <a th:href="@{/communities/create}" class="create-community-btn">
+                <div>+ 커뮤니티 만들기</div>
+            </a>
+            <div class="notice">
+                <p>공지사항</p>
+                <p>커뮤니티 생성 가이드 안내입니다...</p>
+                <p>다른 공지 내용을 적으세요.</p>
+            </div>
+            <div class="notice">
+                <p>공지사항</p>
+                <p>커뮤니티 생성 가이드 안내입니다...</p>
+                <p>다른 공지 내용을 적으세요.</p>
+            </div>
+            <div class="notice">
+                <p>공지사항</p>
+                <p>커뮤니티 생성 가이드 안내입니다...</p>
+                <p>다른 공지 내용을 적으세요.</p>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
+</main>
 
 <footer th:replace="~{footer :: footer}"></footer>
 
@@ -206,21 +243,20 @@
 <script type="module" src="/js/search.js"></script>
 
 <script type="module">
-  import CONFIG from '/static/js/config.js';
+    import CONFIG from '/static/js/config.js';
 
-  document.addEventListener('DOMContentLoaded', function () {
-    fetchPopularCommunities();
-    fetchPopularQuestions();
-    fetchNotice();
-    fetchPopularTags();
-    fetchPopularQuestion();
-    fetchPopularAnswer();
-  });
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchPopularCommunities();
+        fetchPopularQuestions();
+        fetchNotice();
+        fetchPopularTags();
+        fetchPopularQuestion();
+        fetchPopularAnswer();
+    });
 
-  // const url = `http://localhost:8080/api/main`;
-  // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
-  const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.MAIN;
-  const token = CONFIG.AUTH.DEFAULT_TOKEN;
+    // const url = `http://localhost:8080/api/main`;
+    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+    const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.MAIN;
 
   /* 커뮤니티 */
   function fetchPopularCommunities() {
@@ -234,93 +270,96 @@
     .then(data => {
       console.log('Received data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
 
-      if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
-        displayPopularCommunities(data.data);
-      } else {
-        console.error('Unexpected data structure:', data);
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
+                if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
+                    displayPopularCommunities(data.data);
+                } else {
+                    console.error('Unexpected data structure:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
-  // 각 커뮤니티에 대한 카드를 생성
-  function displayPopularCommunities(communities) {
-    const container = document.getElementById('popularCommunities');
-    container.innerHTML = ''; // Clear existing content
+    // 각 커뮤니티에 대한 카드를 생성
+    function displayPopularCommunities(communities) {
+        const container = document.getElementById('popularCommunities');
+        container.innerHTML = ''; // Clear existing content
 
-    communities.forEach((community, index) => {
-      const card = document.createElement('div');
-      card.className = 'community-card';
-      card.innerHTML = `
-        <span class="star">★</span>
-        <div class="community-info">
-            <p>${community.name}</p>
+        communities.forEach((community, index) => {
+            const card = document.createElement('div');
+            card.className = 'community-card';
+            card.innerHTML = `
+<!--        <span class="star">★</span>-->
+    <img class="community-img" src="../../static/images/star.png" alt="커뮤니티">
+    <div class="community-info">
+        <p>${community.name}</p>
+        <div class="community-info-cnt">
             <p>회원수: ${community.memberCnt}</p>
             <p>방문자수: ${community.visitorCnt}</p>
         </div>
-      `;
+    </div>
+    `;
 
-      // 커뮤니티 내부로 이동
-      card.addEventListener('click', () => {
-        window.location.href = `/communities/info/${community.id}`;
-      });
+            // 커뮤니티 내부로 이동
+            card.addEventListener('click', () => {
+                window.location.href = `/communities/info/${community.id}`;
+            });
 
-      container.appendChild(card);
-    });
-  }
+            container.appendChild(card);
+        });
+    }
 
-  /* 질문 */
-  function fetchPopularQuestions() {
-    fetch(url + `/premonth-top5-questions`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Received question data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+    /* 질문 */
+    function fetchPopularQuestions() {
+        fetch(url + `/premonth-top5-questions`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Received question data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
 
-      if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
-        displayPopularQuestions(data.data);
-      } else {
-        console.error('Unexpected data structure:', data);
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
+                if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
+                    displayPopularQuestions(data.data);
+                } else {
+                    console.error('Unexpected data structure:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
-  // 각 질문에 대한 카드를 생성
-  function displayPopularQuestions(questions) {
-    const container = document.getElementById('popularQuestions');
-    container.innerHTML = ''; // Clear existing content
+    // 각 질문에 대한 카드를 생성
+    function displayPopularQuestions(questions) {
+        const container = document.getElementById('popularQuestions');
+        container.innerHTML = ''; // Clear existing content
 
-    questions.forEach((question, index) => {
-      const card = document.createElement('div');
-      card.className = 'question-item';
-      card.innerHTML = `
+        questions.forEach((question, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-item';
+            card.innerHTML = `
        <span class="index">${index + 1}</span>
        <div class="community-info">
            <p>${truncateText(question.title, 20)}</p>
-           <p></p>${truncateText(question.content, 50)}</p>
-           <p>조회수: ${question.viewCnt}</p>
+           <p>${truncateText(question.content, 50)}</p>
+           <p class="community-info-view">조회수: ${question.viewCnt}</p>
        </div>
       `;
-      // 질문 내부로 이동
-      card.addEventListener('click', () => {
-        window.location.href = `/questions/info/${question.id}`;
-      });
-      container.appendChild(card);
-    });
-  }
-
-  // 원하는 크기로 글자수 제한
-  function truncateText(text, maxLength) {
-    if (text.length > maxLength) {
-      return text.substring(0, maxLength) + '...';
+            // 질문 내부로 이동
+            card.addEventListener('click', () => {
+                window.location.href = `/questions/info/${question.id}`;
+            });
+            container.appendChild(card);
+        });
     }
-    return text;
-  }
+
+    // 원하는 크기로 글자수 제한
+    function truncateText(text, maxLength) {
+        if (text.length > maxLength) {
+            return text.substring(0, maxLength) + '...';
+        }
+        return text;
+    }
 </script>
 
 </body>

@@ -11,5 +11,4 @@ public class SupernovaApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SupernovaApplication.class, args);
 	}
-
 }

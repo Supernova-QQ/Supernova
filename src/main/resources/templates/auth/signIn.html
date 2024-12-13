@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{header :: head(additionalStyles=~{::style})}">
+    <meta charset="UTF-8">
+
+    <style>
+        /* CSS 스타일 */
+        html {
+            height: 100%;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+        }
+
+        .btn-signin {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-signin:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+<header th:replace="~{header :: header}"></header>
+<div th:insert="~{header :: headerScripts}"></div>
+<main>
+    <div class="container">
+        <h2>로그인</h2>
+        <form id="signin-form" action="/login" method="post">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="btn-signin">Sign In</button>
+        </form>
+    </div>
+</main>
+<footer th:replace="~{footer :: footer}"></footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const signinForm = document.getElementById('signin-form');
+
+        signinForm.addEventListener('submit', function (event) {
+            event.preventDefault(); // 기본 폼 제출 방지
+
+            // 입력값 가져오기
+            const formData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+
+            // 로그인 엔드포인트로 데이터 전송
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            })
+                .then(response => response.json())
+                .then(response => {
+                    if (response.accessToken && response.refreshToken) {
+                        // ACCESS_TOKEN_HEADER_KEY로 AccessTokeㅇn 저장
+                        localStorage.setItem('ACCESS_TOKEN_HEADER_KEY', response.accessToken);
+                        console.log("로그인 성공 - Access Token:", response.accessToken); // accessToken 로그 출력
+                        console.log("로그인 성공 - Refresh Token:", response.refreshToken); // RefreshToken 로그 출력
+
+                        alert('로그인 성공!');
+                        window.location.href = '/'; // 성공 시 홈 페이지로 리다이렉트
+                    } else {
+                        alert('로그인 실패');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('로그인 중 오류가 발생했습니다.');
+                });
+        });
+
+    });
+</script>
+</body>
+</html>
