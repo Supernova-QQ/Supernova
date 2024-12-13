@@ -29,172 +29,166 @@
             margin-top: 0;
         }
 
-    .container {
-      display: flex;
-      justify-content: space-between;
-      width: 70%;
-      margin: 0 auto;
-      padding: 20px;
-      gap: 20px;
-    }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            margin: 0 auto;
+            padding: 20px 80px;
+            gap: 20px;
+        }
 
-    .left-column, .middle-column, .right-column {
-      background-color: white;
-      border-radius: 8px;
-      padding: 15px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+        .left-column, .middle-column, .right-column {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
 
-    .left-column {
-      width: 40%;
-    }
+        .left-column, .right-column {
+            width: 25%;
+        }
 
-    .middle-column {
-      width: 40%;
-    }
+        /* 인기 커뮤니티 */
 
-    .right-column {
-      width: 20%;
-    }
+        .community-card {
+            gap: 15px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
 
-    h2 {
-      margin-top: 0;
-      color: #333;
-    }
+        .community-card:hover {
+            cursor: pointer;
+        }
 
-    /* 인기 커뮤니티 */
+        .community-img {
+            width: 40px;
+            height: 40px;
+        }
 
-    .community-card {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-      padding: 10px;
-      border: 1px solid #e0e0e0;
-      border-radius: 4px;
-    }
+        .community-info {
+            width: 100%;
+        }
 
-    .community-card:hover {
-      cursor: pointer;
-    }
+        .community-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
 
-    .star {
-      color: #ffd700;
-      margin-right: 10px;
-      font-size: 24px;
-    }
+        .community-info > p:first-child {
+            font-weight: bold;
+            font-size: 16px;
+        }
 
-    .community-info p {
-      margin: 5px 0;
-      font-size: 14px;
-    }
+        .community-info-cnt {
+            float: right;
+        }
 
-    .community-info p:first-child {
-      font-weight: bold;
-      font-size: 16px;
-    }
+        .community-info-cnt p, .community-info-view {
+            text-align: right;
+            color: #888;
+        }
 
-    /* 인기 질문 */
+        /* 인기 질문 */
+        .middle-column {
+            width: 45%;
+        }
 
-    .middle-column {
-      width: 45%;
-      background-color: white;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+        .question-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
 
-    .question-item {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 20px;
-    }
+        .question-item:hover {
+            cursor: pointer;
+        }
 
-    .question-item:hover {
-      cursor: pointer;
-    }
+        .index {
+            background-color: #62b1ff;
+            color: #ffffff;
+            width: 38px;
+            height: 38px;
+            margin-top: 10px;
+            margin-right: 15px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16pt;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
 
-    .index {
-      background-color: #e6f3ff;
-      color: #0066cc;
-      width: 30px;
-      margin-top: 26px;
-      height: 30px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 15px;
-      font-weight: bold;
-      flex-shrink: 0;
-    }
+        /* 인기 & 공지사항 */
 
-    /* 인기 & 공지사항 */
+        .info-box {
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+        }
 
-    .info-box {
-      background-color: #f9f9f9;
-      border: 1px solid #e0e0e0;
-      border-radius: 4px;
-      padding: 15px;
-    }
+        .info-box h3 {
+            margin: 10px 0 5px;
+            color: #333;
+        }
 
-    .info-box h3 {
-      margin: 10px 0 5px;
-      font-size: 16px;
-      color: #333;
-    }
+        .info-box p, span {
+            margin: 0 0 10px;
+            font-size: 14px;
+            color: #666;
+        }
 
-    .info-box p, span {
-      margin: 0 0 10px;
-      font-size: 14px;
-      color: #666;
-    }
+        .notice, .popular {
+            margin-bottom: 30px;
+        }
 
-    .notice, .popular {
-      margin-bottom: 30px;
-    }
+        /* 인기 태그 스타일 추가 */
+        .tag.clickable {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-block;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            padding: 5px 10px;
+            background-color: #f4f6fa;
+            border-radius: 4px;
+            color: #024098;
+        }
 
-    /* 인기 태그 스타일 추가 */
-    .tag.clickable {
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: inline-block;
-      margin-right: 5px;
-      margin-bottom: 5px;
-      padding: 5px 10px;
-      background-color: #f4f6fa;
-      border-radius: 4px;
-      color: #024098;
-    }
+        .tag.clickable:hover {
+            background-color: #e3e8f7;
+            transform: translateY(-1px);
+        }
 
-    .tag.clickable:hover {
-      background-color: #e3e8f7;
-      transform: translateY(-1px);
-    }
+        .tag.clickable span {
+            color: inherit;
+        }
 
-    .tag.clickable span {
-      color: inherit;
-    }
+        #popularTags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
 
-    #popularTags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
+        .tag-item {
+            margin-bottom: 5px;
+        }
 
-    .tag-item {
-      margin-bottom: 5px;
-    }
+        #mostViewedQuestion:hover {
+            cursor: pointer;
+        }
 
-    #mostViewedQuestion:hover {
-      cursor: pointer;
-    }
+        #mostLikedAnswer:hover {
+            cursor: pointer;
+        }
 
-    #mostLikedAnswer:hover {
-      cursor: pointer;
-    }
-
-  </style>
+    </style>
 
 </head>
 <body>
@@ -202,59 +196,53 @@
 <div th:insert="~{header :: headerScripts}"></div>
 
 <main>
-  <div class="container">
-    <div class="left-column">
-      <div class="section-header">
-        <h2>전체 커뮤니티 최신 질문</h2>
-<!--        <button id="all-questions-more-btn" class="view-more-btn">더보기</button>-->
-      </div>
-      <div id="left-card">
-        <!-- 여기에 동적으로 전체 게시판 최신 질문이 추가됨 -->
-      </div>
+    <div class="container">
+        <div class="left-column">
+            <h3>전체 커뮤니티 최신 질문</h3>
+            <div id="left-card">
+                <!-- 여기에 동적으로 전체 게시판 최신 질문이 추가됨 -->
+            </div>
+        </div>
+
+        <div class="middle-column">
+            <h3>일반 커뮤니티 최신 질문</h3>
+            <div id="right-card">
+                <!-- 여기에 동적으로 일반 게시판 최신 질문이 추가됨 -->
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="info-box">
+                <div class="notice">
+                    <h3>공지사항</h3>
+                    <div id="notice">
+                        <!-- 여기에 동적으로 공지사항 카드가 추가됨 -->
+                    </div>
+                </div>
+
+                <div class="popular">
+                    <h3>인기 태그</h3>
+                    <div id="popularTags">
+                        <!-- 여기에 동적으로 태그 카드가 추가됨 -->
+                    </div>
+                </div>
+
+                <div class="popular">
+                    <h3>전 날 최다 조회 질문</h3>
+                    <div id="mostViewedQuestion">
+                        <!-- 여기에 동적으로 질문 카드가 추가됨 -->
+                    </div>
+                </div>
+
+                <div class="popular">
+                    <h3>전 날 최다 추천 답변</h3>
+                    <div id="mostLikedAnswer">
+                        <!-- 여기에 동적으로 답변 카드가 추가됨 -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="middle-column">
-      <div class="section-header">
-        <h2>일반 커뮤니티 최신 질문</h2>
-<!--        <button id="general-questions-more-btn" class="view-more-btn">더보기</button>-->
-      </div>
-      <div id="right-card">
-        <!-- 여기에 동적으로 일반 게시판 최신 질문이 추가됨 -->
-      </div>
-    </div>
-
-    <div class="right-column">
-      <div class="info-box">
-        <div class="notice">
-          <h3>공지사항</h3>
-          <div id="notice">
-            <!-- 여기에 동적으로 공지사항 카드가 추가됨 -->
-          </div>
-        </div>
-
-        <div class="popular">
-          <h3>인기 태그</h3>
-          <div id="popularTags">
-            <!-- 여기에 동적으로 태그 카드가 추가됨 -->
-          </div>
-        </div>
-
-        <div class="popular">
-          <h3>전 날 최다 조회 질문</h3>
-          <div id="mostViewedQuestion">
-            <!-- 여기에 동적으로 질문 카드가 추가됨 -->
-          </div>
-        </div>
-
-        <div class="popular">
-          <h3>전 날 최다 추천 답변</h3>
-          <div id="mostLikedAnswer">
-            <!-- 여기에 동적으로 답변 카드가 추가됨 -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </main>
 
 <footer th:replace="~{footer :: footer}"></footer>
@@ -266,64 +254,64 @@
 
 <script type="module">
 
-  import CONFIG from '/static/js/config.js';
+    import CONFIG from '/static/js/config.js';
 
-  document.addEventListener('DOMContentLoaded', function() {
-    fetchLatestQuestions();
-    fetchLatestGeneralQuestions();
-    fetchNotice();
-    fetchPopularTags();
-    fetchPopularQuestion();
-    fetchPopularAnswer();
-  });
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchLatestQuestions();
+        fetchLatestGeneralQuestions();
+        fetchNotice();
+        fetchPopularTags();
+        fetchPopularQuestion();
+        fetchPopularAnswer();
+    });
 
-  // const url = `http://localhost:8080/api/main`;
-  // const baseURL = `http://localhost:8080`;
-  // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
-  const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
-  const baseURL = CONFIG.API.BASE_URL;
-  const token = CONFIG.AUTH.DEFAULT_TOKEN;
+    // const url = `http://localhost:8080/api/main`;
+    // const baseURL = `http://localhost:8080`;
+    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+    const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
+    const baseURL = CONFIG.API.BASE_URL;
+    const token = CONFIG.AUTH.DEFAULT_TOKEN;
 
-  // 전체 게시판 최신 질문
-  function fetchLatestQuestions() {
-    fetch(url + `/N-latest-questions`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('전체 게시판 Received data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-      if (data.data && Array.isArray(data.data)) {
-        displayQuestions(data.data, 'left-card');
-      } else {
-        console.error('Unexpected data structure:', data);
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
+    // 전체 게시판 최신 질문
+    function fetchLatestQuestions() {
+        fetch(url + `/N-latest-questions`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('전체 게시판 Received data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+                if (data.data && Array.isArray(data.data)) {
+                    displayQuestions(data.data, 'left-card');
+                } else {
+                    console.error('Unexpected data structure:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
-  // 일반 게시판 최신 질문
-  function fetchLatestGeneralQuestions() {
-    fetch(url + `/N-latest-questions-from-general`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.data && Array.isArray(data.data)) {
-        displayQuestions(data.data, 'right-card');
-      } else {
-        console.error('Unexpected data structure:', data);
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
+    // 일반 게시판 최신 질문
+    function fetchLatestGeneralQuestions() {
+        fetch(url + `/N-latest-questions-from-general`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.data && Array.isArray(data.data)) {
+                    displayQuestions(data.data, 'right-card');
+                } else {
+                    console.error('Unexpected data structure:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
-  // 질문 표시 함수
+    // 질문 표시 함수
   function displayQuestions(questions, id) {
     const container = document.getElementById(id);
     container.innerHTML = '';
@@ -344,168 +332,168 @@
     });
   }
 
-  /* 공지사항 */
-  function fetchNotice() {
-    fetch(baseURL + `/api/notices/pinned-list`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Received notice data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+    /* 공지사항 */
+    function fetchNotice() {
+        fetch(baseURL + `/api/notices/pinned-list`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Received notice data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
 
-      if (data.data) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
-        displayNotice(data.data);
-      } else {
-        console.error('Unexpected data structure:', data);
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
+                if (data.data) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
+                    displayNotice(data.data);
+                } else {
+                    console.error('Unexpected data structure:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
-  // 공지사항에 대한 카드를 생성
-  function displayNotice(notices) {
-    const container = document.getElementById('notice');
-    container.innerHTML = ''; // Clear existing content
+    // 공지사항에 대한 카드를 생성
+    function displayNotice(notices) {
+        const container = document.getElementById('notice');
+        container.innerHTML = ''; // Clear existing content
 
-    notices.forEach((notice, index) => {
-      const card = document.createElement('div');
-      card.className = 'notice-item';
-      card.innerHTML = `
+        notices.forEach((notice, index) => {
+            const card = document.createElement('div');
+            card.className = 'notice-item';
+            card.innerHTML = `
        <div class="notice-info">
            <p>* ${notice.title}</p>
        </div>
       `;
-      container.appendChild(card);
-    });
-  }
+            container.appendChild(card);
+        });
+    }
 
-  /* 해시태그 */
-  function fetchPopularTags() {
-    fetch(url + `/preday-top10-hashtag`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Received hashtag data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+    /* 해시태그 */
+    function fetchPopularTags() {
+        fetch(url + `/preday-top10-hashtag`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Received hashtag data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
 
-      if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
-        displayPopularTags(data.data);
-      } else {
-        console.error('Unexpected data structure:', data);
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
+                if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
+                    displayPopularTags(data.data);
+                } else {
+                    console.error('Unexpected data structure:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
-  // 각 태그에 대한 카드를 생성
-  function displayPopularTags(tags) {
-    const container = document.getElementById('popularTags');
-    container.innerHTML = ''; // Clear existing content
+    // 각 태그에 대한 카드를 생성
+    function displayPopularTags(tags) {
+        const container = document.getElementById('popularTags');
+        container.innerHTML = ''; // Clear existing content
 
-    tags.forEach(tag => {
-      const tagDiv = document.createElement('div');
-      tagDiv.className = 'tag-item';
+        tags.forEach(tag => {
+            const tagDiv = document.createElement('div');
+            tagDiv.className = 'tag-item';
 
-      // 클릭 가능한 스타일을 위한 추가 클래스
-      tagDiv.innerHTML = `
+            // 클릭 가능한 스타일을 위한 추가 클래스
+            tagDiv.innerHTML = `
             <div class="tag clickable">
                 <span>#${tag.name}</span>
                 <span>(${tag.tagCnt})</span>
             </div>
         `;
 
-      // 클릭 이벤트 추가
-      tagDiv.addEventListener('click', () => {
-        window.location.href = `/search?search-keyword=${encodeURIComponent(tag.name)}&search-type=HASHTAG&sort-type=CREATED_AT`;
-      });
+            // 클릭 이벤트 추가
+            tagDiv.addEventListener('click', () => {
+                window.location.href = `/search?search-keyword=${encodeURIComponent(tag.name)}&search-type=HASHTAG&sort-type=CREATED_AT`;
+            });
 
-      container.appendChild(tagDiv);
-    });
-  }
+            container.appendChild(tagDiv);
+        });
+    }
 
-  /* 최다 조회 질문 */
-  function fetchPopularQuestion() {
-    fetch(url + `/preday-most-viewed-question`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Received viewed question data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+    /* 최다 조회 질문 */
+    function fetchPopularQuestion() {
+        fetch(url + `/preday-most-viewed-question`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Received viewed question data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
 
-      if (data.data) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
-        displayPopularQuestion(data.data);
-      } else {
-        console.error('Unexpected data structure:', data);
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
+                if (data.data) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
+                    displayPopularQuestion(data.data);
+                } else {
+                    console.error('Unexpected data structure:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
-  // 질문에 대한 카드를 생성
-  function displayPopularQuestion(question) {
-    const container = document.getElementById('mostViewedQuestion');
-    container.innerHTML = `
+    // 질문에 대한 카드를 생성
+    function displayPopularQuestion(question) {
+        const container = document.getElementById('mostViewedQuestion');
+        container.innerHTML = `
      <span>Q. ${question.id})</span>
      <span>${truncateText(question.title, 40)}</span>
     `;
 
-    displayQuestion(container, question.id);
-  }
+        displayQuestion(container, question.id);
+    }
 
-  /* 최다 추천 답변 */
-  function fetchPopularAnswer() {
-    fetch(url + `/preday-most-recommended-answer`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Received viewed question data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+    /* 최다 추천 답변 */
+    function fetchPopularAnswer() {
+        fetch(url + `/preday-most-recommended-answer`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Received viewed question data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
 
-      if (data.data) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
-        displayPopularAnswer(data.data);
-      } else {
-        console.error('Unexpected data structure:', data);
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
+                if (data.data) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
+                    displayPopularAnswer(data.data);
+                } else {
+                    console.error('Unexpected data structure:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
-  // 답변 대한 카드를 생성
-  function displayPopularAnswer(answer) {
-    const container = document.getElementById('mostLikedAnswer');
-    container.innerHTML = `
+    // 답변 대한 카드를 생성
+    function displayPopularAnswer(answer) {
+        const container = document.getElementById('mostLikedAnswer');
+        container.innerHTML = `
       <p>${truncateText(answer.answer, 50)}</p>
     `;
-    console.log("questionId for answer: ", answer.questionId);
-    displayQuestion(container, answer.questionId)
-  }
-
-  function displayQuestion(container, questionId) {
-    // 질문 내부로 이동
-    container.addEventListener('click', () => {
-      window.location.href = `/questions/info/${questionId}`;
-    });
-  }
-
-  // 원하는 크기로 글자수 제한
-  function truncateText(text, maxLength) {
-    if (text.length > maxLength) {
-      return text.substring(0, maxLength) + '...';
+        console.log("questionId for answer: ", answer.questionId);
+        displayQuestion(container, answer.questionId)
     }
-    return text;
-  }
+
+    function displayQuestion(container, questionId) {
+        // 질문 내부로 이동
+        container.addEventListener('click', () => {
+            window.location.href = `/questions/info/${questionId}`;
+        });
+    }
+
+    // 원하는 크기로 글자수 제한
+    function truncateText(text, maxLength) {
+        if (text.length > maxLength) {
+            return text.substring(0, maxLength) + '...';
+        }
+        return text;
+    }
 
 </script>
 

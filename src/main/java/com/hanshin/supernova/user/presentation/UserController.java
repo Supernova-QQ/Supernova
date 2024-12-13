@@ -6,13 +6,15 @@ import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.user.application.UserService;
 import com.hanshin.supernova.user.domain.User;
-import com.hanshin.supernova.user.dto.request.*;
+import com.hanshin.supernova.user.dto.request.ChangePasswordRequest;
+import com.hanshin.supernova.user.dto.request.DeleteUserRequest;
+import com.hanshin.supernova.user.dto.request.ResetPasswordRequest;
+import com.hanshin.supernova.user.dto.request.UserRegisterRequest;
 import com.hanshin.supernova.user.dto.response.ChangePasswordResponse;
 import com.hanshin.supernova.user.dto.response.ResetPasswordResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 
-@Slf4j
 @RestController
 @RequestMapping(path = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
@@ -63,17 +64,11 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    //    @DeleteMapping("/delete")
-//    public ResponseEntity<String> deleteUser(@Validated @RequestBody DeleteUserRequest deleteUserRequest) {
-//        userService.deleteUser(deleteUserRequest.getUserId(), deleteUserRequest.getPassword());
-//        return ResponseEntity.ok("유저가 성공적으로 삭제되었습니다.");
-//    }
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteUser(@Validated @RequestBody DeleteUserRequest deleteUserRequest) {
         userService.deleteUser(deleteUserRequest.getUserId(), deleteUserRequest.getPassword());
         return ResponseEntity.ok("유저가 성공적으로 삭제되었습니다.");
     }
-
 
     @GetMapping("/nickname")
     public ResponseEntity<Map<String, String>> getNickname(@RequestBody(required = false) Map<String, Object> request, AuthUser authUser) {

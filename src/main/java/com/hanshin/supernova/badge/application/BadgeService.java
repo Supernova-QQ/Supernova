@@ -1,5 +1,7 @@
 package com.hanshin.supernova.badge.application;
 
+import static com.hanshin.supernova.badge.BadgeConstants.*;
+
 import com.hanshin.supernova.answer.domain.Answer;
 import com.hanshin.supernova.answer.infrastructure.AnswerRepository;
 import com.hanshin.supernova.auth.model.AuthUser;
@@ -35,8 +37,7 @@ public class BadgeService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         // 2. 사용자가 작성한 질문 중 다른 사용자의 북마크에 10건 이상 추가된 질문 조회
-        int bookmarkThreshold = 10; // 북마크 기준 수
-        List<Long> bookmarkedQuestions = questionRepository.findBookmarkedQuestionsByUserId(foundUser.getId(), bookmarkThreshold);
+        List<Long> bookmarkedQuestions = questionRepository.findBookmarkedQuestionsByUserId(foundUser.getId(), BOOKMARK_THRESHOLD);
         log.info("bookmarked questions: {}", bookmarkedQuestions);
 
         // 3. 북마크 기준을 충족하는 질문이 있으면 멋진 질문자 배지를 부여
@@ -61,13 +62,11 @@ public class BadgeService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         // 2. 추천 수가 10 이상인 질문을 조회
-        int recommendationThreshold = 10; // 추천 수 기준
-        int questionCountThreshold = 3; // 질문 개수 기준
-        List<Long> popularQuestions = questionRepository.findPopularQuestionsByUserId(foundUser.getId(), recommendationThreshold);
-        log.info("popular questions: {}", popularQuestions);
+        List<Long> popularQuestions = questionRepository.findPopularQuestionsByUserId(foundUser.getId(), QUESTION_RECOMMENDATION_THRESHOLD);
+        log.info("popular questions: {}", QUESTION_COUNT_THRESHOLD);
 
         // 3. 조건을 충족하는 경우 인기 질문자 배지를 부여
-        if (popularQuestions.size() >= questionCountThreshold) {
+        if (popularQuestions.size() >= QUESTION_COUNT_THRESHOLD) {
             Activity activity = foundUser.getActivity();
             if (!activity.hasPopularQuestionBadge()) {
                 activity.setPopularQuestionBadge(true);
@@ -88,12 +87,11 @@ public class BadgeService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         // 2. 사용자가 작성한 답변 중 소스를 제공하고 채택된 답변을 조회
-        int acceptedAnswerCountThreshold = 3; // 채택된 답변 수 기준
         List<Answer> acceptedAnswersWithSource = answerRepository.findAcceptedAnswersWithSourceByUserId(foundUser.getId());
         log.info("acceptedAnswerCountThreshold: {}", acceptedAnswersWithSource);
 
         // 3. 조건을 충족하는 경우 정확한 답변자 배지를 부여
-        if (acceptedAnswersWithSource.size() >= acceptedAnswerCountThreshold) {
+        if (acceptedAnswersWithSource.size() >= ACCEPTED_ANSWER_COUNT_THRESHOLD) {
             Activity activity = foundUser.getActivity();
             if (!activity.hasAcceptedAnswerBadge()) {
                 activity.setAcceptedAnswerBadge(true);
@@ -114,13 +112,11 @@ public class BadgeService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         // 2. 사용자가 작성한 답변 중 소스를 제공하고 추천 수가 10 이상인 답변을 조회
-        int recommendationThreshold = 10; // 추천 수 기준
-        int answerCountThreshold = 3; // 답변 개수 기준
-        List<Answer> popularAnswersWithSource = answerRepository.findPopularAnswersWithSourceByUserId(foundUser.getId(), recommendationThreshold);
+        List<Answer> popularAnswersWithSource = answerRepository.findPopularAnswersWithSourceByUserId(foundUser.getId(), ANSWER_RECOMMENDATION_THRESHOLD);
         log.info("popularAnswersWithSource: {}", popularAnswersWithSource);
 
         // 3. 조건을 충족하는 경우 인기 답변자 배지를 부여
-        if (popularAnswersWithSource.size() >= answerCountThreshold) {
+        if (popularAnswersWithSource.size() >= ANSWER_COUNT_THRESHOLD) {
             Activity activity = foundUser.getActivity();
             if (!activity.hasPopularAnswerBadge()) {
                 activity.setPopularAnswerBadge(true);

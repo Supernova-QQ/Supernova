@@ -234,20 +234,20 @@
 <script type="module" src="/js/search.js"></script>
 
 <script type="module">
-  import CONFIG from '/static/js/config.js';
+    import CONFIG from '/static/js/config.js';
 
-  // 이미지 미리보기 기능
-  document.getElementById('community-icon').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('icon-preview').src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-  
+    // 이미지 미리보기 기능
+    document.getElementById('community-icon').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('icon-preview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
     // 폼 제출 처리
     document.getElementById('communityForm').addEventListener('submit', async function (e) {
         e.preventDefault();

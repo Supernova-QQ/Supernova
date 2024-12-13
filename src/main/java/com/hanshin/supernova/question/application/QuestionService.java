@@ -20,13 +20,14 @@ import com.hanshin.supernova.question.infrastructure.QuestionRecommendationRepos
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.question.infrastructure.QuestionViewRepository;
 import com.hanshin.supernova.user.domain.User;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -102,6 +103,7 @@ public class QuestionService extends AbstractValidateService {
      */
     @Transactional
     public QuestionSaveResponse editQuestion(AuthUser user, Long qId, QuestionRequest request) {
+
         Community findCommunity = getCommunityOrThrowIfNotExist(request.getCommId());
 
         Question findQuestion = getQuestionById(qId);
