@@ -1,15 +1,16 @@
 package com.hanshin.supernova.question.infrastructure;
 
 import com.hanshin.supernova.question.domain.Question;
-import java.time.LocalDate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 @Transactional(readOnly = true)
@@ -107,7 +108,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     // 특정 사용자가 작성한 질문 목록을 최신순으로 조회
     @Query("SELECT q FROM Question q WHERE q.questionerId = :userId ORDER BY q.createdAt DESC")
     List<Question> findAllByQuestionerId(@Param("userId") Long userId);
-
 
     // questionId로 commId 조회
     @Query("SELECT q.commId FROM Question q WHERE q.id = :questionId")

@@ -754,12 +754,12 @@
 <script type="module" src="/js/search.js"></script>
 
 <script type="module">
-  import CONFIG from '/static/js/config.js';
-  let questionId = null;
+    import CONFIG from '/static/js/config.js';
+    let questionId = null;
 
-  document.addEventListener('DOMContentLoaded', function () {
-    questionId = [[${questionId}]];
-    console.log('Initializing with question ID:', questionId);
+    document.addEventListener('DOMContentLoaded', function () {
+        questionId = [[${questionId}]];
+        console.log('Initializing with question ID:', questionId);
 
         fetchQuestionInfo(questionId);
         fetchHashtagInfo(questionId);
@@ -795,17 +795,17 @@
     // const url = `http://localhost:8080/api/questions`;
     // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
     const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.QUESTIONS;
+    const baseURL = CONFIG.API.BASE_URL;
     // const baseURL = CONFIG.API.BASE_URL;
 
-  // 페이지 로드 시와 재생성 버튼 클릭 시 남은 횟수를 조회하는 함수
-  async function fetchRemainingCount() {
-      try {
-          const response = await fetch(baseURL + '/api/rate-limit/ai-answers', {
-              headers: {
-                  'X-QQ-AUTH-TOKEN': token
-              }
-          });
-          const data = await response.json();
+    // 페이지 로드 시와 재생성 버튼 클릭 시 남은 횟수를 조회하는 함수
+    async function fetchRemainingCount() {
+        try {
+            const response = await fetchWithAuth(baseURL + '/api/rate-limit/ai-answers', {
+                headers: {
+                }
+            });
+            const data = await response.json();
 
           // 남은 횟수 업데이트
           const remainingCountElement = document.getElementById('remaining-count');
@@ -1136,6 +1136,7 @@
             });
     }
 
+
   // AI 답변
   // function fetchAiComment(questionId) {
   //   fetch(url + `/${questionId}/ai-answers`, {
@@ -1158,11 +1159,10 @@
   //   .catch(error => console.error('Error:', error));
   // }
   function fetchAiComment(questionId) {
-    fetch(url + `/${questionId}/ai-answers`, {
+    fetchWithAuth(url + `/${questionId}/ai-answers`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': token
+        'Content-Type': 'application/json'
       }
     })
     .then(response => response.json())
@@ -1210,42 +1210,42 @@
         const regenerationBtn = document.getElementById('regenerationBtn');
         const originalText = regenerationBtn.textContent;
 
-    // 페이지 로드 시 남은 횟수 조회
-    fetchRemainingCount();
+        // 페이지 로드 시 남은 횟수 조회
+        fetchRemainingCount();
 
-    regenerationBtn.addEventListener('click', async () => {
-      regenerationBtn.textContent = '...';
-      regenerationBtn.disabled = true;
+        regenerationBtn.addEventListener('click', async () => {
+            // 버튼 텍스트 변경 및 비활성화
+            regenerationBtn.textContent = '...';
+            regenerationBtn.disabled = true;
 
-      try {
-        const response = await fetch(url + `/${questionId}/ai-answers`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-QQ-AUTH-TOKEN': token
-          }
+            try {
+                const response = await fetchWithAuth(url + `/${questionId}/ai-answers`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+                const data = await response.json();
+
+                    if (data.data) {
+                        displayAiComment(data.data);
+                        // 답변 생성 후 남은 횟수 다시 조회
+                        await fetchRemainingCount();
+                    } else {
+                        let errorMessage = 'AI 답변을 생성 중 오류가 발생했습니다.';
+                        if (data.reason) {
+                            errorMessage += `\n이유: ${data.reason}`;
+                        }
+                        alert(errorMessage);
+                    }
+                } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                regenerationBtn.textContent = originalText;
+                regenerationBtn.disabled = false;
+            }
         });
-        const data = await response.json();
-
-        if (data.data) {
-          displayAiComment(data.data);
-          // 답변 생성 후 남은 횟수 다시 조회
-          await fetchRemainingCount();
-        } else {
-          let errorMessage = 'AI 답변을 생성 중 오류가 발생했습니다.';
-          if (data.reason) {
-            errorMessage += `\n이유: ${data.reason}`;
-          }
-          alert(errorMessage);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      } finally {
-        regenerationBtn.textContent = originalText;
-        regenerationBtn.disabled = false;
-      }
-    });
-  }
+    }
 
     function fetchComments(questionId) {
         fetchWithAuth(url + `/${questionId}/answers`, {

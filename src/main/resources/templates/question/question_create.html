@@ -298,22 +298,22 @@
             <option value="">커뮤니티를 선택하세요</option>
         </select>
 
-  <!-- 태그 입력 -->
-  <label for="tag-container">#태그 (최대 10개)</label>
-  <div id="tag-container" class="tag-container">
-    <input type="text" class="tag-input" placeholder="#" onkeyup="validateHashtag(this)">
-  </div>
+        <!-- 태그 입력 -->
+        <label for="tag-container">#태그 (최대 10개)</label>
+        <div id="tag-container" class="tag-container">
+            <input type="text" class="tag-input" placeholder="#" onkeyup="validateHashtag(this)">
+        </div>
 
-  <!-- AI 답변 선택 및 남은 요청 가능 횟수 조회 -->
-  <div style="display: flex; align-items: center; margin: 20px 0;">
-    <div style="display: flex; align-items: center;">
-      <input type="checkbox" id="ai-answer-checkbox" style="margin-right: 8px;">
-      <label for="ai-answer-checkbox" class="ai-answer-request">AI 답변 요청하기</label>
-    </div>
-    <div id="remaining-count" style="margin-left: 30px; color: #666;">
-      남은 요청 가능 횟수: <span id="remaining-count-value">-</span>회
-    </div>
-  </div>
+        <!-- AI 답변 선택 및 남은 요청 가능 횟수 조회 -->
+        <div style="display: flex; align-items: center; margin: 20px 0;">
+            <div style="display: flex; align-items: center;">
+                <input type="checkbox" id="ai-answer-checkbox" style="margin-right: 8px;">
+                <label for="ai-answer-checkbox" class="ai-answer-request">AI 답변 요청하기</label>
+            </div>
+            <div id="remaining-count" style="margin-left: 30px; color: #666;">
+                남은 요청 가능 횟수: <span id="remaining-count-value">-</span>회
+            </div>
+        </div>
 
         <!-- 답변 설정 -->
         <!--  <div class="settings-wrapper">-->
@@ -365,12 +365,12 @@
 <script type="module">
     import CONFIG from '/static/js/config.js';
 
-  // 페이지 로드 시 커뮤니티 목록을 가져오는 함수
-  document.addEventListener('DOMContentLoaded', function () {
-    fetchMyCommunities();
-    fetchRemainingCount(); // 남은 횟수 조회 추가
-    initializeTagInput();
-  });
+    // 페이지 로드 시 커뮤니티 목록을 가져오는 함수
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchMyCommunities();
+        fetchRemainingCount(); // 남은 횟수 조회 추가
+        initializeTagInput();
+    });
 
     // 이미지 업로드 관련 코드
     document.getElementById('upload-button').addEventListener('click', function () {
@@ -446,52 +446,51 @@
         }
     }
 
-  // 남은 횟수 조회 함수
-  function fetchRemainingCount() {
-    fetch(baseURL + '/api/rate-limit/ai-answers', {
-      headers: {
-        'X-QQ-AUTH-TOKEN': token
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      const remainingCountElement = document.getElementById('remaining-count-value');
-      remainingCountElement.textContent = data.remainingGenerateCount;
+    // 남은 횟수 조회 함수
+    function fetchRemainingCount() {
+        fetchWithAuth(baseURL + '/api/rate-limit/ai-answers', {
+            headers: {
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const remainingCountElement = document.getElementById('remaining-count-value');
+                remainingCountElement.textContent = data.remainingGenerateCount;
 
-      // 체크박스 상태 제어
-      const checkbox = document.getElementById('ai-answer-checkbox');
-      if (data.remainingGenerateCount <= 0) {
-        checkbox.disabled = true;  // 체크박스 비활성화
-        checkbox.checked = false;  // 체크 해제
-        checkbox.title = "남은 AI 답변 요청 횟수가 없습니다";  // 마우스 오버 시 툴팁
-      } else {
-        checkbox.disabled = false;
-        checkbox.title = "";
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching remaining count:', error);
-      const remainingCountElement = document.getElementById('remaining-count-value');
-      remainingCountElement.textContent = '-';
-    });
-  }
+                // 체크박스 상태 제어
+                const checkbox = document.getElementById('ai-answer-checkbox');
+                if (data.remainingGenerateCount <= 0) {
+                    checkbox.disabled = true;  // 체크박스 비활성화
+                    checkbox.checked = false;  // 체크 해제
+                    checkbox.title = "남은 AI 답변 요청 횟수가 없습니다";  // 마우스 오버 시 툴팁
+                } else {
+                    checkbox.disabled = false;
+                    checkbox.title = "";
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching remaining count:', error);
+                const remainingCountElement = document.getElementById('remaining-count-value');
+                remainingCountElement.textContent = '-';
+            });
+    }
 
-  /* 해시태그 */
+    /* 해시태그 */
 
-  function initializeTagInput() {
-    const container = document.getElementById('tag-container');
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.className = 'tag-input';
-    input.placeholder = '#';
-    input.onkeyup = function() {
-      validateHashtag(this);
-    };
-    container.appendChild(input);
-  }
+    function initializeTagInput() {
+        const container = document.getElementById('tag-container');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'tag-input';
+        input.placeholder = '#';
+        input.onkeyup = function() {
+            validateHashtag(this);
+        };
+        container.appendChild(input);
+    }
 
-  // 특수문자 체크를 위한 정규식
-  const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    // 특수문자 체크를 위한 정규식
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
 
     function validateHashtag(input) {
         // 특수문자 체크
@@ -516,27 +515,27 @@
         }
     }
 
-  function getHashtags() {
-    const container = document.getElementById('tag-container');
-    const inputs = container.getElementsByClassName('tag-input');
-    const hashtags = [];
+    function getHashtags() {
+        const container = document.getElementById('tag-container');
+        const inputs = container.getElementsByClassName('tag-input');
+        const hashtags = [];
 
-    for (let input of inputs) {
-      if (input.value) {
-        hashtags.push(input.value);
-      }
+        for (let input of inputs) {
+            if (input.value) {
+                hashtags.push(input.value);
+            }
+        }
+
+        return hashtags;
     }
 
-    return hashtags;
-  }
-
-  // 폼 제출 처리
-  document.querySelector('.submit-btn').addEventListener('click', async function () {
-    const title = document.getElementById('question-title').value;
-    const content = document.getElementById('question-description').value;
-    const commId = document.getElementById('community-select').value;
-    const hashtags = getHashtags();
-    const imageFile = document.getElementById('question-image').files[0];
+    // 폼 제출 처리
+    document.querySelector('.submit-btn').addEventListener('click', async function () {
+        const title = document.getElementById('question-title').value;
+        const content = document.getElementById('question-description').value;
+        const commId = document.getElementById('community-select').value;
+        const hashtags = getHashtags();
+        const imageFile = document.getElementById('question-image').files[0];
 
         // 필수 필드 검증
         if (!title.trim()) {
@@ -579,15 +578,15 @@
                 console.log('Uploaded image URL:', imageUrl);
             }
 
-      // 2. 질문 생성
-      const questionData = {
-        title: title,
-        content: content,
-        imgUrl: imageUrl || '', // 이미지 URL이 있으면 사용, 없으면 빈 문자열
-        commId: parseInt(commId),
-        hashtags: hashtags,
-        isAiAnswerRequested: document.getElementById('ai-answer-checkbox').checked
-      };
+            // 2. 질문 생성
+            const questionData = {
+                title: title,
+                content: content,
+                imgUrl: imageUrl || '', // 이미지 URL이 있으면 사용, 없으면 빈 문자열
+                commId: parseInt(commId),
+                hashtags: hashtags,
+                isAiAnswerRequested: document.getElementById('ai-answer-checkbox').checked
+            };
 
             // 질문 등록 API 호출
             const response = await fetchWithAuth(url, {

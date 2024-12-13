@@ -5,7 +5,7 @@ import com.hanshin.supernova.exception.auth.UserAuthManagementInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.user.UserInvalidException;
 import com.hanshin.supernova.exception.user.UserRegisterInvalidException;
-import com.hanshin.supernova.security.service.JwtService;
+import com.hanshin.supernova.security.application.JwtService;
 import com.hanshin.supernova.user.domain.Activity;
 import com.hanshin.supernova.user.domain.Authority;
 import com.hanshin.supernova.user.domain.User;
@@ -17,7 +17,6 @@ import com.hanshin.supernova.user.infrastructure.UserRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 //import jakarta.persistence.PersistenceContext;
 
 import java.util.List;
-import java.util.Optional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {

@@ -6,7 +6,7 @@ import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.community.infrastructure.CommunityRepository;
 import com.hanshin.supernova.exception.community.CommunityInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
-import com.hanshin.supernova.security.service.JwtService;
+import com.hanshin.supernova.security.application.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
@@ -33,9 +33,7 @@ public class SingleVisitInterceptor implements HandlerInterceptor {
     private final CommunityRepository communityRepository;
 
     // TODO 만약 예원이가 한 내용 병합될 경우, TokenService -> SecurityTokenService
-//    private final TokenService tokenService;
-//    private final AuthUserResolver authUserResolver;
-    private final JwtService jwtService;
+    private final TokenService tokenService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,

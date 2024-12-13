@@ -45,24 +45,11 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-    .left-column {
-      width: 40%;
-    }
+        .left-column, .right-column {
+            width: 25%;
+        }
 
-    .middle-column {
-      width: 40%;
-    }
-
-    .right-column {
-      width: 20%;
-    }
-
-    h2 {
-      margin-top: 0;
-      color: #333;
-    }
-
-    /* 인기 커뮤니티 */
+        /* 인기 커뮤니티 */
 
         .community-card {
             gap: 15px;
@@ -210,59 +197,53 @@
 <div th:insert="~{header :: headerScripts}"></div>
 
 <main>
-  <div class="container">
-    <div class="left-column">
-      <div class="section-header">
-        <h2>전체 커뮤니티 최신 질문</h2>
-<!--        <button id="all-questions-more-btn" class="view-more-btn">더보기</button>-->
-      </div>
-      <div id="left-card">
-        <!-- 여기에 동적으로 전체 게시판 최신 질문이 추가됨 -->
-      </div>
+    <div class="container">
+        <div class="left-column">
+            <h3>전체 커뮤니티 최신 질문</h3>
+            <div id="left-card">
+                <!-- 여기에 동적으로 전체 게시판 최신 질문이 추가됨 -->
+            </div>
+        </div>
+
+        <div class="middle-column">
+            <h3>일반 커뮤니티 최신 질문</h3>
+            <div id="right-card">
+                <!-- 여기에 동적으로 일반 게시판 최신 질문이 추가됨 -->
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="info-box">
+                <div class="notice">
+                    <h3>공지사항</h3>
+                    <div id="notice">
+                        <!-- 여기에 동적으로 공지사항 카드가 추가됨 -->
+                    </div>
+                </div>
+
+                <div class="popular">
+                    <h3>인기 태그</h3>
+                    <div id="popularTags">
+                        <!-- 여기에 동적으로 태그 카드가 추가됨 -->
+                    </div>
+                </div>
+
+                <div class="popular">
+                    <h3>전 날 최다 조회 질문</h3>
+                    <div id="mostViewedQuestion">
+                        <!-- 여기에 동적으로 질문 카드가 추가됨 -->
+                    </div>
+                </div>
+
+                <div class="popular">
+                    <h3>전 날 최다 추천 답변</h3>
+                    <div id="mostLikedAnswer">
+                        <!-- 여기에 동적으로 답변 카드가 추가됨 -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="middle-column">
-      <div class="section-header">
-        <h2>일반 커뮤니티 최신 질문</h2>
-<!--        <button id="general-questions-more-btn" class="view-more-btn">더보기</button>-->
-      </div>
-      <div id="right-card">
-        <!-- 여기에 동적으로 일반 게시판 최신 질문이 추가됨 -->
-      </div>
-    </div>
-
-    <div class="right-column">
-      <div class="info-box">
-        <div class="notice">
-          <h3>공지사항</h3>
-          <div id="notice">
-            <!-- 여기에 동적으로 공지사항 카드가 추가됨 -->
-          </div>
-        </div>
-
-        <div class="popular">
-          <h3>인기 태그</h3>
-          <div id="popularTags">
-            <!-- 여기에 동적으로 태그 카드가 추가됨 -->
-          </div>
-        </div>
-
-        <div class="popular">
-          <h3>전 날 최다 조회 질문</h3>
-          <div id="mostViewedQuestion">
-            <!-- 여기에 동적으로 질문 카드가 추가됨 -->
-          </div>
-        </div>
-
-        <div class="popular">
-          <h3>전 날 최다 추천 답변</h3>
-          <div id="mostLikedAnswer">
-            <!-- 여기에 동적으로 답변 카드가 추가됨 -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </main>
 
 <footer th:replace="~{footer :: footer}"></footer>
@@ -274,64 +255,64 @@
 
 <script type="module">
 
-  import CONFIG from '/static/js/config.js';
+    import CONFIG from '/static/js/config.js';
 
-  document.addEventListener('DOMContentLoaded', function() {
-    fetchLatestQuestions();
-    fetchLatestGeneralQuestions();
-    fetchNotice();
-    fetchPopularTags();
-    fetchPopularQuestion();
-    fetchPopularAnswer();
-  });
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchLatestQuestions();
+        fetchLatestGeneralQuestions();
+        fetchNotice();
+        fetchPopularTags();
+        fetchPopularQuestion();
+        fetchPopularAnswer();
+    });
 
-  // const url = `http://localhost:8080/api/main`;
-  // const baseURL = `http://localhost:8080`;
-  // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
-  const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
-  const baseURL = CONFIG.API.BASE_URL;
-  const token = CONFIG.AUTH.DEFAULT_TOKEN;
+    // const url = `http://localhost:8080/api/main`;
+    // const baseURL = `http://localhost:8080`;
+    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+    const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
+    const baseURL = CONFIG.API.BASE_URL;
+    const token = CONFIG.AUTH.DEFAULT_TOKEN;
 
-  // 전체 게시판 최신 질문
-  function fetchLatestQuestions() {
-    fetch(url + `/N-latest-questions`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('전체 게시판 Received data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-      if (data.data && Array.isArray(data.data)) {
-        displayQuestions(data.data, 'left-card');
-      } else {
-        console.error('Unexpected data structure:', data);
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
+    // 전체 게시판 최신 질문
+    function fetchLatestQuestions() {
+        fetch(url + `/N-latest-questions`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('전체 게시판 Received data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+                if (data.data && Array.isArray(data.data)) {
+                    displayQuestions(data.data, 'left-card');
+                } else {
+                    console.error('Unexpected data structure:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
-  // 일반 게시판 최신 질문
-  function fetchLatestGeneralQuestions() {
-    fetch(url + `/N-latest-questions-from-general`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.data && Array.isArray(data.data)) {
-        displayQuestions(data.data, 'right-card');
-      } else {
-        console.error('Unexpected data structure:', data);
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
+    // 일반 게시판 최신 질문
+    function fetchLatestGeneralQuestions() {
+        fetch(url + `/N-latest-questions-from-general`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.data && Array.isArray(data.data)) {
+                    displayQuestions(data.data, 'right-card');
+                } else {
+                    console.error('Unexpected data structure:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
-  // 질문 표시 함수
+    // 질문 표시 함수
   function displayQuestions(questions, id) {
     const container = document.getElementById(id);
     container.innerHTML = '';
@@ -500,12 +481,12 @@
         displayQuestion(container, answer.questionId)
     }
 
-  function displayQuestion(container, questionId) {
-    // 질문 내부로 이동
-    container.addEventListener('click', () => {
-      window.location.href = `/questions/info/${questionId}`;
-    });
-  }
+    function displayQuestion(container, questionId) {
+        // 질문 내부로 이동
+        container.addEventListener('click', () => {
+            window.location.href = `/questions/info/${questionId}`;
+        });
+    }
 
     // 원하는 크기로 글자수 제한
     function truncateText(text, maxLength) {

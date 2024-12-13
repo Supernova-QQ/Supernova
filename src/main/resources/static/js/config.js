@@ -1,3 +1,6 @@
+console.log("config script loaded");
+
+
 let CONFIG = {
   API: {
     BASE_URL: 'http://localhost:8080',
