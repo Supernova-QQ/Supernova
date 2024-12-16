@@ -1,3 +1,9 @@
+### ✅ 서비스 테스트 가능 계정
+- ID : tester@naver.com <br>
+- PW : tester
+
+## 📍 프로젝트 소개
+
 ![image](https://github.com/user-attachments/assets/7319ee6d-b923-439f-ac5a-4d83e2b2b713)
 
 ![image](https://github.com/user-attachments/assets/3a8bbc63-5a9d-46b8-b6f6-fa523ccf2203)
