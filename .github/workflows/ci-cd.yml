@@ -60,7 +60,7 @@ jobs:
           # OpenAI key 환경변수 주입
           openai.api.key: ${{ secrets.OPENAI_API_KEY }}
           # JWT secret key 환경변수 주입
-          spring.security.jwt.secret-key: ${{ secrets.JWT_SECRET_KEY }}
+          spring.security.jwt.secretKey: ${{ secrets.JWT_SECRET_KEY }}
 
       # gradlew 파일 실행권한 설정
       - name: Grant execute permission for gradlew
