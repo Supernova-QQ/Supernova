@@ -1,5 +1,3 @@
-# Supernova
-수퍼노바의 저장소입니다 💫
 
 
 ![image](https://github.com/user-attachments/assets/7319ee6d-b923-439f-ac5a-4d83e2b2b713)
