@@ -111,5 +111,5 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     // questionId로 commId 조회
     @Query("SELECT q.commId FROM Question q WHERE q.id = :questionId")
-    Long findCommunityIdByQuestionId(Long questionId);
+    Long findCommunityIdByQuestionId(@Param("questionId") Long questionId);
 }
