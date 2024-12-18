@@ -1,10 +1,14 @@
 package com.hanshin.supernova.user.application;
 
+import com.hanshin.supernova.community.application.CommunityService;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.auth.UserAuthManagementInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.user.UserInvalidException;
 import com.hanshin.supernova.exception.user.UserRegisterInvalidException;
+import com.hanshin.supernova.news.application.NewsService;
+import com.hanshin.supernova.news.domain.Type;
+import com.hanshin.supernova.news.dto.request.NewsRequest;
 import com.hanshin.supernova.security.application.JwtService;
 import com.hanshin.supernova.user.domain.Activity;
 import com.hanshin.supernova.user.domain.Authority;
@@ -33,6 +37,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final CommunityService communityService;
+    private final NewsService newsService;
 
 
     @Transactional
@@ -55,6 +61,14 @@ public class UserServiceImpl implements UserService {
         }
 
         User savedUser = buildAndSaveUser(request);
+
+        // 가입과 동시에 일반 게시판 회원 등록
+        communityService.joinGeneralCommunity(savedUser);
+
+        // 가입 알림 전송
+        NewsRequest newsRequest = new NewsRequest("축하합니다! 가입이 완료되었습니다.",
+                "회원님은 현재 일반 게시판을 자유롭게 이용 가능합니다.", Type.COMMUNITY, false, null, savedUser.getId());
+        newsService.createNews(newsRequest);
 
         return UserRegisterResponse.toResponse(
                 savedUser.getId(),

@@ -16,6 +16,7 @@ import com.hanshin.supernova.community.infrastructure.CommunityMemberRepository;
 import com.hanshin.supernova.community.infrastructure.CommunityRepository;
 import com.hanshin.supernova.exception.community.CommunityInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
+import com.hanshin.supernova.user.domain.User;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -177,6 +178,18 @@ public class CommunityService extends AbstractValidateService {
         findCommunity.getCommCounter().increaseMemberCnt();
 
         return new SuccessResponse("가입 처리 완료");
+    }
+
+    /**
+     * 회원가입과 동시에 일반 게시판 가입 처리
+     */
+    @Transactional
+    public void joinGeneralCommunity(User user) {
+        Community findCommunity = getCommunityOrThrowIfNotExist(1L);
+        CommunityMember savedCommunityMember = buildCommunityMember(
+                findCommunity, Autority.USER, getUserOrThrowIfNotExist(user.getId()).getId());
+        communityMemberRepository.save(savedCommunityMember);
+        findCommunity.getCommCounter().increaseMemberCnt();
     }
 
     /**
