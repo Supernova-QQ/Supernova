@@ -89,6 +89,7 @@ public class QuestionService extends AbstractValidateService {
                             .viewedAt(LocalDate.now())
                             .questionId(qId)
                             .viewerId(viewer_id)
+                            .commId(findQuestion.getCommId())
                             .build());
             findQuestion.updateViewCnt();
         } else {

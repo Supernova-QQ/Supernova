@@ -20,6 +20,7 @@ public interface QuestionViewRepository extends JpaRepository<QuestionView, Long
     @Query("SELECT qv.questionId, COUNT(DISTINCT qv.viewerId) AS viewCnt "
             + "FROM QuestionView qv "
             + "WHERE qv.viewedAt BETWEEN :startDate AND :endDate "
+            + "AND qv.commId > 1"
             + "GROUP BY qv.questionId "
             + "ORDER BY viewCnt DESC "
             + "LIMIT :N")

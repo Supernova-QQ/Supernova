@@ -33,6 +33,9 @@ public class QuestionView {
     @Column(name = "viewer_id")
     private Long viewerId;
 
+    @Column(name = "comm_id")
+    private Long commId;
+
     public void updateViewedAt() {
         this.viewedAt = LocalDate.now();
     }
