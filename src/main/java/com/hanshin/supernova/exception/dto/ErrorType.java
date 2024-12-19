@@ -62,7 +62,8 @@ public enum ErrorType {
     ANSWER_CNT_NEGATIVE_ERROR(HttpStatus.BAD_REQUEST, "답변 수는 0보다 작을 수 없습니다."),
     ACCEPTED_ANSWER_CANNOT_BE_DELETED_ERROR(HttpStatus.BAD_REQUEST, "채택된 답변은 삭제가 불가능합니다."),
     ACCEPTED_ANSWER_CANNOT_BE_EDITED_ERROR(HttpStatus.BAD_REQUEST, "채택된 답변은 수정이 불가능합니다."),
-    QUESTIONER_CANNOT_ACCEPT_THEIR_OWN_ANSWER_ERROR(HttpStatus.BAD_REQUEST, "게시글 당사자는 자신의 댓글 채택이 불가능합니다."),
+    AUTHOR_CANNOT_ACCEPT_THEIR_OWN_ANSWER_ERROR(HttpStatus.BAD_REQUEST, "자신의 댓글은 채택할 수 없습니다."),
+    ONLY_QUESTIONER_CAN_ADOPT_ANSWER_ERROR(HttpStatus.BAD_REQUEST, "댓글 채택은 게시글 당사자만 가능합니다."),
 
     // S3 예외
     EMPTY_IMAGE_ERROR(HttpStatus.BAD_REQUEST, "이미지 파일이 비어있습니다."),
