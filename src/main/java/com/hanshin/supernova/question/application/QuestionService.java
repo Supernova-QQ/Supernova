@@ -109,12 +109,20 @@ public class QuestionService extends AbstractValidateService {
 
         Question findQuestion = getQuestionById(qId);
 
+        Community originalCommunity = getCommunityOrThrowIfNotExist(findQuestion.getCommId());
+
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
         validateSameQuestionerById(findQuestion, findUser.getId());
 
         findQuestion.updateQuestion(request.getTitle(), request.getContent(), request.getImgUrl(),
                 findCommunity.getId());
+
+        // 질문 게시판 이동 시 각 커뮤니티에서 질문 수 증감
+        if (!originalCommunity.getId().equals(request.getCommId())) {
+            originalCommunity.getCommCounter().decreaseQuestionCnt();
+            findCommunity.getCommCounter().increaseQuestionCnt();
+        }
 
         // TODO ContentWord update logic
 
