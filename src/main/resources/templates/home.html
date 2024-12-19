@@ -274,6 +274,7 @@
     // const baseURL = `http://localhost:8080`;
     // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
     const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
+    const mainURL = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.MAIN;
     const baseURL = CONFIG.API.BASE_URL;
     const token = CONFIG.AUTH.DEFAULT_TOKEN;
 
@@ -377,7 +378,7 @@
 
     /* 해시태그 */
     function fetchPopularTags() {
-        fetch(url + `/preday-top10-hashtag`, {
+        fetch(mainURL + `/preday-top10-hashtag`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -389,6 +390,8 @@
 
                 if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularTags(data.data);
+                } else if(data.data == null) {
+                    displayNoDataById('popularTags');
                 } else {
                     console.error('Unexpected data structure:', data);
                 }
@@ -424,7 +427,7 @@
 
     /* 최다 조회 질문 */
     function fetchPopularQuestion() {
-        fetch(url + `/preday-most-viewed-question`, {
+        fetch(mainURL + `/preday-most-viewed-question`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -436,6 +439,8 @@
 
                 if (data.data) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularQuestion(data.data);
+                } else if(data.data == null) {
+                    displayNoDataById('mostViewedQuestion');
                 } else {
                     console.error('Unexpected data structure:', data);
                 }
@@ -447,8 +452,7 @@
     function displayPopularQuestion(question) {
         const container = document.getElementById('mostViewedQuestion');
         container.innerHTML = `
-     <span>Q. ${question.id})</span>
-     <span>${truncateText(question.title, 40)}</span>
+     <span>Q. ${truncateText(question.title, 40)}</span>
     `;
 
         displayQuestion(container, question.id);
@@ -456,7 +460,7 @@
 
     /* 최다 추천 답변 */
     function fetchPopularAnswer() {
-        fetch(url + `/preday-most-recommended-answer`, {
+        fetch(mainURL + `/preday-most-recommended-answer`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -464,10 +468,13 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received viewed question data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+                console.log('최다 추천 답변 데이터:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+                console.log('data.data = ', data.data);
 
                 if (data.data) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularAnswer(data.data);
+                } else if(data.data == null) {
+                    displayNoDataById('mostLikedAnswer');
                 } else {
                     console.error('Unexpected data structure:', data);
                 }
@@ -475,12 +482,19 @@
             .catch(error => console.error('Error:', error));
     }
 
+    function displayNoDataById(id) {
+        const container = document.getElementById(id);
+        container.innerHTML = `
+            <p>(데이터가 존재하지 않습니다. 활동을 시작해주세요!)</p>
+          `;
+    }
+
     // 답변 대한 카드를 생성
     function displayPopularAnswer(answer) {
         const container = document.getElementById('mostLikedAnswer');
-        container.innerHTML = `
-      <p>${truncateText(answer.answer, 50)}</p>
-    `;
+            container.innerHTML = `
+            <p>A. ${truncateText(answer.answer, 50)}</p>
+          `;
         console.log("questionId for answer: ", answer.questionId);
         displayQuestion(container, answer.questionId)
     }
