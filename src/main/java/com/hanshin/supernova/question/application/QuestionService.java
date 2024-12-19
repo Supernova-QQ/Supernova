@@ -115,6 +115,13 @@ public class QuestionService extends AbstractValidateService {
         findQuestion.updateQuestion(request.getTitle(), request.getContent(), request.getImgUrl(),
                 findCommunity.getId());
 
+        // 질문 게시판 이동 시 각 커뮤니티에서 질문 수 증감
+        if (!findCommunity.getId().equals(request.getCommId())) {
+            findCommunity.getCommCounter().decreaseQuestionCnt();
+            Community newCommunity = getCommunityOrThrowIfNotExist(request.getCommId());
+            newCommunity.getCommCounter().increaseQuestionCnt();
+        }
+
         // TODO ContentWord update logic
 
         return QuestionSaveResponse.toResponse(
