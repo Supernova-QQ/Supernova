@@ -560,7 +560,7 @@
                 const imageFormData = new FormData();
                 imageFormData.append('image', imageFile);
 
-                const imageResponse = await fetchWithAuth('http://localhost:8080/api/images', {
+                const imageResponse = await fetchWithAuth(baseURL + '/api/images', {
                     method: 'POST',
                     headers: {},
                     body: imageFormData
