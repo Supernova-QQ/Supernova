@@ -84,4 +84,15 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+//    // 특정 회원의 이름 업데이트
+//    @PutMapping("/{id}/update-name")
+//    public String updateUserName(@PathVariable Long id, @RequestBody UpdateNameRequest request) {
+//        String newName = request.getNewName(); // JSON에서 파싱된 값
+//        boolean isUpdated = userService.updateUserName(id, newName);
+//        if (isUpdated) {
+//            return "회원 이름이 성공적으로 업데이트되었습니다.";
+//        } else {
+//            return "업데이트 실패: 해당 회원을 찾을 수 없습니다.";
+//        }
+//    }
 }

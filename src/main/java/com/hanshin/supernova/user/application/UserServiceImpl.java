@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -236,4 +235,17 @@ public class UserServiceImpl implements UserService {
                 .map(User::getNickname) // User 객체의 getNickname 호출
                 .orElseThrow(() -> new UserInvalidException(ErrorType.USER_NOT_FOUND_ERROR)); // 유저가 없으면 예외 발생
     }
+
+//    public boolean updateUserName(Long id, String newName) {
+//        Optional<User> userOptional = userRepository.findById(id);
+//        log.info("ServiceImpl newName: {}", newName);
+//
+//        if (userOptional.isPresent()) {
+//            User user = userOptional.get();
+//            user.setUsername(newName); // 이름 업데이트
+//            userRepository.save(user); // 변경사항 저장
+//            return true;
+//        }
+//        return false; // 회원을 찾지 못한 경우
+//    }
 }

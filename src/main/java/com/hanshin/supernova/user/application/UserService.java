@@ -36,4 +36,6 @@ public interface UserService {
     public User getUserFromClaims(HttpServletRequest request);
 
     public String getNicknameById(Long userId);
+
+//    public boolean updateUserName(Long id, String newName);
 }
