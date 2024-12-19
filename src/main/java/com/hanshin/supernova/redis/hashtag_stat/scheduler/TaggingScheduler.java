@@ -23,13 +23,14 @@ public class TaggingScheduler {
     private final RedisTemplate<String, String> redisTemplate;
     private final HashtagStatsRepository hashtagStatsRepository;
 
-    @Scheduled(initialDelay = 86400000, fixedRate = 86400000)
-//    @Scheduled(initialDelay = 10000, fixedRate = 10000)
+    @Scheduled(initialDelay = 300000, fixedDelay = 3600000)    // 5분 지연, 한 시간 주기
     public void updateTaggingData() {
         Set<String> keys = redisTemplate.keys("hashtag:*:tagging:*:*");
 
         for (String key : keys) {
             try {
+                log.info("해시태그 key = {}", key);
+
                 String[] parts = key.split(":");
                 if (parts.length != 5) {
                     log.warn("Invalid key format: {}", key);

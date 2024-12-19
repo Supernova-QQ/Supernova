@@ -52,9 +52,8 @@ public class MainPopularListController {
      */
     @GetMapping("/preday-most-viewed-question")
     public ResponseEntity<?> preDayMostViewedQuestion() {
-        return mainPopularListService.getMostViewedQuestion()
-                .map(ResponseDto::ok)
-                .orElseGet(ResponseDto::notFound);
+        var response = mainPopularListService.getMostViewedQuestion();
+        return ResponseDto.ok(response);
     }
 
     /**
@@ -62,9 +61,8 @@ public class MainPopularListController {
      */
     @GetMapping("/preday-most-recommended-answer")
     public ResponseEntity<?> preDayMostRecommendedAnswer() {
-        return mainPopularListService.getMostLikedAnswer()
-                .map(ResponseDto::ok)
-                .orElseGet(ResponseDto::notFound);
+        var response = mainPopularListService.getMostLikedAnswer();
+        return ResponseDto.ok(response);
     }
 
 }
