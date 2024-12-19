@@ -156,7 +156,11 @@
   </div>
 </div>
 
+<script type="module" src="/js/config.js"></script>
+
 <script>
+  import CONFIG from '/static/js/config.js';
+
   let currentPage = 0;
   const pageSize = 10;
 
@@ -200,15 +204,15 @@
   });
 
 
+  // const url = `http://localhost:8080/api/news`
+  const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.NEWS;
 
   function fetchNews() {
-    const url = `http://localhost:8080/api/news`
 
     fetch(url, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0'
+        'Content-Type': 'application/json'
       }
     })
     .then(response => {
@@ -240,13 +244,11 @@
   }
 
   function fetchNewsDetails(newsId) {
-    const url = `http://localhost:8080/api/news/${newsId}`;
 
-    fetch(url, {
+    fetch(url + `/${newsId}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        'X-QQ-AUTH-TOKEN': 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0'
+        'Content-Type': 'application/json'
       }
     })
     .then(response => {

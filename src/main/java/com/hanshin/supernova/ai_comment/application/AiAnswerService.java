@@ -18,7 +18,7 @@ public class AiAnswerService {
 
     private final ChatGptAPIManager chatGptAPIManager;
 
-    @RateLimit(key = "'createAIAnswerTest2:user' + #user.id", limit = 5, period = 24 * 60 * 60)
+    @RateLimit(key = "'createAIAnswerTest:user' + #user.id", limit = 5, period = 24 * 60 * 60)
     public AiAnswerResponse generateAiAnswer(AuthUser user, String title, String content) {
         try {
             return chatGptAPIManager.generateAiAnswer(title, content);
@@ -32,10 +32,12 @@ public class AiAnswerService {
             } else {
                 throw new GptInvalidException(ErrorType.GPT_REQUEST_FAILED);
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
         }
     }
 
-    @RateLimit(key = "'createAIAnswerTest1:user' + #user.id", limit = 5, period = 24 * 60 * 60)
+    @RateLimit(key = "'createAIAnswerTest:user' + #user.id", limit = 5, period = 24 * 60 * 60)
     public AiAnswerResponse regenerateAiAnswer(AuthUser user, String title, String content, String preAnswer) {
         try {
             return chatGptAPIManager.regenerateAiAnswer(title, content, preAnswer);

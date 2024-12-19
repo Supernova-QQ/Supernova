@@ -22,10 +22,11 @@ public interface CommunityStatsRepository extends JpaRepository<CommunityStats, 
             "WHERE cs.date BETWEEN :startDate AND :endDate " +
             "GROUP BY cs.communityId " +
             "ORDER BY visitorCnt DESC " +
-            "LIMIT 3")
-    List<Object[]> findTop3CommunitiesByVisitorsInDateRange(
+            "LIMIT :n")
+    List<Object[]> findTopNCommunitiesByVisitorsInDateRange(
             @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate);
+            @Param("endDate") LocalDate endDate,
+            @Param("n") int n);
 
     /**
      * 특정 커뮤니티의 당일 방문자수 조회

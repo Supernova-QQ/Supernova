@@ -34,4 +34,7 @@ public class User extends BaseEntity {
     @Embedded
     private Activity activity;
 
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }

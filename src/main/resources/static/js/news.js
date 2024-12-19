@@ -1,7 +1,12 @@
+console.log("news script loaded");
+
+// import { CONFIG, getApiUrl, getDefaultHeaders } from './config';
+import CONFIG from '/static/js/config.js';
+
 console.log("News script loaded");
 
-let currentPage = 0;
-const pageSize = 10;
+let currentPage = CONFIG.PAGINATION.DEFAULT_PAGE;
+const pageSize = CONFIG.PAGINATION.DEFAULT_SIZE;
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log("DOM Content Loaded");
@@ -49,16 +54,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-const newsToken = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+// const newsToken = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
+const newsToken = CONFIG.AUTH.DEFAULT_TOKEN;
+const baseURL = CONFIG.API.BASE_URL;
 
 function fetchNews() {
-  const url = `http://localhost:8080/api/news?page=${currentPage}&size=${pageSize}`;
+  const url = baseURL + `/api/news?page=${currentPage}&size=${pageSize}`;
 
-  fetch(url, {
+  fetchWithAuth(url, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json',
-      'X-QQ-AUTH-TOKEN': newsToken
+      'Content-Type': 'application/json'
     }
   })
   .then(response => {
@@ -90,13 +96,12 @@ function fetchNews() {
 }
 
 function fetchNewsDetails(newsId) {
-  const url = `http://localhost:8080/api/news/${newsId}`;
+  const url = baseURL + `/api/news/${newsId}`;
 
-  fetch(url, {
+  fetchWithAuth(url, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json',
-      'X-QQ-AUTH-TOKEN': newsToken
+      'Content-Type': 'application/json'
     }
   })
   .then(response => {

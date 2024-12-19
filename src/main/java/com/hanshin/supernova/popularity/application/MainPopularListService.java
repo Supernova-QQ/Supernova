@@ -41,11 +41,11 @@ public class MainPopularListService {
     private final AnswerRecommendationRepository answerRecommendationRepository;
     private final AnswerRepository answerRepository;
 
-    public List<PopularCommunityResponse> getTop3Communities() {
+    public List<PopularCommunityResponse> getTopNCommunities() {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(30);
-        List<Object[]> results = communityStatsRepository.findTop3CommunitiesByVisitorsInDateRange(
-                startDate, endDate);
+        List<Object[]> results = communityStatsRepository.findTopNCommunitiesByVisitorsInDateRange(
+                startDate, endDate, 5);
         return getPopularCommunityResponses(results);
     }
 

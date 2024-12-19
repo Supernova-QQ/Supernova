@@ -62,4 +62,15 @@ public class APIRateLimiter {
 
         return remainingTokens;
     }
+
+    /**
+     * 토큰을 소비하지 않고 남은 토큰 수만 확인하는 메서드
+     */
+    public long getRemainingTokens(String key, int limit, int period) {
+        Bucket bucket = proxyManager.builder().build(key, BucketConfiguration.builder()
+                .addLimit(Bandwidth.simple(limit, Duration.ofSeconds(period)))
+                .build());
+
+        return bucket.getAvailableTokens();
+    }
 }

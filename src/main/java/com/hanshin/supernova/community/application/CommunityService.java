@@ -16,24 +16,34 @@ import com.hanshin.supernova.community.infrastructure.CommunityMemberRepository;
 import com.hanshin.supernova.community.infrastructure.CommunityRepository;
 import com.hanshin.supernova.exception.community.CommunityInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
+import com.hanshin.supernova.user.domain.User;
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CommunityService extends AbstractValidateService {
 
     private final CommunityRepository communityRepository;
     private final CommunityMemberRepository communityMemberRepository;
+    private final PageableHandlerMethodArgumentResolverCustomizer pageableCustomizer;
 
     /**
      * 커뮤니티 생성
      */
     @Transactional
     public CommunityResponse createCommunity(AuthUser user, CommunityRequest request) {
+
+        log.info("createCommunity 호출됨: AuthUser = {}", user);
 
         // 커뮤니티 이름 중복 체크
         isCommunityNameDuplicated(request);
@@ -134,6 +144,28 @@ public class CommunityService extends AbstractValidateService {
     }
 
     /**
+     * 커뮤니티 목록 - 최신 순
+     */
+    @Transactional(readOnly = true)
+    public Page<CommunityInfoResponse> getLatestCommunities(Pageable pageable) {
+
+        Page<Community> findAllCommunities = communityRepository.findAllOrderByCreatedAtDesc(pageable);
+
+        return findAllCommunities.map(this::convertToCommunityInfoResponse);
+    }
+
+    /**
+     * 커뮤니티 목록 - 오래된 순
+     */
+    @Transactional(readOnly = true)
+    public Page<CommunityInfoResponse> getOldCommunities(Pageable pageable) {
+
+        Page<Community> findAllCommunities = communityRepository.findAllOrderByCreatedAtASC(pageable);
+
+        return findAllCommunities.map(this::convertToCommunityInfoResponse);
+    }
+
+    /**
      * 커뮤니티 가입 요청 처리 - 회원에게 발송된 초대 알림에서 '수락' 버튼을 클릭 시 해당 api 로 요청이 들어온다.
      */
     @Transactional
@@ -146,6 +178,18 @@ public class CommunityService extends AbstractValidateService {
         findCommunity.getCommCounter().increaseMemberCnt();
 
         return new SuccessResponse("가입 처리 완료");
+    }
+
+    /**
+     * 회원가입과 동시에 일반 게시판 가입 처리
+     */
+    @Transactional
+    public void joinGeneralCommunity(User user) {
+        Community findCommunity = getCommunityOrThrowIfNotExist(1L);
+        CommunityMember savedCommunityMember = buildCommunityMember(
+                findCommunity, Autority.USER, getUserOrThrowIfNotExist(user.getId()).getId());
+        communityMemberRepository.save(savedCommunityMember);
+        findCommunity.getCommCounter().increaseMemberCnt();
     }
 
     /**
@@ -184,6 +228,16 @@ public class CommunityService extends AbstractValidateService {
                 .createdBy(creatorId)
                 .commCounter(commCounter)
                 .build();
+    }
+
+
+    private CommunityInfoResponse convertToCommunityInfoResponse(Community community) {
+        return new CommunityInfoResponse(
+                community.getId(),
+                community.getName(),
+                community.getCommCounter().getMemberCnt(),
+                community.getImgUrl()
+        );
     }
 
     private static CommunityMember buildCommunityMember(Community savedCommunity,

@@ -24,6 +24,11 @@ public class CommunityViewController {
         return "community/community_main";
     }
 
+    @GetMapping("/list")
+    public String communityList() {
+        return "community/community_list";
+    }
+
     @GetMapping("/create")
     public String communityCreate() {
         return "community/community_create";
@@ -61,4 +66,11 @@ public class CommunityViewController {
         model.addAttribute("communityId", communityId);
         return "community/all_question_list";
     }
+
+    @GetMapping("/my-note/{id}")
+    public String communityMyNote(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("communityId", id);
+        return "my/community_my_note";
+    }
+
 }
