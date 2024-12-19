@@ -299,7 +299,7 @@
         </select>
 
         <!-- 태그 입력 -->
-        <label for="tag-container">#태그 (최대 10개)</label>
+        <label for="tag-container">#태그 (최대 5개)</label>
         <div id="tag-container" class="tag-container">
             <input type="text" class="tag-input" placeholder="#" onkeyup="validateHashtag(this)">
         </div>
@@ -504,7 +504,7 @@
         const container = document.getElementById('tag-container');
         const inputs = container.getElementsByClassName('tag-input');
 
-        if (input.value && input === inputs[inputs.length - 1] && inputs.length < 10) {
+        if (input.value && input === inputs[inputs.length - 1] && inputs.length < 5) {
             const newInput = document.createElement('input');
             newInput.type = 'text';
             newInput.className = 'tag-input';
