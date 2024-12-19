@@ -108,6 +108,8 @@ public class QuestionService extends AbstractValidateService {
 
         Question findQuestion = getQuestionById(qId);
 
+        Community originalCommunity = getCommunityOrThrowIfNotExist(findQuestion.getCommId());
+
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
         validateSameQuestionerById(findQuestion, findUser.getId());
@@ -116,10 +118,9 @@ public class QuestionService extends AbstractValidateService {
                 findCommunity.getId());
 
         // 질문 게시판 이동 시 각 커뮤니티에서 질문 수 증감
-        if (!findCommunity.getId().equals(request.getCommId())) {
-            findCommunity.getCommCounter().decreaseQuestionCnt();
-            Community newCommunity = getCommunityOrThrowIfNotExist(request.getCommId());
-            newCommunity.getCommCounter().increaseQuestionCnt();
+        if (!originalCommunity.getId().equals(request.getCommId())) {
+            originalCommunity.getCommCounter().decreaseQuestionCnt();
+            findCommunity.getCommCounter().increaseQuestionCnt();
         }
 
         // TODO ContentWord update logic
