@@ -32,9 +32,11 @@
         .container {
             display: flex;
             justify-content: space-between;
+            width: 70%;
             margin: 0 auto;
             padding: 20px 80px;
             gap: 20px;
+            width: 70%;
         }
 
         .left-column, .middle-column, .right-column {
@@ -44,7 +46,11 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .left-column, .right-column {
+        .left-column, .middle-column {
+            width: 45%;
+        }
+
+        .right-column {
             width: 25%;
         }
 
@@ -58,6 +64,7 @@
             padding: 10px 15px;
             border: 1px solid #e0e0e0;
             border-radius: 4px;
+            min-width: max-content;
         }
 
         .community-card:hover {
@@ -198,16 +205,16 @@
 <main>
     <div class="container">
         <div class="left-column">
-            <h3>인기 커뮤니티</h3>
-            <div id="popularCommunities">
-                <!-- 여기에 동적으로 커뮤니티 카드가 추가된다 -->
+            <h3>전체 커뮤니티 최신 질문</h3>
+            <div id="left-card">
+                <!-- 여기에 동적으로 전체 게시판 최신 질문이 추가됨 -->
             </div>
         </div>
 
         <div class="middle-column">
-            <h3>인기 질문</h3>
-            <div id="popularQuestions">
-                <!-- 여기에 동적으로 질문 카드가 추가된다 -->
+            <h3>일반 커뮤니티 최신 질문</h3>
+            <div id="right-card">
+                <!-- 여기에 동적으로 일반 게시판 최신 질문이 추가됨 -->
             </div>
         </div>
 
@@ -216,28 +223,28 @@
                 <div class="notice">
                     <h3>공지사항</h3>
                     <div id="notice">
-                        <!-- 여기에 동적으로 공지사항 카드가 추가된다 -->
+                        <!-- 여기에 동적으로 공지사항 카드가 추가됨 -->
                     </div>
                 </div>
 
                 <div class="popular">
                     <h3>인기 태그</h3>
                     <div id="popularTags">
-                        <!-- 여기에 동적으로 태그 카드가 추가된다 -->
+                        <!-- 여기에 동적으로 태그 카드가 추가됨 -->
                     </div>
                 </div>
 
                 <div class="popular">
                     <h3>전 날 최다 조회 질문</h3>
                     <div id="mostViewedQuestion">
-                        <!-- 여기에 동적으로 질문 카드가 추가된다 -->
+                        <!-- 여기에 동적으로 질문 카드가 추가됨 -->
                     </div>
                 </div>
 
                 <div class="popular">
                     <h3>전 날 최다 추천 답변</h3>
                     <div id="mostLikedAnswer">
-                        <!-- 여기에 동적으로 답변 카드가 추가된다 -->
+                        <!-- 여기에 동적으로 답변 카드가 추가됨 -->
                     </div>
                 </div>
             </div>
@@ -257,8 +264,8 @@
     import CONFIG from '/static/js/config.js';
 
     document.addEventListener('DOMContentLoaded', function () {
-        fetchPopularCommunities();
-        fetchPopularQuestions();
+        fetchLatestQuestions();
+        fetchLatestGeneralQuestions();
         fetchNotice();
         fetchPopularTags();
         fetchPopularQuestion();
@@ -268,62 +275,14 @@
     // const url = `http://localhost:8080/api/main`;
     // const baseURL = `http://localhost:8080`;
     // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
-    const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.MAIN;
+    const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
+    const mainURL = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.MAIN;
     const baseURL = CONFIG.API.BASE_URL;
     const token = CONFIG.AUTH.DEFAULT_TOKEN;
 
-  /* 커뮤니티 */
-  function fetchPopularCommunities() {
-    fetch(url + `/premonth-topN-communities`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Received data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
-                if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
-                    displayPopularCommunities(data.data);
-                } else {
-                    console.error('Unexpected data structure:', data);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    }
-
-    // 각 커뮤니티에 대한 카드를 생성
-    function displayPopularCommunities(communities) {
-        const container = document.getElementById('popularCommunities');
-        container.innerHTML = ''; // Clear existing content
-
-        communities.forEach((community, index) => {
-            const card = document.createElement('div');
-            card.className = 'community-card';
-            card.innerHTML = `
-<!--       <span class="star">★</span>-->
-    <img class="community-img" src="../../static/images/star.png" alt="커뮤니티">
-    <div class="community-info">
-        <p>${community.name}</p>
-        <div class="community-info-cnt">
-            <p>회원수: ${community.memberCnt}</p>
-            <p>방문자수: ${community.visitorCnt}</p>
-        </div>
-    </div>
-    `;
-
-            // 커뮤니티 내부로 이동
-            card.addEventListener('click', () => {
-                window.location.href = `/communities/info/${community.id}`;
-            });
-            container.appendChild(card);
-        });
-    }
-
-    /* 질문 */
-    function fetchPopularQuestions() {
-        fetch(url + `/premonth-top5-questions`, {
+    // 전체 게시판 최신 질문
+    function fetchLatestQuestions() {
+        fetch(url + `/N-latest-questions`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -331,10 +290,9 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received question data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
-                if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
-                    displayPopularQuestions(data.data);
+                console.log('전체 게시판 Received data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+                if (data.data && Array.isArray(data.data)) {
+                    displayQuestions(data.data, 'left-card');
                 } else {
                     console.error('Unexpected data structure:', data);
                 }
@@ -342,28 +300,45 @@
             .catch(error => console.error('Error:', error));
     }
 
-    // 각 질문에 대한 카드를 생성
-    function displayPopularQuestions(questions) {
-        const container = document.getElementById('popularQuestions');
-        container.innerHTML = '';
-
-        questions.forEach((question, index) => {
-            const card = document.createElement('div');
-            card.className = 'question-item';
-            card.innerHTML = `
-       <span class="index">${index + 1}</span>
-       <div class="community-info">
-           <p>${truncateText(question.title, 20)}</p>
-           <p>${truncateText(question.content, 50)}</p>
-           <p class="community-info-view">조회수: ${question.viewCnt}</p>
-       </div>
-      `;
-
-            displayQuestion(card, question.id);
-
-            container.appendChild(card);
-        });
+    // 일반 게시판 최신 질문
+    function fetchLatestGeneralQuestions() {
+        fetch(url + `/N-latest-questions-from-general`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.data && Array.isArray(data.data)) {
+                    displayQuestions(data.data, 'right-card');
+                } else {
+                    console.error('Unexpected data structure:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
     }
+
+    // 질문 표시 함수
+  function displayQuestions(questions, id) {
+    const container = document.getElementById(id);
+    container.innerHTML = '';
+
+    questions.forEach((question, index) => {
+      const card = document.createElement('div');
+      card.className = 'question-item';
+      card.innerHTML = `
+            <span class="index">${index + 1}</span>
+            <div class="community-info">
+                <p>${truncateText(question.title, 20)}</p>
+                <p>${truncateText(question.content, 50)}</p>
+            </div>
+        `;
+
+      displayQuestion(card, question.id);
+      container.appendChild(card);
+    });
+  }
 
     /* 공지사항 */
     function fetchNotice() {
@@ -405,7 +380,7 @@
 
     /* 해시태그 */
     function fetchPopularTags() {
-        fetch(url + `/preday-top10-hashtag`, {
+        fetch(mainURL + `/preday-top10-hashtag`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -417,6 +392,8 @@
 
                 if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularTags(data.data);
+                } else if(data.data == null) {
+                    displayNoDataById('popularTags');
                 } else {
                     console.error('Unexpected data structure:', data);
                 }
@@ -452,7 +429,7 @@
 
     /* 최다 조회 질문 */
     function fetchPopularQuestion() {
-        fetch(url + `/preday-most-viewed-question`, {
+        fetch(mainURL + `/preday-most-viewed-question`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -464,6 +441,8 @@
 
                 if (data.data) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularQuestion(data.data);
+                } else if(data.data == null) {
+                    displayNoDataById('mostViewedQuestion');
                 } else {
                     console.error('Unexpected data structure:', data);
                 }
@@ -475,8 +454,7 @@
     function displayPopularQuestion(question) {
         const container = document.getElementById('mostViewedQuestion');
         container.innerHTML = `
-     <span>Q. ${question.id})</span>
-     <span>${truncateText(question.title, 40)}</span>
+     <span>Q. ${truncateText(question.title, 40)}</span>
     `;
 
         displayQuestion(container, question.id);
@@ -484,7 +462,7 @@
 
     /* 최다 추천 답변 */
     function fetchPopularAnswer() {
-        fetch(url + `/preday-most-recommended-answer`, {
+        fetch(mainURL + `/preday-most-recommended-answer`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -492,10 +470,13 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received viewed question data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+                console.log('최다 추천 답변 데이터:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
+                console.log('data.data = ', data.data);
 
                 if (data.data) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularAnswer(data.data);
+                } else if(data.data == null) {
+                    displayNoDataById('mostLikedAnswer');
                 } else {
                     console.error('Unexpected data structure:', data);
                 }
@@ -503,23 +484,22 @@
             .catch(error => console.error('Error:', error));
     }
 
+    function displayNoDataById(id) {
+        const container = document.getElementById(id);
+        container.innerHTML = `
+            <p>(데이터가 존재하지 않습니다. 활동을 시작해주세요!)</p>
+          `;
+    }
+
     // 답변 대한 카드를 생성
     function displayPopularAnswer(answer) {
         const container = document.getElementById('mostLikedAnswer');
-        container.innerHTML = `
-      <p>${truncateText(answer.answer, 50)}</p>
-    `;
+            container.innerHTML = `
+            <p>A. ${truncateText(answer.answer, 50)}</p>
+          `;
         console.log("questionId for answer: ", answer.questionId);
         displayQuestion(container, answer.questionId)
     }
-
-
-    // function displayQuestionCreation(container) {
-    //   // 질문 생성 페이지로 이동
-    //   container.addEventListener('click', () => {
-    //     window.location.href = `/questions/create`;
-    //   });
-    // }
 
     function displayQuestion(container, questionId) {
         // 질문 내부로 이동

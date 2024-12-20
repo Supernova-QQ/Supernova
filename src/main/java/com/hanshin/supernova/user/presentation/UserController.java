@@ -13,7 +13,6 @@ import com.hanshin.supernova.user.dto.response.ResetPasswordResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-@Slf4j
 @RestController
 @RequestMapping(path = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
@@ -64,11 +61,6 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    //    @DeleteMapping("/delete")
-//    public ResponseEntity<String> deleteUser(@Validated @RequestBody DeleteUserRequest deleteUserRequest) {
-//        userService.deleteUser(deleteUserRequest.getUserId(), deleteUserRequest.getPassword());
-//        return ResponseEntity.ok("유저가 성공적으로 삭제되었습니다.");
-//    }
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteUser(@Validated @RequestBody DeleteUserRequest deleteUserRequest) {
         userService.deleteUser(deleteUserRequest.getUserId(), deleteUserRequest.getPassword());
@@ -95,7 +87,6 @@ public class UserController {
             throw new AuthInvalidException(ErrorType.USER_NOT_FOUND_ERROR);
         }
 
-        log.info("controller new Nickname:{}",request.getNewNickname());
         ChangeNicknameResponse response = userService.changeNickname(
                 authUser.getId(),
                 request.getNewNickname());

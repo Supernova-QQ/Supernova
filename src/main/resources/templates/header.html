@@ -49,6 +49,7 @@
             margin-right: 3%;
             padding-right: 20px;
             gap: 10px;
+            min-width: max-content;
         }
 
         /* 검색 옵션 커스텀 드롭다운 */
@@ -227,6 +228,7 @@
             font-size: 16px;
             flex: 1;
             text-align: center;
+            min-width: max-content;
         }
 
         a {
@@ -256,6 +258,8 @@
             color: #007bff;
             background-color: white;
             cursor: pointer;
+            height: 50px;
+            min-width: max-content;
         }
 
         #create-question-btn:hover,.button-style:hover {
@@ -458,11 +462,12 @@
     <nav>
         <a th:href="@{/}">Home</a>
         <a th:href="@{/communities/main}">Community</a>
-        <a href="#">일반게시판</a>
+        <a th:href="@{/communities/info/1}">일반게시판</a>
         <a th:href="@{/my}">My Page</a>
         <a href="#">About Us</a>
     </nav>
 
+    <!-- 알림 모달 -->
     <div id="news-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>

@@ -1,4 +1,4 @@
-package com.hanshin.supernova.security.service;
+package com.hanshin.supernova.security.application;
 
 import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.auth.model.AuthUserImpl;
@@ -77,17 +77,6 @@ public class JwtService {
             return false;
         }
     }
-
-
-//    // JWT 토큰에서 Claims 추출
-//    public Claims getClaimsFromToken(String token) {
-//        return Jwts.parser()
-//                .verifyWith(key)
-//                .clockSkewSeconds(360) // 1분의 시간 차이를 허용
-//                .build()
-//                .parseSignedClaims(token)
-//                .getPayload();
-//    }
 
     public Claims getClaimsFromToken(String token) {
         try {

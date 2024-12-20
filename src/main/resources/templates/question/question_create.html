@@ -226,6 +226,10 @@
             border-color: #007bff;
         }
 
+    .ai-answer-request {
+      padding-top: 10px;
+    }
+
         /* 무엇이든 물어보세요 버튼 */
         .chat-widget {
             position: fixed;
@@ -295,9 +299,20 @@
         </select>
 
         <!-- 태그 입력 -->
-        <label for="tag-container">#태그 (최대 10개)</label>
+        <label for="tag-container">#태그 (최대 5개)</label>
         <div id="tag-container" class="tag-container">
             <input type="text" class="tag-input" placeholder="#" onkeyup="validateHashtag(this)">
+        </div>
+
+        <!-- AI 답변 선택 및 남은 요청 가능 횟수 조회 -->
+        <div style="display: flex; align-items: center; margin: 20px 0;">
+            <div style="display: flex; align-items: center;">
+                <input type="checkbox" id="ai-answer-checkbox" style="margin-right: 8px;">
+                <label for="ai-answer-checkbox" class="ai-answer-request">AI 답변 요청하기</label>
+            </div>
+            <div id="remaining-count" style="margin-left: 30px; color: #666;">
+                남은 요청 가능 횟수: <span id="remaining-count-value">-</span>회
+            </div>
         </div>
 
         <!-- 답변 설정 -->
@@ -353,6 +368,8 @@
     // 페이지 로드 시 커뮤니티 목록을 가져오는 함수
     document.addEventListener('DOMContentLoaded', function () {
         fetchMyCommunities();
+        fetchRemainingCount(); // 남은 횟수 조회 추가
+        initializeTagInput();
     });
 
     // 이미지 업로드 관련 코드
@@ -382,6 +399,7 @@
     // const url = `http://localhost:8080/api/questions`;
     // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
     const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.QUESTIONS;
+    const baseURL = CONFIG.API.BASE_URL;
 
     function fetchMyCommunities() {
         fetchWithAuth(url + '/my-communities', {
@@ -429,7 +447,48 @@
         }
     }
 
+    // 남은 횟수 조회 함수
+    function fetchRemainingCount() {
+        fetchWithAuth(baseURL + '/api/rate-limit/ai-answers', {
+            headers: {
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const remainingCountElement = document.getElementById('remaining-count-value');
+                remainingCountElement.textContent = data.remainingGenerateCount;
+
+                // 체크박스 상태 제어
+                const checkbox = document.getElementById('ai-answer-checkbox');
+                if (data.remainingGenerateCount <= 0) {
+                    checkbox.disabled = true;  // 체크박스 비활성화
+                    checkbox.checked = false;  // 체크 해제
+                    checkbox.title = "남은 AI 답변 요청 횟수가 없습니다";  // 마우스 오버 시 툴팁
+                } else {
+                    checkbox.disabled = false;
+                    checkbox.title = "";
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching remaining count:', error);
+                const remainingCountElement = document.getElementById('remaining-count-value');
+                remainingCountElement.textContent = '-';
+            });
+    }
+
     /* 해시태그 */
+
+    function initializeTagInput() {
+        const container = document.getElementById('tag-container');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'tag-input';
+        input.placeholder = '#';
+        input.onkeyup = function() {
+            validateHashtag(this);
+        };
+        container.appendChild(input);
+    }
 
     // 특수문자 체크를 위한 정규식
     const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
@@ -445,7 +504,7 @@
         const container = document.getElementById('tag-container');
         const inputs = container.getElementsByClassName('tag-input');
 
-        if (input.value && input === inputs[inputs.length - 1] && inputs.length < 10) {
+        if (input.value && input === inputs[inputs.length - 1] && inputs.length < 5) {
             const newInput = document.createElement('input');
             newInput.type = 'text';
             newInput.className = 'tag-input';
@@ -464,9 +523,6 @@
 
         for (let input of inputs) {
             if (input.value) {
-                // #이 없는 경우 추가
-                // const tag = input.value.startsWith('#') ? input.value : '#' + input.value;
-                // hashtags.push(tag);
                 hashtags.push(input.value);
             }
         }
@@ -477,7 +533,7 @@
     // 폼 제출 처리
     document.querySelector('.submit-btn').addEventListener('click', async function () {
         const title = document.getElementById('question-title').value;
-        const content = document.getElementById('question-description').value.replace(/\n/g, '<br>');
+        const content = document.getElementById('question-description').value;
         const commId = document.getElementById('community-select').value;
         const hashtags = getHashtags();
         const imageFile = document.getElementById('question-image').files[0];
@@ -529,7 +585,8 @@
                 content: content,
                 imgUrl: imageUrl || '', // 이미지 URL이 있으면 사용, 없으면 빈 문자열
                 commId: parseInt(commId),
-                hashtags: hashtags
+                hashtags: hashtags,
+                isAiAnswerRequested: document.getElementById('ai-answer-checkbox').checked
             };
 
             // 질문 등록 API 호출
@@ -547,29 +604,6 @@
             } else {
                 throw new Error(data.reason || '질문 등록 실패');
             }
-            // API 요청
-            // fetch(url, {
-            //   method: 'POST',
-            //   headers: {
-            //     'Content-Type': 'application/json',
-            //     'X-QQ-ACCESS-TOKEN': token
-            //   },
-            //   body: JSON.stringify(questionData)
-            // })
-            // .then(response => response.json())
-            // .then(data => {
-            //   console.log('Received question data:', JSON.stringify(data, null, 2));
-            //   if (data.data) {
-            //     // 성공 시 질문 상세 페이지로 이동
-            //     window.location.href = `/questions/info/${data.data.questionId}`;
-            //   } else {
-            //     alert('질문 등록에 실패했습니다: ' + data.message);
-            //   }
-            // })
-            // .catch(error => {
-            //   console.error('Error:', error);
-            //   alert('질문 등록 중 오류가 발생했습니다.');
-            // });
         } catch (error) {
             console.error('Error:', error);
             alert(error.message || '질문 등록 중 오류가 발생했습니다.');

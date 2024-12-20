@@ -6,11 +6,6 @@ spring:
       host: localhost
       port: 6379
 
-  cache:
-    type: redis
-    port: 6379
-
-
   security:
     jwt:
       secretKey: daccaf8d974dc147519ea15f6c3ae221b57a6ef8fa7508e7eca7e4acc863a6a2972ffd261e05dbe48479dd8e91186e5aaf720ffc223d29558848ada33ca48e07

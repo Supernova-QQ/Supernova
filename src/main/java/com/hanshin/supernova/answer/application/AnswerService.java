@@ -16,13 +16,14 @@ import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.user.domain.User;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -147,10 +148,16 @@ public class AnswerService extends AbstractValidateService {
 
         Answer findAnswer = getAnswerById(aId);
 
-        // 질문자가 자신이 등록한 댓글 채택하는 것 방지
-        if (findQuestion.getQuestionerId().equals(findAnswer.getAnswererId())) {
+        // 자신이 등록한 댓글 채택하는 것 방지
+        if (findUser.getId().equals(findAnswer.getAnswererId())) {
             throw new AnswerInvalidException(
-                    ErrorType.QUESTIONER_CANNOT_ACCEPT_THEIR_OWN_ANSWER_ERROR);
+                    ErrorType.AUTHOR_CANNOT_ACCEPT_THEIR_OWN_ANSWER_ERROR);
+        }
+
+        // 질문 당사자가 아닌 사람이 댓글 채택하는 것 방지
+        if (!findUser.getId().equals(findQuestion.getQuestionerId())) {
+            throw new AnswerInvalidException(
+                    ErrorType.ONLY_QUESTIONER_CAN_ADOPT_ANSWER_ERROR);
         }
 
         findAnswer.changeStatus();

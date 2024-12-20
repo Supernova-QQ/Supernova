@@ -1,7 +1,5 @@
 package com.hanshin.supernova.question.presentation;
 
-import static com.hanshin.supernova.common.CrossOriginConstants.CROSS_ORIGIN_ADDRESS;
-
 import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.orchestration.application.QuestionOrchestrator;
@@ -9,18 +7,13 @@ import com.hanshin.supernova.question.application.QuestionService;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
 import com.hanshin.supernova.question.dto.response.CommunityInfoResponse;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import static com.hanshin.supernova.common.CrossOriginConstants.CROSS_ORIGIN_ADDRESS;
 
 @CrossOrigin(origins = CROSS_ORIGIN_ADDRESS)
 @RestController
@@ -87,7 +80,7 @@ public class QuestionController {
 
     // questionId로 communityId 조회
     @GetMapping("/{q_id}/c_id")
-    public ResponseEntity<Long> getCommunityIdByQuestionId(@PathVariable Long q_id) {
+    public ResponseEntity<Long> getCommunityIdByQuestionId(@PathVariable(name = "q_id") Long q_id) {
         Long communityId = questionService.findCommunityIdByQuestionId(q_id);
         return ResponseEntity.ok(communityId);
     }

@@ -1,3 +1,5 @@
+console.log("news script loaded");
+
 // import { CONFIG, getApiUrl, getDefaultHeaders } from './config';
 import CONFIG from '/static/js/config.js';
 
@@ -59,11 +61,10 @@ const baseURL = CONFIG.API.BASE_URL;
 function fetchNews() {
   const url = baseURL + `/api/news?page=${currentPage}&size=${pageSize}`;
 
-  fetch(url, {
+  fetchWithAuth(url, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json',
-      'X-QQ-ACCESS-TOKEN': newsToken
+      'Content-Type': 'application/json'
     }
   })
   .then(response => {
@@ -97,11 +98,10 @@ function fetchNews() {
 function fetchNewsDetails(newsId) {
   const url = baseURL + `/api/news/${newsId}`;
 
-  fetch(url, {
+  fetchWithAuth(url, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json',
-      'X-QQ-ACCESS-TOKEN': newsToken
+      'Content-Type': 'application/json'
     }
   })
   .then(response => {
