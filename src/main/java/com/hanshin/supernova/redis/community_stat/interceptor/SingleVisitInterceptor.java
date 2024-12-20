@@ -1,7 +1,5 @@
 package com.hanshin.supernova.redis.community_stat.interceptor;
 
-import static com.hanshin.supernova.auth.AuthConstants.ACCESS_TOKEN_HEADER_KEY;
-
 import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.community.infrastructure.CommunityRepository;
 import com.hanshin.supernova.exception.community.CommunityInvalidException;
@@ -9,15 +7,18 @@ import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.security.application.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.time.LocalDate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+
+import java.time.LocalDate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.hanshin.supernova.auth.AuthConstants.ACCESS_TOKEN_HEADER_KEY;
 
 /**
  * 방문자 정보 저장
@@ -33,7 +34,9 @@ public class SingleVisitInterceptor implements HandlerInterceptor {
     private final CommunityRepository communityRepository;
 
     // TODO 만약 예원이가 한 내용 병합될 경우, TokenService -> SecurityTokenService
-    private final TokenService tokenService;
+//    private final TokenService tokenService;
+//    private final AuthUserResolver authUserResolver;
+    private final JwtService jwtService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,

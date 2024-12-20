@@ -17,10 +17,6 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
 
     boolean existsByName(String name);
 
-    // 커뮤니티 ID로 이미지 URL 조회
-    @Query("SELECT c.imgUrl FROM Community c WHERE c.id = :communityId")
-    Optional<String> findImgUrlById(@Param("communityId") Long communityId);
-
     @Query("SELECT c FROM Community c ORDER BY c.createdAt DESC")
     Page<Community> findAllOrderByCreatedAtDesc(Pageable pageable);
 
