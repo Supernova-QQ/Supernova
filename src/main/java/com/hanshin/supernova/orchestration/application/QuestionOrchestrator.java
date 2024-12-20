@@ -8,9 +8,7 @@ import com.hanshin.supernova.ai_comment.dto.response.AiAnswerResponse;
 import com.hanshin.supernova.answer.dto.response.AiCommentResponse;
 import com.hanshin.supernova.answer.infrastructure.AiCommentRepository;
 import com.hanshin.supernova.auth.model.AuthUser;
-import com.hanshin.supernova.exception.dto.ErrorType;
-import com.hanshin.supernova.exception.question.QuestionInvalidException;
-import com.hanshin.supernova.exception.rate_limit.RateLimitExceededException;
+import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.hashtag.application.HashtagService;
 import com.hanshin.supernova.hashtag.dto.request.HashtagRequest;
 import com.hanshin.supernova.news.application.NewsService;
@@ -29,11 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class QuestionOrchestrator {
+public class QuestionOrchestrator extends AbstractValidateService {
 
     private final QuestionService questionService;
     private final HashtagService hashtagService;
-    private final QuestionRepository questionRepository;
     private final AiAnswerService aiAnswerService;
     private final AiCommentService aiCommentService;
     private final NewsService newsService;
@@ -116,12 +113,6 @@ public class QuestionOrchestrator {
         // 답변 등록
         return aiCommentService.updateAiComment(
                 user, buildAiCommentRequest(questionId, regenerationResponse.getAnswer()));
-    }
-
-    private Question getQuestionOrThrowIfNotExist(Long questionId) {
-        return questionRepository.findById(questionId).orElseThrow(
-                () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
-        );
     }
 
     private static AiCommentRequest buildAiCommentRequest(Long questionId,

@@ -5,7 +5,10 @@ import com.hanshin.supernova.community.infrastructure.CommunityRepository;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.community.CommunityInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
+import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.exception.user.UserInvalidException;
+import com.hanshin.supernova.question.domain.Question;
+import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.user.domain.Authority;
 import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.user.infrastructure.UserRepository;
@@ -17,6 +20,7 @@ public abstract class AbstractValidateService {
 
     protected UserRepository userRepository;
     protected CommunityRepository communityRepository;
+    protected QuestionRepository questionRepository;
 
     @Autowired
     public void setUserRepository(UserRepository userRepository, CommunityRepository communityRepository) {
@@ -33,6 +37,12 @@ public abstract class AbstractValidateService {
     protected Community getCommunityOrThrowIfNotExist(Long cId) {
         return communityRepository.findById(cId).orElseThrow(
                 () -> new CommunityInvalidException(ErrorType.COMMUNITY_NOT_FOUND_ERROR)
+        );
+    }
+
+    protected Question getQuestionOrThrowIfNotExist(Long qId) {
+        return questionRepository.findById(qId).orElseThrow(
+                () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
         );
     }
 
