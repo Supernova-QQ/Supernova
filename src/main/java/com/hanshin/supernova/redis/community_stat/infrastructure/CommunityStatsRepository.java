@@ -20,6 +20,7 @@ public interface CommunityStatsRepository extends JpaRepository<CommunityStats, 
     @Query("SELECT cs.communityId, COUNT(DISTINCT cs.visitorIdentifier) as visitorCnt " +
             "FROM CommunityStats cs " +
             "WHERE cs.date BETWEEN :startDate AND :endDate " +
+            "AND cs.communityId > 1" +
             "GROUP BY cs.communityId " +
             "ORDER BY visitorCnt DESC " +
             "LIMIT :n")
