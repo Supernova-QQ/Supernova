@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 @RestController
 @RequestMapping(path = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor

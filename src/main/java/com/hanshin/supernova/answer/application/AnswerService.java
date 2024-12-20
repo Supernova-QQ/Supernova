@@ -53,7 +53,6 @@ public class AnswerService extends AbstractValidateService {
 
         return getAnswerResponse(savedAnswer, findUser);
     }
-
     /**
      * 답변 조회
      */

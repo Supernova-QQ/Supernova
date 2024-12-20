@@ -10,7 +10,7 @@ public class UserInfoViewController {
 
     // 비밀번호 찾기 페이지로 이동
     @GetMapping("/reset-password")
-    public String resetPasswordPage() {
+    public String resetPassword() {
         return "auth/reset_password"; // reset_password.html로 매핑
     }
 }

@@ -274,6 +274,11 @@
             margin-right: 20px;
         }
 
+        .remaining-count {
+            font-size: 12px;
+            color: #666;
+        }
+
         #regenerationBtn {
             min-width: 120px;
             width: 120px;
@@ -285,9 +290,9 @@
             cursor: pointer;
         }
 
-        .remaining-count {
-            font-size: 12px;
-            color: #666;
+        #regenerationBtn:hover{
+            background-color: #0056b3;
+            color: white;
         }
 
         /* 답변 확인하기 */
@@ -620,8 +625,6 @@
         .bookmark-btn:hover .bookmark-icon {
             transform: scale(1.1);
         }
-
-
     </style>
 </head>
 <body>
@@ -802,17 +805,17 @@
             });
             const data = await response.json();
 
-            // 남은 횟수 업데이트
-            const remainingCountElement = document.getElementById('remaining-count');
-            remainingCountElement.textContent = `남은 횟수: ${data.remainingGenerateCount}회`;
-        } catch (error) {
-            console.error('Error fetching remaining count:', error);
-            const remainingCountElement = document.getElementById('remaining-count');
-            remainingCountElement.textContent = '남은 횟수: -회';
-        }
-    }
+          // 남은 횟수 업데이트
+          const remainingCountElement = document.getElementById('remaining-count');
+          remainingCountElement.textContent = `남은 횟수: ${data.remainingGenerateCount}회`;
+      } catch (error) {
+          console.error('Error fetching remaining count:', error);
+          const remainingCountElement = document.getElementById('remaining-count');
+          remainingCountElement.textContent = '남은 횟수: -회';
+      }
+  }
 
-    // 해시태그 정보
+  // 해시태그 정보
     function fetchHashtagInfo(questionId) {
         fetchWithAuth(url + `/${questionId}/hashtags`, {
             method: 'GET',

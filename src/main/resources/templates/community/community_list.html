@@ -137,7 +137,6 @@
   });
 
   const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
-  const token = CONFIG.AUTH.DEFAULT_TOKEN;
 
   function fetchCommunities(page = 0) {
     const endpoint = currentSort === 'latest' ? 'all-latest-communities' : 'all-old-communities';
