@@ -40,7 +40,7 @@
             gap: 20px;
         }
 
-        .left-column, .password-setting {
+        .left-column, .setting-element {
             background-color: white;
             border-radius: 8px;
             padding: 20px;
@@ -151,7 +151,7 @@
             flex-direction: column;
         }
 
-        .password-setting {
+        .setting-element {
             display: flex;
             flex-direction: row;
             margin-bottom: 20px;
@@ -159,24 +159,24 @@
             align-items: center;
         }
 
-        .password-setting img {
+        .setting-element img {
             width: 24px;
             height: 24px;
             margin-right: 7px;
         }
 
-        .password-setting h3 {
+        .setting-element h3 {
             font-size: 16px;
             margin-bottom: 0;
             margin-top: 2px;
         }
 
-        .change-password {
+        .change-setting {
             flex-grow: 1;
             display: inline-block;
         }
 
-        .change-password-btn {
+        .change-setting-btn {
             margin-left: auto;
             display: inline-block;
             padding: 7px 10px;
@@ -188,7 +188,7 @@
             cursor: pointer;
         }
 
-        .change-password-btn:hover {
+        .change-setting-btn:hover {
             background-color: #007bff;
             color: white;
         }
@@ -221,10 +221,17 @@
         </div>
 
         <div class="right-column">
-            <div class="password-setting">
+            <div class="setting-element">
                 <img th:src="@{/images/lock.png}" alt="비밀번호">
-                <div class="change-password"><h3>비밀번호</h3></div>
-                <a th:href="@{/my/change-password}" class="change-password-btn">
+                <div class="change-setting"><h3>비밀번호</h3></div>
+                <a th:href="@{/my/change-password}" class="change-setting-btn">
+                    <div>변경</div>
+                </a>
+            </div>
+            <div class="setting-element">
+                <img th:src="@{/images/nickname.png}" alt="닉네임">
+                <div class="change-setting"><h3>닉네임</h3></div>
+                <a th:href="@{/my/change-nickname}" class="change-setting-btn">
                     <div>변경</div>
                 </a>
             </div>

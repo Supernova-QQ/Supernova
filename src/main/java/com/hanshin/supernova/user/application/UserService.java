@@ -3,6 +3,7 @@ package com.hanshin.supernova.user.application;
 import com.hanshin.supernova.user.dto.request.UserRegisterRequest;
 import com.hanshin.supernova.user.dto.response.ChangePasswordResponse;
 import com.hanshin.supernova.user.dto.response.ResetPasswordResponse;
+import com.hanshin.supernova.user.dto.response.ChangeNicknameResponse;
 import com.hanshin.supernova.user.dto.response.UserRegisterResponse;
 import com.hanshin.supernova.user.domain.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,4 +39,7 @@ public interface UserService {
     public String getNicknameById(Long userId);
 
 //    public boolean updateUserName(Long id, String newName);
+
+    ChangeNicknameResponse changeNickname(Long userId, String newNickname);
+
 }
