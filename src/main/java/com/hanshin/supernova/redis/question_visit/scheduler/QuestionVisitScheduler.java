@@ -25,7 +25,7 @@ public class QuestionVisitScheduler extends AbstractValidateService {
     private final QuestionViewRepository questionViewRepository;
 
     @Transactional
-    @Scheduled(initialDelay = 1000, fixedDelay = 1000)  // 1초 지연, 1초 주기
+    @Scheduled(initialDelay = 3000, fixedDelay = 3000)    // 3초 지연, 3초 주기
     public void updateQuestionVisitorData() {
         Set<String> keys = redisTemplate.keys("question:*:visit:*:*");
 
