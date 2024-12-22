@@ -931,7 +931,7 @@
 
         // 작성 시간 업데이트
         const createdAtElement = document.querySelector('.question-header-left div:last-child');
-        createdAtElement.innerHTML = `${formatDate(questionInfo.createdAt)}<br>조회 수 ${questionInfo.viewCnt - 1}`;
+        createdAtElement.innerHTML = `${formatDate(questionInfo.createdAt)}<br>조회 수 ${questionInfo.viewCnt}`;
 
         // 스타일 추가
         createdAtElement.style.fontSize = '14px';
