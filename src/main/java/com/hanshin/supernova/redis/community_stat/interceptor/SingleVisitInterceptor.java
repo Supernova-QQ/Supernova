@@ -66,6 +66,12 @@ public class SingleVisitInterceptor implements HandlerInterceptor {
         String visitorIdentifier =
                 (authUser != null) ? authUser.getId().toString() : request.getRemoteAddr();
 
+        // IPv6 주소 처리
+        if (visitorIdentifier.contains(":")) {
+            // IPv6 주소의 ':' 를 '_'로 대체하여 Redis 키 구분자와 충돌 방지
+            visitorIdentifier = visitorIdentifier.replace(":", "_");
+        }
+
         String userAgent = request.getHeader("User-Agent");
         String today = LocalDate.now().toString();
         String key = "community:" + communityId + ":visit:" + visitorIdentifier + ":" + today;
