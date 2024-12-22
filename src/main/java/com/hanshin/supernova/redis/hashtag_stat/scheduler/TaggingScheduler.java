@@ -23,7 +23,7 @@ public class TaggingScheduler {
     private final RedisTemplate<String, String> redisTemplate;
     private final HashtagStatsRepository hashtagStatsRepository;
 
-    @Scheduled(initialDelay = 300000, fixedDelay = 3600000)    // 5분 지연, 한 시간 주기
+    @Scheduled(initialDelay = 3000, fixedDelay = 3000)    // 3초 지연, 3초 주기
     public void updateTaggingData() {
         Set<String> keys = redisTemplate.keys("hashtag:*:tagging:*:*");
 

@@ -95,6 +95,12 @@ public class HashtagService extends AbstractValidateService {
     private void recordTaggingData(Long hashtagId, AuthUser authUser) {
         String taggerIdentifier =
                 (authUser != null) ? authUser.getId().toString() : request.getRemoteAddr();
+
+        // IPv6 주소 처리: IPv6 주소의 ':' 를 '_'로 대체하여 Redis 키 구분자와 충돌 방지
+        if (taggerIdentifier.contains(":")) {
+            taggerIdentifier = taggerIdentifier.replace(":", "_");
+        }
+
         String userAgent = request.getHeader("User-Agent");
         String today = LocalDate.now().toString();
         String key = "hashtag:" + hashtagId + ":tagging:" + taggerIdentifier + ":" + today;
