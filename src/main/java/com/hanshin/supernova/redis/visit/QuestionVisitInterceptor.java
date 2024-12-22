@@ -37,10 +37,12 @@ public class QuestionVisitInterceptor implements HandlerInterceptor {
             throw new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR);
         }
 
-        // IPv6 -> IPv4 변환
         String visitorIdentifier = request.getRemoteAddr();
-        if (visitorIdentifier.equals("0:0:0:0:0:0:0:1")) {
-            visitorIdentifier = "127.0.0.1";
+
+        // IPv6 주소 처리
+        if (visitorIdentifier.contains(":")) {
+            // IPv6 주소의 ':' 를 '_'로 대체하여 Redis 키 구분자와 충돌 방지
+            visitorIdentifier = visitorIdentifier.replace(":", "_");
         }
 
         String today = LocalDate.now().toString();
