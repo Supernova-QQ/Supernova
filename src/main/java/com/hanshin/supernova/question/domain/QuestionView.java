@@ -24,19 +24,18 @@ public class QuestionView {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_agent")
+    private String userAgent;
+
     @Column(name = "viewed_at")
     private LocalDate viewedAt;
 
     @Column(name = "question_id")
     private Long questionId;
 
-    @Column(name = "viewer_id")
-    private Long viewerId;
+    @Column(name = "visitor_identifier")
+    private String visitorIdentifier;   // IP 주소
 
     @Column(name = "comm_id")
     private Long commId;
-
-    public void updateViewedAt() {
-        this.viewedAt = LocalDate.now();
-    }
 }

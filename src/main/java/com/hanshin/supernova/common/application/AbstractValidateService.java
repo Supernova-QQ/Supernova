@@ -23,9 +23,10 @@ public abstract class AbstractValidateService {
     protected QuestionRepository questionRepository;
 
     @Autowired
-    public void setUserRepository(UserRepository userRepository, CommunityRepository communityRepository) {
+    public void setRepository(UserRepository userRepository, CommunityRepository communityRepository, QuestionRepository questionRepository) {
         this.userRepository = userRepository;
         this.communityRepository = communityRepository;
+        this.questionRepository = questionRepository;
     }
 
     protected User getUserOrThrowIfNotExist(Long userId) {

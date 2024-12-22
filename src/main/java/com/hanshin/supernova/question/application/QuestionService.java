@@ -11,14 +11,12 @@ import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.domain.QuestionRecommendation;
-import com.hanshin.supernova.question.domain.QuestionView;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
 import com.hanshin.supernova.question.dto.response.CommunityInfoResponse;
 import com.hanshin.supernova.question.dto.response.QuestionResponse;
 import com.hanshin.supernova.question.dto.response.QuestionSaveResponse;
 import com.hanshin.supernova.question.infrastructure.QuestionRecommendationRepository;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
-import com.hanshin.supernova.question.infrastructure.QuestionViewRepository;
 import com.hanshin.supernova.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +33,6 @@ import java.util.List;
 public class QuestionService extends AbstractValidateService {
 
     private final QuestionRepository questionRepository;
-    private final QuestionViewRepository questionViewRepository;
     private final CommunityMemberRepository communityMemberRepository;
     private final QuestionRecommendationRepository questionRecommendationRepository;
 
@@ -73,28 +70,10 @@ public class QuestionService extends AbstractValidateService {
     /**
      * 질문 조회
      */
-    @Transactional
-    public QuestionResponse getQuestion(AuthUser user, Long qId) {
-
-        // 조회를 시도하는 회원의 중복 체크 및 조회수 증가
+    @Transactional(readOnly = true) //
+    public QuestionResponse getQuestion(Long qId) {
 
         Question findQuestion = getQuestionById(qId);
-
-        User findUser = getUserOrThrowIfNotExist(user.getId());
-        Long viewer_id = findUser.getId();
-
-        if (!questionViewRepository.existsByViewerIdAndQuestionId(viewer_id, qId)) {
-            questionViewRepository.save(
-                    QuestionView.builder()
-                            .viewedAt(LocalDate.now())
-                            .questionId(qId)
-                            .viewerId(viewer_id)
-                            .commId(findQuestion.getCommId())
-                            .build());
-            findQuestion.updateViewCnt();
-        } else {
-            questionViewRepository.findByViewerIdAndQuestionId(viewer_id, qId).updateViewedAt();
-        }
 
         return getQuestionResponse(findQuestion);
     }

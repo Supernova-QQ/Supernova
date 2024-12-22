@@ -34,9 +34,8 @@ public class QuestionController {
 
     @GetMapping(path = "/{q_id}")
     public ResponseEntity<?> readQuestion(
-            AuthUser user,
             @PathVariable("q_id") Long q_id) {
-        var response = questionService.getQuestion(user, q_id);
+        var response = questionService.getQuestion(q_id);
         return ResponseDto.ok(response);
     }
 
