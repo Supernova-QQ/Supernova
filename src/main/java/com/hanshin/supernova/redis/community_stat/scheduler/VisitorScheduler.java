@@ -25,7 +25,7 @@ public class VisitorScheduler {
     private final RedisTemplate<String, String> redisTemplate;
     private final CommunityStatsRepository communityStatsRepository;
 
-    @Scheduled(initialDelay = 300000, fixedDelay = 3600000)    // 5분 지연, 한 시간 주기
+    @Scheduled(initialDelay = 1000, fixedDelay = 1000)    // 1초 지연, 1초 주기
     public void updateVisitorData() {
         Set<String> keys = redisTemplate.keys("community:*:visit:*:*");
 
