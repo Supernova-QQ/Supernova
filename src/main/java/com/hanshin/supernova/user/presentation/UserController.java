@@ -6,10 +6,8 @@ import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.user.application.UserService;
 import com.hanshin.supernova.user.domain.User;
-import com.hanshin.supernova.user.dto.request.ChangePasswordRequest;
-import com.hanshin.supernova.user.dto.request.DeleteUserRequest;
-import com.hanshin.supernova.user.dto.request.ResetPasswordRequest;
-import com.hanshin.supernova.user.dto.request.UserRegisterRequest;
+import com.hanshin.supernova.user.dto.request.*;
+import com.hanshin.supernova.user.dto.response.ChangeNicknameResponse;
 import com.hanshin.supernova.user.dto.response.ChangePasswordResponse;
 import com.hanshin.supernova.user.dto.response.ResetPasswordResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 @RestController
 @RequestMapping(path = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -80,6 +77,19 @@ public class UserController {
         String nickname = userService.getNicknameById(authUser.getId());
         Map<String, String> response = new HashMap<>();
         response.put("nickname", nickname);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/change-nickname")
+    public ResponseEntity<ChangeNicknameResponse> getNickname(@RequestBody @Valid ChangeNicknameRequest request, AuthUser authUser) {
+        if (authUser == null) {
+            throw new AuthInvalidException(ErrorType.USER_NOT_FOUND_ERROR);
+        }
+
+        ChangeNicknameResponse response = userService.changeNickname(
+                authUser.getId(),
+                request.getNewNickname());
 
         return ResponseEntity.ok(response);
     }
