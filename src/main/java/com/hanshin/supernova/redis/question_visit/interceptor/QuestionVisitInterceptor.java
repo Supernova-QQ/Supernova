@@ -1,4 +1,4 @@
-package com.hanshin.supernova.redis.visit;
+package com.hanshin.supernova.redis.question_visit.interceptor;
 
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;

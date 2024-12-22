@@ -1,4 +1,4 @@
-package com.hanshin.supernova.redis.visit;
+package com.hanshin.supernova.redis.question_visit.scheduler;
 
 import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.community.domain.Community;
