@@ -49,26 +49,10 @@ public class SingleVisitInterceptor implements HandlerInterceptor {
             throw new CommunityInvalidException(ErrorType.COMMUNITY_NOT_FOUND_ERROR);
         }
 
-        // 토큰에서 AuthUser 정보 추출
-        String accessToken = request.getHeader(ACCESS_TOKEN_HEADER_KEY);
-        AuthUser authUser = null;
-        if (accessToken != null && !accessToken.isEmpty()) {
-//            AuthToken token = new AuthToken(accessToken);
-            try {
-//                authUser = tokenService.getAuthUser(token);
-                authUser = jwtService.getAuthUserFromToken(accessToken);
-            } catch (Exception e) {
-                log.warn("Failed to get AuthUser from token", e);
-            }
-        }
+        String visitorIdentifier = request.getRemoteAddr();
 
-        // 인증된 사용자가 없으면 IP 주소 사용
-        String visitorIdentifier =
-                (authUser != null) ? authUser.getId().toString() : request.getRemoteAddr();
-
-        // IPv6 주소 처리
+        // IPv6 주소 처리: IPv6 주소의 ':' 를 '_'로 대체하여 Redis 키 구분자와 충돌 방지
         if (visitorIdentifier.contains(":")) {
-            // IPv6 주소의 ':' 를 '_'로 대체하여 Redis 키 구분자와 충돌 방지
             visitorIdentifier = visitorIdentifier.replace(":", "_");
         }
 
@@ -78,8 +62,8 @@ public class SingleVisitInterceptor implements HandlerInterceptor {
 
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 
-        // redis에 방문 정보 저장
-        if (!valueOperations.getOperations().hasKey(key)) {
+        // redis 에 방문 정보 저장
+        if (Boolean.FALSE.equals(valueOperations.getOperations().hasKey(key))) {
             valueOperations.set(key, userAgent);
             log.info("New visit recorded: communityId={}, visitorIdentifier={}", communityId, visitorIdentifier);
         }

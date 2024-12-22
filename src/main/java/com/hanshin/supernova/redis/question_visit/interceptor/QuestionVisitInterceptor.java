@@ -39,9 +39,8 @@ public class QuestionVisitInterceptor implements HandlerInterceptor {
 
         String visitorIdentifier = request.getRemoteAddr();
 
-        // IPv6 주소 처리
+        // IPv6 주소 처리: IPv6 주소의 ':' 를 '_'로 대체하여 Redis 키 구분자와 충돌 방지
         if (visitorIdentifier.contains(":")) {
-            // IPv6 주소의 ':' 를 '_'로 대체하여 Redis 키 구분자와 충돌 방지
             visitorIdentifier = visitorIdentifier.replace(":", "_");
         }
 
