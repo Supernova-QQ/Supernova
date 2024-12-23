@@ -8,10 +8,8 @@ import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
-import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.exception.user.UserInvalidException;
 import com.hanshin.supernova.question.domain.Question;
-import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.user.domain.Authority;
 import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.user.infrastructure.UserRepository;
@@ -25,7 +23,6 @@ public class AiCommentService extends AbstractValidateService {
 
     private final AiCommentRepository aiCommentRepository;
     private final UserRepository userRepository;
-    private final QuestionRepository questionRepository;
 
     // AI 댓글 등록
     @Transactional
@@ -66,12 +63,6 @@ public class AiCommentService extends AbstractValidateService {
         if (!questionerId.equals(user.getId())) {
             throw new AuthInvalidException(ErrorType.NON_IDENTICAL_USER_ERROR);
         }
-    }
-
-    private Question getQuestionOrThrowIfNotExist(Long questionId) {
-        return questionRepository.findById(questionId).orElseThrow(
-                () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
-        );
     }
 
     private void buildAndSaveAiComment(AiCommentRequest request) {

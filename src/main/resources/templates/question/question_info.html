@@ -797,23 +797,76 @@
     // const baseURL = CONFIG.API.BASE_URL;
 
     // 페이지 로드 시와 재생성 버튼 클릭 시 남은 횟수를 조회하는 함수
-    async function fetchRemainingCount() {
+    async function fetchRemainingCount(questionId) {
+        const remainingCountElement = document.getElementById('remaining-count');
+        const regenerationBtn = document.getElementById('regenerationBtn');
         try {
-            const response = await fetchWithAuth(baseURL + '/api/rate-limit/ai-answers', {
+            const response = await fetchWithAuth(baseURL + `/api/rate-limit/ai-answers/questions/${questionId}`, {
                 headers: {
                 }
             });
-            const data = await response.json();
 
-          // 남은 횟수 업데이트
-          const remainingCountElement = document.getElementById('remaining-count');
-          remainingCountElement.textContent = `남은 횟수: ${data.remainingGenerateCount}회`;
-      } catch (error) {
-          console.error('Error fetching remaining count:', error);
-          const remainingCountElement = document.getElementById('remaining-count');
-          remainingCountElement.textContent = '남은 횟수: -회';
-      }
-  }
+            console.log(`상태 확인: ${response.status}`);
+
+            switch (response.status) {
+                case 404:
+                    console.log('AI 답변 생성 횟수 정보를 찾을 수 없습니다.');
+                    remainingCountElement.style.display = 'none';
+                    regenerationBtn.style.display = 'none';
+                    return;
+
+                case 403:
+                    console.log('AI 답변 생성 횟수 조회 권한이 없습니다.');
+                    remainingCountElement.style.display = 'none';
+                    regenerationBtn.style.display = 'none';
+                    return;
+
+                case 200:
+                    const data = await response.json();
+                    if (data.remainingGenerateCount !== undefined) {
+                        remainingCountElement.style.display = 'inline';
+                        remainingCountElement.textContent = `남은 횟수: ${data.remainingGenerateCount}회`;
+                        regenerationBtn.style.display = 'inline';
+                    } else {
+                        remainingCountElement.style.display = 'none';
+                        regenerationBtn.style.display = 'none';
+                    }
+                    return;
+
+                default:
+                    console.error(`예상치 못한 응답 상태: ${response.status}`);
+                    remainingCountElement.style.display = 'none';
+                    regenerationBtn.style.display = 'none';
+                    return;
+            }
+
+            // 상태 코드 확인(리소스가 없는 경우 or 접근 권한이 없는 경우)
+            // if (response.status === 404 || response.status === 403) {
+            //     remainingCountElement.style.display = 'none';
+            // } else {
+            //     const data = await response.json();
+            //     remainingCountElement.style.display = 'inline';  // 보이게
+            //     remainingCountElement.textContent = `남은 횟수: ${data.remainingGenerateCount}회`;
+            // }
+
+            // if (!response.ok) {
+            //     throw new Error(`HTTP error! status: ${response.status}`);
+            // }
+
+
+
+            // if (data.remainingGenerateCount !== undefined) {
+            //     remainingCountElement.style.display = 'inline';  // 보이게
+            //     remainingCountElement.textContent = `남은 횟수: ${data.remainingGenerateCount}회`;
+            // } else {
+            //     remainingCountElement.style.display = 'none';  // 숨기기
+            // }
+        } catch (error) {
+            console.error('Error fetching remaining count:', error);
+            const remainingCountElement = document.getElementById('remaining-count');
+            remainingCountElement.textContent = '남은 횟수: -회';
+        }
+    }
 
   // 해시태그 정보
     function fetchHashtagInfo(questionId) {
@@ -934,7 +987,7 @@
 
         // 작성 시간 업데이트
         const createdAtElement = document.querySelector('.question-header-left div:last-child');
-        createdAtElement.innerHTML = `${formatDate(questionInfo.createdAt)}<br>조회 수 ${questionInfo.viewCnt - 1}`;
+        createdAtElement.innerHTML = `${formatDate(questionInfo.createdAt)}<br>조회 수 ${questionInfo.viewCnt}`;
 
         // 스타일 추가
         createdAtElement.style.fontSize = '14px';
@@ -1175,7 +1228,7 @@
         aiAnswerContainer.style.display = 'flex';  // 컨테이너 보이기
         displayAiComment(data.data);
         // 남은 횟수 조회
-        fetchRemainingCount();
+        fetchRemainingCount(questionId);
       } else {
         // AI 답변이 없는 경우
         aiAnswerContainer.style.display = 'none';  // 컨테이너 숨기기
