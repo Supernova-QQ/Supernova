@@ -29,13 +29,6 @@ public class QuestionListService extends AbstractValidateService {
         return getQuestionInfoResponses(findAllQuestions);
     }
 
-    public Page<QuestionInfoResponse> getAllLatestQuestionsByDesc(Pageable pageable) {
-
-        Page<Question> findAllQuestions = questionRepository.findAllOrderByCreatedAtDesc(pageable);
-
-        return findAllQuestions.map(this::convertToQuestionInfoResponse);
-    }
-
     public List<QuestionInfoResponse> getNLatestQuestionsFromGeneralCommunityByDesc(int limit) {
 
         Pageable pageable = PageRequest.of(0, limit);
@@ -43,15 +36,6 @@ public class QuestionListService extends AbstractValidateService {
 
         return getQuestionInfoResponses(findAllQuestions);
     }
-
-    public Page<QuestionInfoResponse> getAllLatestQuestionsFromGeneralCommunityByDesc(Pageable pageable) {
-
-        Page<Question> findAllQuestions = questionRepository.findAllFromGeneralCommunityOrderByCreatedAtDesc(pageable);
-
-        return findAllQuestions.map(this::convertToQuestionInfoResponse);
-    }
-
-
 
     /**
      * 답변이 채택되지 않은 질문 목록 - 최신 순
