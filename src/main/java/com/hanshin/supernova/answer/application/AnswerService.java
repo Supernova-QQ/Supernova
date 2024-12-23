@@ -39,28 +39,26 @@ public class AnswerService extends AbstractValidateService {
      */
     @Transactional
     public AnswerResponse createAnswer(AuthUser user, Long qId, AnswerRequest request) {
-        Question findQuestion = getQuestionById(qId);
+        Question findQuestion = getQuestionOrThrowIfNotExist(qId);
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
-        log.info("answer creator ID = {}", findUser.getId());
 
         Answer answer = buildAnswer(qId, request, findUser.getId());
         Answer savedAnswer = answerRepository.save(answer);
-
-        log.info("saved Answer Answerer ID = {}", savedAnswer.getAnswererId());
 
         findQuestion.increaseAnswerCnt();
 
         return getAnswerResponse(savedAnswer, findUser);
     }
+
     /**
      * 답변 조회
      */
     @Transactional(readOnly = true)
     public AnswerResponse getAnswer(AuthUser user, Long qId, Long aId) {
-        getQuestionById(qId);
+        getQuestionOrThrowIfNotExist(qId);
 
-        Answer findAnswer = getAnswerById(aId);
+        Answer findAnswer = getAnswerOrThrowIfNotExist(aId);
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
@@ -72,13 +70,13 @@ public class AnswerService extends AbstractValidateService {
      */
     @Transactional
     public AnswerResponse editAnswer(AuthUser user, Long qId, Long aId, AnswerRequest request) {
-        getQuestionById(qId);
+        getQuestionOrThrowIfNotExist(qId);
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
-        Answer findAnswer = getAnswerById(aId);
+        Answer findAnswer = getAnswerOrThrowIfNotExist(aId);
 
-        validateSameAnswerer(findAnswer, findUser.getId());
+        verifySameUser(findAnswer.getAnswererId(), findUser.getId());
 
         // 채택된 답변은 수정이 불가능
         if (findAnswer.isAccepted()) {
@@ -99,16 +97,17 @@ public class AnswerService extends AbstractValidateService {
      */
     @Transactional
     public SuccessResponse deleteAnswer(AuthUser user, Long qId, Long aId) {
-        Question findQuestion = getQuestionById(qId);
+        Question findQuestion = getQuestionOrThrowIfNotExist(qId);
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
         log.info("answer deleter ID = {}", findUser.getId());
 
-        Answer findAnswer = getAnswerById(aId);
+        Answer findAnswer = getAnswerOrThrowIfNotExist(aId);
 
-        validateSameAnswerer(findAnswer, findUser.getId());
+        verifySameUser(findAnswer.getAnswererId(), findUser.getId());
 
+        // 채택된 답변은 삭제 불가능
         if (findAnswer.isAccepted()) {
             throw new AnswerInvalidException(ErrorType.ACCEPTED_ANSWER_CANNOT_BE_DELETED_ERROR);
         }
@@ -123,7 +122,7 @@ public class AnswerService extends AbstractValidateService {
      * 답변 전체 목록
      */
     public List<AnswerResponse> getAnswerList(Long qId) {
-        getQuestionById(qId);
+        getQuestionOrThrowIfNotExist(qId);
 
         List<AnswerResponse> answerResponses = new ArrayList<>();
         List<Answer> findAnswers = answerRepository.findAllByQuestionId(qId);
@@ -142,11 +141,11 @@ public class AnswerService extends AbstractValidateService {
      */
     @Transactional
     public AnswerResponse acceptAnswer(AuthUser user, Long qId, Long aId) {
-        Question findQuestion = getQuestionById(qId);
+        Question findQuestion = getQuestionOrThrowIfNotExist(qId);
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
-        Answer findAnswer = getAnswerById(aId);
+        Answer findAnswer = getAnswerOrThrowIfNotExist(aId);
 
         // 자신이 등록한 댓글 채택하는 것 방지
         if (findUser.getId().equals(findAnswer.getAnswererId())) {
@@ -168,10 +167,10 @@ public class AnswerService extends AbstractValidateService {
 
     @Transactional
     public AnswerResponse updateAnswerRecommendation(AuthUser user, Long aId) {
-        Answer findAnswer = getAnswerById(aId);
+        Answer findAnswer = getAnswerOrThrowIfNotExist(aId);
         User findUser = getUserOrThrowIfNotExist(user.getId());
         // 자신의 응답은 추천하지 못하도록 예외처리
-        if(findAnswer.getAnswererId().equals(findUser.getId())) {
+        if (findAnswer.getAnswererId().equals(findUser.getId())) {
             throw new AuthInvalidException(ErrorType.WRITER_CANNOT_RECOMMEND_ERROR);
         }
         // 기존 추천한 이력 유무에 따른 추천수 증감
@@ -233,11 +232,6 @@ public class AnswerService extends AbstractValidateService {
         );
     }
 
-    private Question getQuestionById(Long qId) {
-        return questionRepository.findById(qId).orElseThrow(
-                () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
-        );
-    }
 
     private static Answer buildAnswer(Long qId, AnswerRequest request, Long userId) {
         log.info("saved answerer ID = {}", userId);
@@ -251,19 +245,5 @@ public class AnswerService extends AbstractValidateService {
                 .answererId(userId)
                 .questionId(qId)
                 .build();
-    }
-
-    private Answer getAnswerById(Long aId) {
-        return answerRepository.findById(aId).orElseThrow(
-                () -> new AnswerInvalidException(ErrorType.ANSWER_NOT_FOUND_ERROR)
-        );
-    }
-
-    private static void validateSameAnswerer(Answer findAnswer, Long userId) {
-        log.info("answerer ID: {}", findAnswer.getAnswererId());
-        log.info("user ID: {}", userId);
-        if (!findAnswer.getAnswererId().equals(userId)) {
-            throw new AuthInvalidException(ErrorType.NON_IDENTICAL_USER_ERROR);
-        }
     }
 }

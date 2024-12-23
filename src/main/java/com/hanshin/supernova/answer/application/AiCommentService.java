@@ -7,7 +7,6 @@ import com.hanshin.supernova.answer.infrastructure.AiCommentRepository;
 import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.exception.answer.AnswerInvalidException;
-import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.user.UserInvalidException;
 import com.hanshin.supernova.question.domain.Question;
@@ -35,10 +34,9 @@ public class AiCommentService extends AbstractValidateService {
     // AI 댓글 조회
     @Transactional(readOnly = true)
     public AiCommentResponse getAiComment(Long questionId) {
-        getQuestionOrThrowIfNotExist(questionId);
+        Question findQuestion = getQuestionOrThrowIfNotExist(questionId);
 
-        AiComment findAiComment = aiCommentRepository.findByQuestionId(questionId)
-                .orElseThrow(() -> new AnswerInvalidException(ErrorType.ANSWER_NOT_FOUND_ERROR));
+        AiComment findAiComment = getAiCommentOrThrowIfNotExist(findQuestion.getId());
 
         User systemUser = getUserOrThrowIfNotExist(findAiComment.getUserId());
         return getAiCommentResponse(findAiComment, systemUser);
@@ -48,9 +46,9 @@ public class AiCommentService extends AbstractValidateService {
     public AiCommentResponse updateAiComment(AuthUser user, AiCommentRequest request) {
         Question findQuestion = getQuestionOrThrowIfNotExist(request.getQuestionId());
 
-        AiComment findAiComment = aiCommentRepository.findByQuestionId(request.getQuestionId()).orElse(null);
+        AiComment findAiComment = getAiCommentOrThrowIfNotExist(findQuestion.getId());
 
-        verifySameUser(user, findQuestion.getQuestionerId());
+        verifySameUser(user.getId(), findQuestion.getQuestionerId());
 
         findAiComment.update(request.getAiAnswer());
 
@@ -58,11 +56,6 @@ public class AiCommentService extends AbstractValidateService {
         return getAiCommentResponse(findAiComment, systemUser);
     }
 
-    private static void verifySameUser(AuthUser user, Long questionerId) {
-        if (!questionerId.equals(user.getId())) {
-            throw new AuthInvalidException(ErrorType.NON_IDENTICAL_USER_ERROR);
-        }
-    }
 
     private void buildAndSaveAiComment(AiCommentRequest request) {
         User systemUser = userRepository.findByAuthority(Authority.SYSTEM).orElseThrow(
@@ -86,5 +79,10 @@ public class AiCommentService extends AbstractValidateService {
                 findAiComment.getAiComment(),
                 findAiComment.getCreatedAt()
         );
+    }
+
+    private AiComment getAiCommentOrThrowIfNotExist(Long questionId) {
+        return aiCommentRepository.findByQuestionId(questionId)
+                .orElseThrow(() -> new AnswerInvalidException(ErrorType.ANSWER_NOT_FOUND_ERROR));
     }
 }

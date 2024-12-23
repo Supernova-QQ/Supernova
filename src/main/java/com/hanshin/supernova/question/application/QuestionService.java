@@ -92,7 +92,7 @@ public class QuestionService extends AbstractValidateService {
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
-        validateSameQuestionerById(findQuestion, findUser.getId());
+        verifySameUser(findUser.getId(), findQuestion.getQuestionerId());
 
         findQuestion.updateQuestion(request.getTitle(), request.getContent(), request.getImgUrl(),
                 findCommunity.getId());
@@ -125,7 +125,7 @@ public class QuestionService extends AbstractValidateService {
         log.info("questioner ID = {}", findQuestion.getQuestionerId());
         log.info("user ID = {}", findUser.getId());
 
-        validateSameQuestionerById(findQuestion, findUser.getId());
+        verifySameUser(findUser.getId(), findQuestion.getQuestionerId());
 
         Community findCommunity = getCommunityOrThrowIfNotExist(
                 findQuestion.getCommId());
@@ -185,12 +185,6 @@ public class QuestionService extends AbstractValidateService {
         return communityInfoResponses;
     }
 
-
-    private static void validateSameQuestionerById(Question findQuestion, Long user_id) {
-        if (!findQuestion.getQuestionerId().equals(user_id)) {
-            throw new AuthInvalidException(ErrorType.NON_IDENTICAL_USER_ERROR);
-        }
-    }
 
     private Question getQuestionById(Long q_Id) {
         return questionRepository.findById(q_Id).orElseThrow(
