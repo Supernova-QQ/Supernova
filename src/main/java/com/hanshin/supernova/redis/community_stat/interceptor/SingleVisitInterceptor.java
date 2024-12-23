@@ -56,7 +56,7 @@ public class SingleVisitInterceptor implements HandlerInterceptor {
         // redis 에 방문 정보 저장
         if (Boolean.FALSE.equals(valueOperations.getOperations().hasKey(key))) {
             valueOperations.set(key, userAgent);
-            log.info("New visit recorded: communityId={}, visitorIdentifier={}", communityId, visitorIdentifier);
+            log.debug("New Community visit recorded: communityId={}, visitorIdentifier={}", communityId, visitorIdentifier);
         }
 
         return true;

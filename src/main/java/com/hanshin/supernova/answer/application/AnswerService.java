@@ -98,8 +98,6 @@ public class AnswerService extends AbstractValidateService {
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
-        log.info("answer deleter ID = {}", findUser.getId());
-
         Answer findAnswer = getAnswerOrThrowIfNotExist(aId);
 
         verifySameUser(findAnswer.getAnswererId(), findUser.getId());
@@ -216,7 +214,6 @@ public class AnswerService extends AbstractValidateService {
     }
 
     private static Answer buildAnswer(Long qId, AnswerRequest request, Long userId) {
-        log.info("saved answerer ID = {}", userId);
         return Answer.builder()
                 .answer(request.getAnswer())
                 .tag(request.getTag())

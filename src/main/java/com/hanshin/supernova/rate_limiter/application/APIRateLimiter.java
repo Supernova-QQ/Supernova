@@ -31,7 +31,7 @@ public class APIRateLimiter {
     @PostConstruct
     public void init() {
         try {
-            log.info("Initializing APIRateLimiter with RedisClient: {}", redisClient);
+            log.debug("Initializing APIRateLimiter with RedisClient: {}", redisClient);
             StatefulRedisConnection<String, byte[]> connection = redisClient.connect(
                     RedisCodec.of(StringCodec.UTF8, ByteArrayCodec.INSTANCE));
             this.proxyManager = LettuceBasedProxyManager.builderFor(connection)
@@ -39,7 +39,7 @@ public class APIRateLimiter {
                             io.github.bucket4j.distributed.ExpirationAfterWriteStrategy
                                     .basedOnTimeForRefillingBucketUpToMax(Duration.ofDays(1)))
                     .build();
-            log.info("APIRateLimiter initialized successfully");
+            log.debug("APIRateLimiter initialized successfully");
         } catch (Exception e) {
             log.error("Failed to initialize APIRateLimiter", e);
             throw new IllegalStateException("Failed to initialize APIRateLimiter", e);
@@ -57,7 +57,7 @@ public class APIRateLimiter {
         ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
         long remainingTokens = probe.isConsumed() ? probe.getRemainingTokens() : -1;
 
-        log.info("API Key: {}, Limit: {}, Period: {}, Consumed: {}, Remaining: {}, Time: {}",
+        log.debug("API Key: {}, Limit: {}, Period: {}, Consumed: {}, Remaining: {}, Time: {}",
                 key, limit, period, probe.isConsumed(), remainingTokens, LocalDateTime.now());
 
         return remainingTokens;

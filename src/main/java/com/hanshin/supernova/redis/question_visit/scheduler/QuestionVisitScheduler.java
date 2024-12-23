@@ -29,12 +29,6 @@ public class QuestionVisitScheduler extends AbstractValidateService {
     public void updateQuestionVisitorData() {
         Set<String> keys = redisTemplate.keys("question:*:visit:*:*");
 
-        // 처리할 키 목록 로깅
-        if (keys != null && !keys.isEmpty()) {
-            log.info("처리할 키 목록: {}", keys);
-
-        }
-
         for (String key : keys) {
             try {
                 String[] parts = key.split(":");
@@ -74,7 +68,7 @@ public class QuestionVisitScheduler extends AbstractValidateService {
                                     .build());
                     findQuestion.updateViewCnt();
 
-                    log.info("게시글 조회: questionId={}, visitorIdentifier={}, date={}", questionId,
+                    log.debug("Saved new Community visitor: questionId={}, visitorIdentifier={}, date={}", questionId,
                             visitorIdentifier, date);
                 }
 

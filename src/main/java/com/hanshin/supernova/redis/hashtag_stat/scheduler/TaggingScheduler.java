@@ -29,7 +29,6 @@ public class TaggingScheduler {
 
         for (String key : keys) {
             try {
-                log.info("해시태그 key = {}", key);
 
                 String[] parts = key.split(":");
                 if (parts.length != 5) {
@@ -61,7 +60,7 @@ public class TaggingScheduler {
                         .build();
 
                 hashtagStatsRepository.save(tagger);
-                log.info("Saved new tagger: hashtagId={}, taggerIdentifier={}, date={}", hashtagId,
+                log.debug("Saved new tagger: hashtagId={}, taggerIdentifier={}, date={}", hashtagId,
                         taggerIdentifier, date);
 
                 redisTemplate.delete(key);

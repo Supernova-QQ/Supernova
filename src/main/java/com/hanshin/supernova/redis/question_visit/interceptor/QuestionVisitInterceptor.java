@@ -28,8 +28,6 @@ public class QuestionVisitInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
             Object handler) throws Exception {
 
-        log.info("조회수 증가 시작!");
-
         String questionId = extractQuestionId(request);
         if (questionId == null) {
             return true;
@@ -55,7 +53,7 @@ public class QuestionVisitInterceptor implements HandlerInterceptor {
         // 새로운 접근자일 경우 Redis 에 방문 정보 저장
         if (!valueOperations.getOperations().hasKey(key)) {
             valueOperations.set(key, userAgent);
-            log.info("질문 조회수 증가: questionId={}, visitorIdentifier={}", questionId,
+            log.debug("New Question visit recorded: questionId={}, visitorIdentifier={}", questionId,
                     visitorIdentifier);
         }
 

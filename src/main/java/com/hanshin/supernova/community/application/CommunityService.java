@@ -24,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,15 +34,12 @@ public class CommunityService extends AbstractValidateService {
 
     private final CommunityRepository communityRepository;
     private final CommunityMemberRepository communityMemberRepository;
-    private final PageableHandlerMethodArgumentResolverCustomizer pageableCustomizer;
 
     /**
      * 커뮤니티 생성
      */
     @Transactional
     public CommunityResponse createCommunity(AuthUser user, CommunityRequest request) {
-
-        log.info("createCommunity 호출됨: AuthUser = {}", user);
 
         // 커뮤니티 이름 중복 체크
         isCommunityNameDuplicated(request);

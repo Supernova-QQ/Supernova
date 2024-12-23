@@ -109,7 +109,7 @@ public class HashtagService extends AbstractValidateService {
 
         // redis 에 해시태그 사용 정보 저장
         valueOperations.set(key, userAgent);
-        log.info("New Tagging data for hashtag recorded: hashtagId={}, taggerIdentifier={}",
+        log.debug("New Hashtag using recorded: hashtagId={}, taggerIdentifier={}",
                 hashtagId, taggerIdentifier);
     }
 

@@ -19,7 +19,6 @@ import com.hanshin.supernova.question.infrastructure.QuestionRecommendationRepos
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.user.domain.User;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +26,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class QuestionService extends AbstractValidateService {
@@ -121,9 +119,6 @@ public class QuestionService extends AbstractValidateService {
         Question findQuestion = getQuestionById(qId);
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
-
-        log.info("questioner ID = {}", findQuestion.getQuestionerId());
-        log.info("user ID = {}", findUser.getId());
 
         verifySameUser(findUser.getId(), findQuestion.getQuestionerId());
 

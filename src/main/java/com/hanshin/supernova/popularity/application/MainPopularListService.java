@@ -24,10 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MainPopularListService {
@@ -58,11 +56,9 @@ public class MainPopularListService {
     }
 
     public List<PopularHashtagResponse> getTop10Hashtags() {
-        log.info("getTop10Hashtags");
         LocalDate yesterday = LocalDate.now();
         List<Object[]> results = hashtagStatsRepository.findTop10HashtagsByTaggersInDateRange(
                 yesterday);
-        log.info("results size: {}", results.size());
         return getPopularHashtagResponses(results);
     }
 
@@ -135,7 +131,6 @@ public class MainPopularListService {
                     Hashtag findHashtag = hashtagRepository.findById(hashtagId).orElseThrow(
                             () -> new HashtagInvalidException(ErrorType.HASHTAG_NOT_FOUND_ERROR)
                     );
-                    log.info("hashtagId={}, hashtagName={}", hashtagId, findHashtag.getName());
                     return PopularHashtagResponse.builder()
                             .name(findHashtag.getName())
                             .tagCnt(tagCnt)
