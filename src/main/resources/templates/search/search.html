@@ -138,10 +138,7 @@
       });
     });
 
-    // const url = `http://localhost:8080/api/search`;
-    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
     const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.SEARCH;
-    // const baseURL = CONFIG.API.BASE_URL;
 
     function fetchSearchResults(page) {
       fetch(url + `?search-keyword=${encodeURIComponent(searchKeyword)}&search-type=${searchType}&sort-type=${currentSort}&page=${page}`, {

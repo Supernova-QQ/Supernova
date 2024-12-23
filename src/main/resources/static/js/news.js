@@ -46,8 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// const newsToken = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
-const newsToken = CONFIG.AUTH.DEFAULT_TOKEN;
 const baseURL = CONFIG.API.BASE_URL;
 
 function fetchNews() {
@@ -149,7 +147,6 @@ function displayNews(newsItems) {
 function displayNewsDetails(news) {
   document.getElementById('news-info-title').textContent = news.title;
   document.getElementById('news-info-content').textContent = news.content;
-  // document.getElementById('news-info-type').textContent = `${news.type}`;
   document.getElementById('news-info-created-at').textContent = `${new Date(
       news.createdAt).toLocaleString()}`;
 

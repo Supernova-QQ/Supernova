@@ -491,20 +491,10 @@
             color: white;
         }
 
-        /*.edit-btn {*/
-        /*  color: #6c757d;*/
-        /*  border-color: #6c757d;*/
-        /*}*/
-
         .delete-btn {
             color: #dc3545;
             border-color: #dc3545;
         }
-
-        /*.edit-btn:hover {*/
-        /*  background-color: #6c757d;*/
-        /*  color: white;*/
-        /*}*/
 
         .delete-btn:hover {
             background-color: #dc3545;
@@ -649,15 +639,12 @@
 
             <!-- 수정/삭제 버튼 추가 -->
             <div class="question-actions">
-                <!--      <button id="edit-button" style="display: none;">수정</button>-->
-                <!--      <button id="delete-button" style="display: none;">삭제</button>-->
                 <button id="edit-button">수정</button>
                 <button id="delete-button">삭제</button>
             </div>
 
             <!-- 오른쪽 섹션 (커뮤니티 정보) -->
             <div id="community-info">
-                <!--      <img src="https://via.placeholder.com/20" alt="커뮤니티 아이콘">-->
                 <span id="community-name">커뮤니티 이름</span>
             </div>
         </div>
@@ -679,11 +666,6 @@
                 <img th:src="@{/images/like.png}" alt="좋아요 아이콘">
                 <span class="like-count">좋아요 0</span>
             </button>
-            <!--        <div class="comments">-->
-            <!--&lt;!&ndash;                  <img src="../../static/images/comment.png" alt="댓글 아이콘">&ndash;&gt;-->
-            <!--&lt;!&ndash;            <img th:src="@{/images/comment.png}" alt="댓글 아이콘">&ndash;&gt;-->
-            <!--            댓글 ?-->
-            <!--        </div>-->
             <button id="question-bookmark-button" data-target-id="4" class="bookmark-button">
                 <img th:src="@{/images/no-bookmark.png}" alt="북마크 아이콘"> 북마크
             </button>
@@ -740,7 +722,6 @@
 <!-- 무엇이든 물어보세요 위젯 -->
 <div class="chat-widget">
     <img th:src="@{/images/chatbotQQ.png}" alt="무엇이든 물어보세요 이미지">
-    <!--  <img src="../../static/images/chatbotQQ.png" alt="무엇이든 물어보세요 이미지">-->
     <p>무엇이든 물어보세요!</p>
 </div>
 
@@ -789,11 +770,8 @@
         });
     })
 
-    // const url = `http://localhost:8080/api/questions`;
-    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
     const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.QUESTIONS;
     const baseURL = CONFIG.API.BASE_URL;
-    // const baseURL = CONFIG.API.BASE_URL;
 
     // 페이지 로드 시와 재생성 버튼 클릭 시 남은 횟수를 조회하는 함수
     async function fetchRemainingCount(questionId) {
@@ -834,28 +812,6 @@
                     regenerationBtn.style.display = 'none';
                     return;
             }
-
-            // 상태 코드 확인(리소스가 없는 경우 or 접근 권한이 없는 경우)
-            // if (response.status === 404 || response.status === 403) {
-            //     remainingCountElement.style.display = 'none';
-            // } else {
-            //     const data = await response.json();
-            //     remainingCountElement.style.display = 'inline';  // 보이게
-            //     remainingCountElement.textContent = `남은 횟수: ${data.remainingGenerateCount}회`;
-            // }
-
-            // if (!response.ok) {
-            //     throw new Error(`HTTP error! status: ${response.status}`);
-            // }
-
-
-
-            // if (data.remainingGenerateCount !== undefined) {
-            //     remainingCountElement.style.display = 'inline';  // 보이게
-            //     remainingCountElement.textContent = `남은 횟수: ${data.remainingGenerateCount}회`;
-            // } else {
-            //     remainingCountElement.style.display = 'none';  // 숨기기
-            // }
         } catch (error) {
             console.error('Error fetching remaining count:', error);
             const remainingCountElement = document.getElementById('remaining-count');
@@ -885,10 +841,6 @@
     function displayHashtagsWithStyle(hashtags) {
         const container = document.getElementById('question-tags');
         container.innerHTML = '';
-
-        // container.innerHTML = hashtags
-        // .map(tag => `<span class="hashtag">#${tag}</span>`)
-        // .join(' '); // 띄어쓰기로 구분
 
         hashtags.forEach(tag => {
             const hashtagSpan = document.createElement('span');
@@ -946,7 +898,6 @@
         }
 
         // 질문 내용 업데이트
-        // document.querySelector('.question-content p').textContent = questionInfo.content;
         const contentElement = document.querySelector('.question-content p');
         contentElement.style.whiteSpace = 'pre-wrap';
         contentElement.textContent = questionInfo.content;
@@ -981,8 +932,6 @@
         createdAtElement.style.fontSize = '14px';
         createdAtElement.style.color = '#888';
 
-        // · 댓글 수 ?
-
         // 좋아요 버튼 업데이트
         const likeButton = document.getElementById('like-button');
 
@@ -1001,13 +950,6 @@
         if (questionInfo.isRecommended) {
             newLikeButton.classList.add('active');
         }
-
-//         // 댓글 수 업데이트
-//         document.querySelector('.comments').innerHTML = `
-//             <img src="../../static/images/comment.png" alt="댓글 아이콘">
-// <!--     <img th:src="@{/images/comment.png}" width="10px" alt="댓글 아이콘">-->
-// <!--     댓글 ??-->
-//     `;
 
         // 해결 여부에 따른 스타일 변경 (옵션)
         if (questionInfo.isResolved) {
@@ -1150,28 +1092,6 @@
             });
     }
 
-
-  // AI 답변
-  // function fetchAiComment(questionId) {
-  //   fetch(url + `/${questionId}/ai-answers`, {
-  //     method: 'GET',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'X-QQ-AUTH-TOKEN': token
-  //     }
-  //   })
-  //   .then(response => response.json())
-  //   .then(data => {
-  //     console.log('Received AI answers data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-  //
-  //     if (data.data) {
-  //       displayAiComment(data.data);
-  //     } else {
-  //       console.error('Error loading answers:', data);
-  //     }
-  //   })
-  //   .catch(error => console.error('Error:', error));
-  // }
   function fetchAiComment(questionId) {
     fetchWithAuth(url + `/${questionId}/ai-answers`, {
       method: 'GET',

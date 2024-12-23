@@ -253,8 +253,6 @@
         fetchPopularAnswer();
     });
 
-    // const url = `http://localhost:8080/api/main`;
-    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
     const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.MAIN;
 
   /* 커뮤니티 */
@@ -285,7 +283,6 @@
             const card = document.createElement('div');
             card.className = 'community-card';
             card.innerHTML = `
-<!--        <span class="star">★</span>-->
     <img class="community-img" src="../../static/images/star.png" alt="커뮤니티">
     <div class="community-info">
         <p>${community.name}</p>

@@ -151,15 +151,6 @@
             margin-top: 5px;
         }
 
-
-        /*.tag-input {*/
-        /*  width: 100%;*/
-        /*  padding: 10px;*/
-        /*  border: 1px solid #ccc;*/
-        /*  border-radius: 5px;*/
-        /*  margin-bottom: 20px;*/
-        /*}*/
-
         .settings-wrapper {
             border-top: 1px solid #ddd;
             margin-top: 20px;
@@ -419,9 +410,6 @@
         }
     });
 
-    // const url = `http://localhost:8080/api/questions`;
-    // const baseURL = `http://localhost:8080`;
-    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
     const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.QUESTIONS;
     const baseURL = CONFIG.API.BASE_URL;
 
@@ -646,35 +634,6 @@
             console.error('Error:', error);
             alert(error.message || '질문 수정 중 오류가 발생했습니다.');
         }
-
-        // const questionData = {
-        //   title: title,
-        //   content: content,
-        //   commId: parseInt(commId),
-        //   hashtags: hashtags
-        // };
-        //
-        // fetch(url + `/${questionId}`, {
-        //   method: 'PUT',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //     'X-QQ-ACCESS-TOKEN': token
-        //   },
-        //   body: JSON.stringify(questionData)
-        // })
-        // .then(response => response.json())
-        // .then(data => {
-        //   if (data.data) {
-        //     alert('질문이 수정되었습니다.');
-        //     window.location.href = `/questions/info/${questionId}`;
-        //   } else {
-        //     alert('질문 수정에 실패했습니다: ' + data.message);
-        //   }
-        // })
-        // .catch(error => {
-        //   console.error('Error:', error);
-        //   alert('질문 수정 중 오류가 발생했습니다.');
-        // });
     }
 
     /* 해시태그 */

@@ -315,32 +315,6 @@
             </div>
         </div>
 
-        <!-- 답변 설정 -->
-        <!--  <div class="settings-wrapper">-->
-        <!--    <h2>답변 설정<span class="required">*</span></h2>-->
-        <!--    <div class="settings-group">-->
-        <!--      &lt;!&ndash; 공개 여부 &ndash;&gt;-->
-        <!--      공개여부-->
-        <!--      <div class="divider"></div> &lt;!&ndash; 구분선 &ndash;&gt;-->
-
-        <!--      <div class="settings">-->
-        <!--        <label><input type="radio" name="visibility" value="members" checked> 공개 여부: Members-->
-        <!--          Only</label>-->
-        <!--        <label><input type="radio" name="visibility" value="all"> 공개 여부: ALL</label>-->
-        <!--      </div>-->
-
-        <!--      &lt;!&ndash; 답변/댓글 권한 &ndash;&gt;-->
-        <!--      답변/댓글 권한-->
-        <!--      <div class="divider"></div> &lt;!&ndash; 구분선 &ndash;&gt;-->
-
-        <!--      <div class="settings">-->
-        <!--        <label><input type="radio" name="answer-access" value="members" checked> 답변/댓글 권한: Members-->
-        <!--          Only</label>-->
-        <!--        <label><input type="radio" name="answer-access" value="all"> 답변/댓글 권한: All</label>-->
-        <!--      </div>-->
-        <!--    </div>-->
-        <!--  </div>-->
-
         <!-- 버튼 섹션 -->
         <div class="buttons">
             <button class="cancel-btn">취소</button>
@@ -396,8 +370,6 @@
         }
     });
 
-    // const url = `http://localhost:8080/api/questions`;
-    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
     const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.QUESTIONS;
     const baseURL = CONFIG.API.BASE_URL;
 
