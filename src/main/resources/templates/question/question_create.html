@@ -410,8 +410,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received question data:', JSON.stringify(data, null, 2));
-
                 if (data.data && Array.isArray(data.data)) {
                     populateCommunitySelect(data.data);
                 } else {
@@ -576,7 +574,6 @@
                 }
 
                 imageUrl = imageResult.data;
-                console.log('Uploaded image URL:', imageUrl);
             }
 
             // 2. 질문 생성

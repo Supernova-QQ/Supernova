@@ -267,8 +267,6 @@
     })
     .then(response => response.json())
     .then(data => {
-      console.log('Received data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
                 if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularCommunities(data.data);
                 } else {
@@ -317,8 +315,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received question data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
                 if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularQuestions(data.data);
                 } else {

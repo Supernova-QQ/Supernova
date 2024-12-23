@@ -170,7 +170,6 @@
         })
             .then(response => response.json())
             .then(result => {
-                console.log('Received questions:', result);
                 if (result.data) {
                     displayQuestions(result.data.content);
                     displayPagination(result.data);

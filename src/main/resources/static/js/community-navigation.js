@@ -1,5 +1,3 @@
-console.log("community script loaded");
-
 document.addEventListener('DOMContentLoaded', function () {
     // URL에서 communityId 추출
     const pathSegments = window.location.pathname.split('/');

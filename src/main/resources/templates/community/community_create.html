@@ -283,7 +283,6 @@
                 }
 
                 imageUrl = imageResult.data;
-                console.log('Uploaded image URL:', imageUrl);
             }
 
             // 2. 커뮤니티 생성
@@ -294,8 +293,6 @@
                 isVisible: formData.get('visibility') === 'public',
                 isPublic: formData.get('access') === 'all'
             };
-
-            console.log('Sending community data:', communityData);
 
             const communityResponse = await fetchWithAuth(url + '/api/communities', {
                 method: 'POST',
@@ -310,7 +307,6 @@
             }
 
             const result = await communityResponse.json();
-            console.log('Community creation result:', result);
 
             if (result.data && result.data.id) {
                 window.location.href = `/communities/create-success/${result.data.id}`;

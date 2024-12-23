@@ -152,10 +152,7 @@
       })
       .then(response => response.json())
       .then(data => {
-        console.log('Received search data:', JSON.stringify(data, null, 2));
-
         if (data.data) {
-          console.log("data data content = ", data.data.content);
           displaySearchResults(data.data.content);
           displayPagination(data.data);
         }

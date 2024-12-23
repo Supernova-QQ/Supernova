@@ -1,15 +1,9 @@
-console.log("news script loaded");
-
-// import { CONFIG, getApiUrl, getDefaultHeaders } from './config';
 import CONFIG from '/static/js/config.js';
-
-console.log("News script loaded");
 
 let currentPage = CONFIG.PAGINATION.DEFAULT_PAGE;
 const pageSize = CONFIG.PAGINATION.DEFAULT_SIZE;
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("DOM Content Loaded");
   const newsModal = document.getElementById('news-modal');
   const newsInfoModal = document.getElementById('news-info-modal');
   const bellBtn = document.getElementById('news-bell-btn');
@@ -18,9 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const backBtn = document.getElementById('news-info-back-btn');
 
   if (bellBtn) {
-    console.log("Bell button found");
     bellBtn.addEventListener('click', () => {
-      console.log("Bell button clicked");
       newsModal.style.display = 'block';
       currentPage = 0;
       document.getElementById('news-list').innerHTML = '';
@@ -74,7 +66,6 @@ function fetchNews() {
     return response.json();
   })
   .then(data => {
-    console.log('Received news data:', JSON.stringify(data, null, 2));
     if (data.data && Array.isArray(data.data.content)) {
       displayNews(data.data.content, currentPage === 0);
       currentPage++;

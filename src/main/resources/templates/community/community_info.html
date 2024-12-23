@@ -360,7 +360,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received question data:', JSON.stringify(data, null, 2));
 
                 if (data.data) {
                     updateCommunityInfo(data.data);
@@ -408,8 +407,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received visitor data:', JSON.stringify(data, null, 2));
-
                 if (data) {
                     updateCommunityVisitor(data);
                 } else {
@@ -433,8 +430,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received community create data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
                 if (data.data) {
                     displayQuestions(data.data, 'left-card');
                 } else {
@@ -462,8 +457,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received community create data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
                 if (data.data) {
                     displayQuestions(data.data, 'right-card');
                 } else {
