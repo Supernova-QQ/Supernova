@@ -6,6 +6,7 @@ import com.hanshin.supernova.answer.dto.response.AiCommentResponse;
 import com.hanshin.supernova.answer.infrastructure.AiCommentRepository;
 import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.application.AbstractValidateService;
+import com.hanshin.supernova.exception.answer.AnswerInvalidException;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.user.UserInvalidException;
@@ -36,10 +37,8 @@ public class AiCommentService extends AbstractValidateService {
     public AiCommentResponse getAiComment(Long questionId) {
         getQuestionOrThrowIfNotExist(questionId);
 
-        AiComment findAiComment = aiCommentRepository.findByQuestionId(questionId).orElse(null);
-        if (findAiComment == null) {
-            return null;
-        }
+        AiComment findAiComment = aiCommentRepository.findByQuestionId(questionId)
+                .orElseThrow(() -> new AnswerInvalidException(ErrorType.ANSWER_NOT_FOUND_ERROR));
 
         User systemUser = getUserOrThrowIfNotExist(findAiComment.getUserId());
         return getAiCommentResponse(findAiComment, systemUser);
