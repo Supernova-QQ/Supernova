@@ -1,7 +1,6 @@
 package com.hanshin.supernova.question.dto.response;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

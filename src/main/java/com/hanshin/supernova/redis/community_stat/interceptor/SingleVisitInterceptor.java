@@ -1,10 +1,8 @@
 package com.hanshin.supernova.redis.community_stat.interceptor;
 
-import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.community.infrastructure.CommunityRepository;
 import com.hanshin.supernova.exception.community.CommunityInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
-import com.hanshin.supernova.security.application.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +16,6 @@ import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.hanshin.supernova.auth.AuthConstants.ACCESS_TOKEN_HEADER_KEY;
-
 /**
  * 방문자 정보 저장
  * 커뮤니티 정보에 접근하는 방문자가 있을 경우 해당 커뮤니티, 사용자, 날짜 정보를 조합하여 key 를 만듭니다.
@@ -32,11 +28,6 @@ public class SingleVisitInterceptor implements HandlerInterceptor {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final CommunityRepository communityRepository;
-
-    // TODO 만약 예원이가 한 내용 병합될 경우, TokenService -> SecurityTokenService
-//    private final TokenService tokenService;
-//    private final AuthUserResolver authUserResolver;
-    private final JwtService jwtService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,

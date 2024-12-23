@@ -3,22 +3,17 @@ package com.hanshin.supernova.rate_limiter.aop;
 import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.rate_limiter.annotation.RateLimit;
 import com.hanshin.supernova.rate_limiter.application.APIRateLimiter;
-import jakarta.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 // RateLimit 애노테이션을 처리할 Aspect 클래스인 RateLimitingAspect
 @Aspect
@@ -26,7 +21,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @RequiredArgsConstructor
 public class RateLimitingAspect {
 
-    private static final Logger log = LoggerFactory.getLogger(RateLimitingAspect.class);
     private final APIRateLimiter apiRateLimiter;
     private final ExpressionParser parser = new SpelExpressionParser();
 

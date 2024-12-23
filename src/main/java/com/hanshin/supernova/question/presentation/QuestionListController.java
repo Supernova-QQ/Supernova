@@ -35,16 +35,6 @@ public class QuestionListController {
     }
 
     /**
-     * 일반 게시판을 제외하고 전체 커뮤니티 최신 질문 전체 목록
-     */
-//    @GetMapping(path = "/all-latest-questions")
-//    public ResponseEntity<?> allLatestQuestions(
-//            @PageableDefault(size = 7) Pageable pageable) {
-//        Page<QuestionInfoResponse> responses = questionListService.getAllLatestQuestionsByDesc(pageable);
-//        return ResponseDto.ok(responses);
-//    }
-
-    /**
      * 일반 게시판 최신 질문 4개 목록
      */
     @GetMapping(path = "/N-latest-questions-from-general")
@@ -52,17 +42,6 @@ public class QuestionListController {
         List<QuestionInfoResponse> responses = questionListService.getNLatestQuestionsFromGeneralCommunityByDesc(5);
         return ResponseDto.ok(responses);
     }
-
-    /**
-     * 일반 게시판 최신 질문 전체 목록
-     */
-//    @GetMapping(path = "/all-latest-questions-from-general")
-//    public ResponseEntity<?> allLatestQuestionsFromGeneralCommunity(
-//            @PageableDefault(size = 7) Pageable pageable) {
-//        Page<QuestionInfoResponse> responses = questionListService.getAllLatestQuestionsFromGeneralCommunityByDesc(pageable);
-//        return ResponseDto.ok(responses);
-//    }
-
 
     @GetMapping(path = "/{c_id}/all-latest-questions")
     public ResponseEntity<?> allLatestQuestionsByCommunity(

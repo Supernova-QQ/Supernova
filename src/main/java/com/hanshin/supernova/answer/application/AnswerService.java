@@ -12,9 +12,7 @@ import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.exception.answer.AnswerInvalidException;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
-import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.question.domain.Question;
-import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +29,6 @@ import java.util.List;
 public class AnswerService extends AbstractValidateService {
 
     private final AnswerRepository answerRepository;
-    private final QuestionRepository questionRepository;
     private final AnswerRecommendationRepository answerRecommendationRepository;
 
     /**
@@ -202,20 +199,6 @@ public class AnswerService extends AbstractValidateService {
         );
     }
 
-//    /**
-//     * 답변 개수
-//     */
-//    @Transactional(readOnly = true)
-//    public QuestionInfoResponse getAnswerCnt(Long qId) {
-//        Question findQuestion = getQuestionById(qId);
-//
-//        return QuestionInfoResponse.toResponse(
-//                findQuestion.getId(),
-//                findQuestion.getTitle(),
-//                findQuestion.getContent(),
-//                findQuestion.getAnswerCnt()
-//        );
-//    }
 
 
     private static AnswerResponse getAnswerResponse(Answer answer, User user) {
@@ -231,7 +214,6 @@ public class AnswerService extends AbstractValidateService {
                 answer.isAccepted()
         );
     }
-
 
     private static Answer buildAnswer(Long qId, AnswerRequest request, Long userId) {
         log.info("saved answerer ID = {}", userId);
