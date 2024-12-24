@@ -1,15 +1,9 @@
-console.log("news script loaded");
-
-// import { CONFIG, getApiUrl, getDefaultHeaders } from './config';
 import CONFIG from '/static/js/config.js';
-
-console.log("News script loaded");
 
 let currentPage = CONFIG.PAGINATION.DEFAULT_PAGE;
 const pageSize = CONFIG.PAGINATION.DEFAULT_SIZE;
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("DOM Content Loaded");
   const newsModal = document.getElementById('news-modal');
   const newsInfoModal = document.getElementById('news-info-modal');
   const bellBtn = document.getElementById('news-bell-btn');
@@ -18,9 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const backBtn = document.getElementById('news-info-back-btn');
 
   if (bellBtn) {
-    console.log("Bell button found");
     bellBtn.addEventListener('click', () => {
-      console.log("Bell button clicked");
       newsModal.style.display = 'block';
       currentPage = 0;
       document.getElementById('news-list').innerHTML = '';
@@ -54,8 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// const newsToken = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
-const newsToken = CONFIG.AUTH.DEFAULT_TOKEN;
 const baseURL = CONFIG.API.BASE_URL;
 
 function fetchNews() {
@@ -74,7 +64,6 @@ function fetchNews() {
     return response.json();
   })
   .then(data => {
-    console.log('Received news data:', JSON.stringify(data, null, 2));
     if (data.data && Array.isArray(data.data.content)) {
       displayNews(data.data.content, currentPage === 0);
       currentPage++;
@@ -158,7 +147,6 @@ function displayNews(newsItems) {
 function displayNewsDetails(news) {
   document.getElementById('news-info-title').textContent = news.title;
   document.getElementById('news-info-content').textContent = news.content;
-  // document.getElementById('news-info-type').textContent = `${news.type}`;
   document.getElementById('news-info-created-at').textContent = `${new Date(
       news.createdAt).toLocaleString()}`;
 

@@ -122,9 +122,6 @@
     #news-bell-btn {
       border: none;
       background: none;
-      /*background-image: url("../../img/bell/bell-yellow.png");*/
-      /*width: 30px;*/
-      /*height: 30px;*/
     }
 
     #news-bell-btn:hover {
@@ -203,8 +200,6 @@
     }
   });
 
-
-  // const url = `http://localhost:8080/api/news`
   const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.NEWS;
 
   function fetchNews() {
@@ -222,7 +217,6 @@
       return response.json();
     })
     .then(data => {
-      console.log('Received question data:', JSON.stringify(data, null, 2));
       if (data.data) {
         const responseData = data.data;
         displayNews(responseData);
@@ -305,14 +299,12 @@
   function displayNewsDetails(news) {
     document.getElementById('news-info-title').textContent = news.title;
     document.getElementById('news-info-content').textContent = news.content;
-    // document.getElementById('news-info-type').textContent = `${news.type}`;
     document.getElementById('news-info-created-at').textContent = `${new Date(news.createdAt).toLocaleString()}`;
 
     const relatedBtn = document.getElementById('news-info-related-btn');
     if (news.hasRelatedContent) {
       relatedBtn.style.display = 'block';
       relatedBtn.onclick = () => {
-        console.log('Related content ID:', news.relatedContentId);
       };
     } else {
       relatedBtn.style.display = 'none';

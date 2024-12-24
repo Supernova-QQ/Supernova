@@ -272,9 +272,6 @@
         fetchPopularAnswer();
     });
 
-    // const url = `http://localhost:8080/api/main`;
-    // const baseURL = `http://localhost:8080`;
-    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
     const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
     const mainURL = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.MAIN;
     const baseURL = CONFIG.API.BASE_URL;
@@ -290,7 +287,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('전체 게시판 Received data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
                 if (data.data && Array.isArray(data.data)) {
                     displayQuestions(data.data, 'left-card');
                 } else {
@@ -350,8 +346,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received notice data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
                 if (data.data) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayNotice(data.data);
                 } else {
@@ -388,8 +382,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received hashtag data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
                 if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularTags(data.data);
                 } else if(data.data == null) {
@@ -437,8 +429,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received viewed question data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
                 if (data.data) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularQuestion(data.data);
                 } else if(data.data == null) {
@@ -470,9 +460,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('최다 추천 답변 데이터:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-                console.log('data.data = ', data.data);
-
                 if (data.data) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularAnswer(data.data);
                 } else if(data.data == null) {
@@ -497,7 +484,6 @@
             container.innerHTML = `
             <p>A. ${truncateText(answer.answer, 50)}</p>
           `;
-        console.log("questionId for answer: ", answer.questionId);
         displayQuestion(container, answer.questionId)
     }
 

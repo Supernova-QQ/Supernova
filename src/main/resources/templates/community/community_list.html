@@ -149,7 +149,6 @@
     })
     .then(response => response.json())
     .then(result => {
-      console.log('Received communities:', result);
       if (result.data) {
         displayCommunities(result.data.content);
         displayPagination(result.data);

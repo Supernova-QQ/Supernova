@@ -255,8 +255,6 @@
 
             <!-- Left card -->
             <div class="card">
-                <!--      <h3>답변을 기다리는 질문</h3>-->
-                <!--      <div id="left-card"></div>-->
                 <div class="section-header">
                     <h3>답변을 기다리는 질문</h3>
                     <button id="unanswered-view-more-btn" class="view-more-btn">더보기</button>
@@ -346,8 +344,6 @@
         fetchPopularQuestions(communityId);
     })
 
-    // const url = `http://localhost:8080/api/communities`
-    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
     const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.COMMUNITIES;
 
     // 커뮤니티 정보 로딩
@@ -360,8 +356,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received question data:', JSON.stringify(data, null, 2));
-
                 if (data.data) {
                     updateCommunityInfo(data.data);
                 } else {
@@ -408,8 +402,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received visitor data:', JSON.stringify(data, null, 2));
-
                 if (data) {
                     updateCommunityVisitor(data);
                 } else {
@@ -433,8 +425,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received community create data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
                 if (data.data) {
                     displayQuestions(data.data, 'left-card');
                 } else {
@@ -462,8 +452,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received community create data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
                 if (data.data) {
                     displayQuestions(data.data, 'right-card');
                 } else {
