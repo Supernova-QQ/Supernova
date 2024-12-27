@@ -24,7 +24,7 @@ public class S3Uploader {
 
     public String uploadFile(MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) {
-            log.info("image is null");
+            log.warn("image is null");
             return "";
         }
 
@@ -52,7 +52,6 @@ public class S3Uploader {
                     s3Client.serviceClientConfiguration().region().toString(),
                     fileName);
 
-            log.info("Uploaded file URL: {}", fileUrl);
             return fileUrl;
 
         } catch (IOException e) {

@@ -32,7 +32,7 @@ public class S3Controller {
             if (fileUrl.isEmpty()) {
                 throw new S3InvalidException(ErrorType.EMPTY_IMAGE_ERROR);
             }
-            log.info("Successfully uploaded image. URL: {}", fileUrl);
+            log.debug("Successfully uploaded image. URL: {}", fileUrl);
             return ResponseDto.ok(fileUrl);
         } catch (Exception e) {
             log.error("Failed to upload image", e);

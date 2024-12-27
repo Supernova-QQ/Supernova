@@ -23,20 +23,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findNLatestQuestionsByCreatedAtDesc(@Param("N") Integer limitNumber, Pageable pageable);
 
     @Query("SELECT q FROM Question q " +
-            "WHERE q.commId > 1" +
-            "ORDER BY q.createdAt DESC")
-    Page<Question> findAllOrderByCreatedAtDesc(Pageable pageable);
-
-    @Query("SELECT q FROM Question q " +
             "WHERE q.commId = 1" +
             "ORDER BY q.createdAt DESC " +
             "LIMIT :N")
     List<Question> findNLatestQuestionsFromGeneralCommunityByCreatedAtDesc(@Param("N") Integer limitNumber, Pageable pageable);
-
-    @Query("SELECT q FROM Question q " +
-            "WHERE q.commId = 1" +
-            "ORDER BY q.createdAt DESC")
-    Page<Question> findAllFromGeneralCommunityOrderByCreatedAtDesc(Pageable pageable);
 
     @Query("SELECT q FROM Question q WHERE q.commId=:commId AND q.isResolved=:isResolved ORDER BY q.createdAt ASC")
     Page<Question> findAllByCommIdAndIsResolvedOrderByCreatedAtAsc(@Param("commId") Long c_id, @Param("isResolved") boolean isResolved, Pageable pageable);

@@ -13,11 +13,9 @@ import com.hanshin.supernova.user.domain.User;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NoticeService extends AbstractValidateService {
@@ -29,7 +27,6 @@ public class NoticeService extends AbstractValidateService {
      */
     @Transactional
     public NoticeResponse createNotice(AuthUser user, NoticeRequest request) {
-        log.info("Creating notice for user {}", user.getId());
         User findUser = getUserOrThrowIfNotExist(user.getId());
         verifyAdmin(findUser);
         Notice notice = buildNotice(request);

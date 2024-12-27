@@ -57,8 +57,6 @@ public class NewsService extends AbstractValidateService {
             }
         }
 
-        log.info("news status view = {}", findNews.isViewed());
-
         return NewsResponse.toResponse(
                 findNews.getId(), findNews.getTitle(), findNews.getContent(),
                 findNews.getType(), findNews.isViewed(), findNews.getCreatedAt(),

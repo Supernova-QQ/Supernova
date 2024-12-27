@@ -4,7 +4,6 @@ import static com.hanshin.supernova.common.CrossOriginConstants.CROSS_ORIGIN_ADD
 
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.popularity.application.MainPopularListService;
-import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;

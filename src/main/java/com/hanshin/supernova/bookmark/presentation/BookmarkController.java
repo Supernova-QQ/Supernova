@@ -165,7 +165,7 @@ public class BookmarkController {
     public boolean isQuestionBookmarked(
             AuthUser authUser,
             @PathVariable(name = "c_id") Long commId,
-            @PathVariable Long questionId) {
+            @PathVariable(name = "questionId") Long questionId) {
         return bookmarkService.isQuestionBookmarked(authUser.getId(), commId, questionId);
     }
 
@@ -176,7 +176,7 @@ public class BookmarkController {
     public boolean isAnswerBookmarked(
             AuthUser authUser,
             @PathVariable(name = "c_id") Long commId,
-            @PathVariable Long answerId) {
+            @PathVariable(name = "answerId") Long answerId) {
         return bookmarkService.isAnswerBookmarked(authUser.getId(), commId, answerId);
     }
 }

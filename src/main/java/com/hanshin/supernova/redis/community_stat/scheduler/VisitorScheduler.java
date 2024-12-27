@@ -66,7 +66,7 @@ public class VisitorScheduler {
                             .build();
 
                     communityStatsRepository.save(visitor);
-                    log.info("Saved new visitor: communityId={}, visitorIdentifier={}, date={}",
+                    log.debug("Saved new Community visitor: communityId={}, visitorIdentifier={}, date={}",
                             communityId, visitorIdentifier, date);
                 }
 
