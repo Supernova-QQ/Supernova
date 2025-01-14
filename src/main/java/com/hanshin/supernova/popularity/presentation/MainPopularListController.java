@@ -4,6 +4,7 @@ import static com.hanshin.supernova.common.CrossOriginConstants.CROSS_ORIGIN_ADD
 
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.popularity.application.MainPopularListService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,45 +20,35 @@ public class MainPopularListController {
 
     private final MainPopularListService mainPopularListService;
 
-    /**
-     * 근 30일 최다 방문객수 커뮤니티 N(5)개
-     */
+    @Operation(summary = "근 30일 최다 방문객수 커뮤니티 5개 조회")
     @GetMapping("/premonth-topN-communities")
     public ResponseEntity<?> preMonthTopNCommunities() {
         var responses = mainPopularListService.getTopNCommunities();
         return ResponseDto.ok(responses);
     }
 
-    /**
-     * 근 30일 최다 조회수 질문 5개
-     */
+    @Operation(summary = "근 30일 최다 조회수 질문 5개 조회")
     @GetMapping("/premonth-top5-questions")
     public ResponseEntity<?> preMonthTop5Questions() {
         var responses = mainPopularListService.getTop5Questions();
         return ResponseDto.ok(responses);
     }
 
-    /**
-     * 전날 최다 사용된 해시태그 10개
-     */
+    @Operation(summary = "전날 최다 사용된 해시태그 10개 목록 조회")
     @GetMapping("/preday-top10-hashtag")
     public ResponseEntity<?> preDayTop10Hashtag() {
          var responses = mainPopularListService.getTop10Hashtags();
          return ResponseDto.ok(responses);
     }
 
-    /**
-     * 전날 최다 조회수 질문 1개
-     */
+    @Operation(summary = "전날 최다 조회수 질문 1개 조회")
     @GetMapping("/preday-most-viewed-question")
     public ResponseEntity<?> preDayMostViewedQuestion() {
         var response = mainPopularListService.getMostViewedQuestion();
         return ResponseDto.ok(response);
     }
 
-    /**
-     * 전날 최다 추천수 답변 1개
-     */
+    @Operation(summary = "전날 최다 추천수 답변 1개 조회")
     @GetMapping("/preday-most-recommended-answer")
     public ResponseEntity<?> preDayMostRecommendedAnswer() {
         var response = mainPopularListService.getMostLikedAnswer();

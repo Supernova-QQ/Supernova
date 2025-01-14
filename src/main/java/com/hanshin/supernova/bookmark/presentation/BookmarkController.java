@@ -86,6 +86,8 @@ import com.hanshin.supernova.bookmark.application.BookmarkService;
 import com.hanshin.supernova.bookmark.domain.Bookmark;
 import com.hanshin.supernova.bookmark.dto.request.BookmarkRequest;
 import com.hanshin.supernova.bookmark.dto.response.BookmarkResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -101,12 +103,11 @@ public class BookmarkController {
 
     private final BookmarkService bookmarkService;
 
-    /**
-     * 로그인한 유저의 질문 북마크 리스트 조회
-     */
+    @Operation(summary = "로그인한 유저의 질문 북마크 리스트 조회")
     @GetMapping("/questions")
     public List<BookmarkResponse> getBookmarkedQuestions(
             AuthUser authUser,
+            @Parameter(description = "커뮤니티 고유 번호")
             @PathVariable(name = "c_id") Long commId) {
         List<BookmarkResponse> responses = bookmarkService.getBookmarkedQuestions(authUser.getId(), commId);
 
@@ -117,12 +118,11 @@ public class BookmarkController {
         return responses;
     }
 
-    /**
-     * 로그인한 유저의 답변 북마크 리스트 조회
-     */
+    @Operation(summary = "로그인한 유저의 답변 북마크 리스트 조회")
     @GetMapping("/answers")
     public List<BookmarkResponse> getBookmarkedAnswers(
             AuthUser authUser,
+            @Parameter(description = "커뮤니티 고유 번호")
             @PathVariable(name = "c_id") Long commId) {
         List<BookmarkResponse> responses = bookmarkService.getBookmarkedAnswers(authUser.getId(), commId);
 
@@ -133,49 +133,48 @@ public class BookmarkController {
         return responses;
     }
 
-    /**
-     * 북마크 추가
-     */
+    @Operation(summary = "북마크 추가")
     @PostMapping
     public void addBookmark(
             AuthUser authUser,
+            @Parameter(description = "커뮤니티 고유 번호")
             @PathVariable(name = "c_id") Long c_id,
+            @Parameter(required = true, description = "북마크 추가 요청")
             @RequestBody BookmarkRequest request) {
         request.setCommId(c_id); // 요청 바디에 커뮤니티 ID 설정
         bookmarkService.addBookmark(authUser.getId(), request);
     }
 
-    /**
-     * 북마크 삭제
-     */
+    @Operation(summary = "북마크 삭제")
     @DeleteMapping
     public void removeBookmark(
             AuthUser authUser,
+            @Parameter(description = "커뮤니티 고유 번호")
             @PathVariable(name = "c_id") Long c_id,
+            @Parameter(required = true, description = "북마크 삭제 요청")
             @RequestBody BookmarkRequest request) {
         request.setCommId(c_id); // 요청 바디에 커뮤니티 ID 설정
         bookmarkService.removeBookmark(authUser.getId(), request);
     }
 
-
-    /**
-     * 특정 질문 북마크 상태 조회
-     */
+    @Operation(summary = "특정 질문 북마크 상태 조회")
     @GetMapping("/questions/{questionId}")
     public boolean isQuestionBookmarked(
             AuthUser authUser,
+            @Parameter(description = "커뮤니티 고유 번호")
             @PathVariable(name = "c_id") Long commId,
+            @Parameter(description = "게시글 고유 번호")
             @PathVariable(name = "questionId") Long questionId) {
         return bookmarkService.isQuestionBookmarked(authUser.getId(), commId, questionId);
     }
 
-    /**
-     * 특정 답변 북마크 상태 조회
-     */
+    @Operation(summary = "특정 답변 북마크 상태 조회")
     @GetMapping("/answers/{answerId}")
     public boolean isAnswerBookmarked(
             AuthUser authUser,
+            @Parameter(description = "커뮤니티 고유 번호")
             @PathVariable(name = "c_id") Long commId,
+            @Parameter(description = "답변자 고유 번호")
             @PathVariable(name = "answerId") Long answerId) {
         return bookmarkService.isAnswerBookmarked(authUser.getId(), commId, answerId);
     }

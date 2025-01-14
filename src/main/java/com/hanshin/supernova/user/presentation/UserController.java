@@ -10,6 +10,8 @@ import com.hanshin.supernova.user.dto.request.*;
 import com.hanshin.supernova.user.dto.response.ChangeNicknameResponse;
 import com.hanshin.supernova.user.dto.response.ChangePasswordResponse;
 import com.hanshin.supernova.user.dto.response.ResetPasswordResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +31,18 @@ public class UserController {
 
     private final UserService userService;
 
+    @Operation(summary = "회원가입")
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserRegisterRequest request) {
+    public ResponseEntity<?> registerUser(
+            @Parameter(required = true, description = "회원 가입 요청") @RequestBody UserRegisterRequest request) {
         var response = userService.registerUser(request);
         return ResponseDto.created(response);
     }
 
+    @Operation(summary = "사용자 비밀번호 변경")
     @PostMapping("/change-password")
-    public ResponseEntity<ChangePasswordResponse> changePassword(HttpServletRequest request, @RequestBody @Valid ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<ChangePasswordResponse> changePassword(HttpServletRequest request,
+            @Parameter(required = true, description = "비밀번호 변경 요청") @RequestBody @Valid ChangePasswordRequest changePasswordRequest) {
         ChangePasswordResponse response = userService.changePassword(
                 request,
                 changePasswordRequest.getCurrentPassword(),
@@ -45,8 +51,10 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "사용자 비밀번호 초기화")
     @PostMapping("/reset-password")
-    public ResponseEntity<ResetPasswordResponse> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+    public ResponseEntity<ResetPasswordResponse> resetPassword(
+            @Parameter(required = true, description = "비밀번호 초기화 요청") @RequestBody @Valid ResetPasswordRequest request) {
         ResetPasswordResponse response = userService.resetPassword(
                 request.getEmail(),
                 request.getUsername(),
@@ -55,20 +63,26 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "회원 목록 조회")
     @GetMapping("/all")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
+    @Operation(summary = "회원 정보 삭제")
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(@Validated @RequestBody DeleteUserRequest deleteUserRequest) {
+    public ResponseEntity<String> deleteUser(
+            @Parameter(required = true, description = "회원 정보 삭제 요청")
+            @Validated @RequestBody DeleteUserRequest deleteUserRequest) {
         userService.deleteUser(deleteUserRequest.getUserId(), deleteUserRequest.getPassword());
         return ResponseEntity.ok("유저가 성공적으로 삭제되었습니다.");
     }
 
+    @Operation(summary = "사용자 닉네입 조회")
     @GetMapping("/nickname")
-    public ResponseEntity<Map<String, String>> getNickname(@RequestBody(required = false) Map<String, Object> request, AuthUser authUser) {
+    public ResponseEntity<Map<String, String>> getNickname(
+            @RequestBody(required = false) Map<String, Object> request, AuthUser authUser) {
         if (authUser == null) {
             throw new AuthInvalidException(ErrorType.USER_NOT_FOUND_ERROR);
         }
@@ -81,8 +95,11 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "사용자 닉네임 변경")
     @PostMapping("/change-nickname")
-    public ResponseEntity<ChangeNicknameResponse> getNickname(@RequestBody @Valid ChangeNicknameRequest request, AuthUser authUser) {
+    public ResponseEntity<ChangeNicknameResponse> getNickname(
+            @Parameter(required = true, description = "사용자 닉네임 변경 요청") @RequestBody @Valid ChangeNicknameRequest request,
+            AuthUser authUser) {
         if (authUser == null) {
             throw new AuthInvalidException(ErrorType.USER_NOT_FOUND_ERROR);
         }
