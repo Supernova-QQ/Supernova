@@ -9,6 +9,8 @@ import com.hanshin.supernova.security.application.JwtService;
 import com.hanshin.supernova.user.application.UserService;
 import com.hanshin.supernova.user.domain.User;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,10 +48,10 @@ public class AuthController {
         this.refreshTokenExpirationMinutes = this.refreshTokenExpiration / 60;
     }
 
-
-    // 로그인 엔드포인트
+    @Operation(summary = "로그인")
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthLoginRequest loginRequest) {
+    public ResponseEntity<?> login(
+            @Parameter(required = true, description = "로그인 요청")@RequestBody AuthLoginRequest loginRequest) {
         // 이메일로 사용자를 조회
         User user = userService.getByEmail(loginRequest.getEmail());
 
@@ -89,7 +91,7 @@ public class AuthController {
     }
 
 
-    // RefreshToken을 사용해 AccessToken 재발급
+    @Operation(summary = "RefreshToken 을 사용한 AccessToken 재발급")
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshAccessToken(HttpServletRequest request) {
 
@@ -142,6 +144,7 @@ public class AuthController {
 //        return ResponseEntity.ok("Logged out successfully");
 //    }
 
+    @Operation(summary = "로그아웃 요청")
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
 
