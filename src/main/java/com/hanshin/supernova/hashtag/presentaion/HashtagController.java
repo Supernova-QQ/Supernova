@@ -43,7 +43,7 @@ public class HashtagController {
 
     @Operation(summary = "게시글에 대한 해시태그 목록 조회")
     @GetMapping("/{q_id}/hashtags")
-    public ResponseEntity<?> getAllHashtags(
+    public ResponseEntity<?> getHashtags(
             @Parameter(description = "게시글 고유 번호")
             @PathVariable(name = "q_id") Long qId
     ) {

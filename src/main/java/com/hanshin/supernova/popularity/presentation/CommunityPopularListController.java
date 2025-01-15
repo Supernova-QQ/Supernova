@@ -24,7 +24,7 @@ public class CommunityPopularListController {
 
     @Operation(summary = "커뮤니티 내부 인기 게시글 4개 목록 조회", description = "커뮤니티 메인 화면에서 게시글 4개의 목록을 조회한다.")
     @GetMapping("/popular-4-questions")
-    public ResponseEntity<?> popular4Questions(
+    public ResponseEntity<?> getPopular4Questions(
             @Parameter(description = "커뮤니티 고유 번호") @PathVariable("c_id") Long c_id) {
         var responses = communityPopularListService.getPopular4QuestionsByCommunity(c_id);
         return ResponseDto.ok(responses);
@@ -32,7 +32,7 @@ public class CommunityPopularListController {
 
     @Operation(summary = "커뮤니티 내부 인기 게시글 전체 목록 조회", description = "커뮤니티 인기 게시글 더보기에서 전체 인기 목록을 조회한다.")
     @GetMapping("/popular-questions")
-    public ResponseEntity<?> popularQuestions(
+    public ResponseEntity<?> getPopularQuestions(
             @Parameter(description = "커뮤니티 고유 번호") @PathVariable("c_id") Long c_id) {
         var responses = communityPopularListService.getPopularQuestionsByCommunity(c_id);
         return ResponseDto.ok(responses);
