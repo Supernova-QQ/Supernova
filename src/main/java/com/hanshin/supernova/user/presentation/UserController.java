@@ -97,7 +97,7 @@ public class UserController {
 
     @Operation(summary = "사용자 닉네임 변경")
     @PostMapping("/change-nickname")
-    public ResponseEntity<ChangeNicknameResponse> getNickname(
+    public ResponseEntity<ChangeNicknameResponse> changeNickname(
             @Parameter(required = true, description = "사용자 닉네임 변경 요청") @RequestBody @Valid ChangeNicknameRequest request,
             AuthUser authUser) {
         if (authUser == null) {

@@ -28,7 +28,7 @@ public class BadgeController {
 
     @Operation(summary = "사용자의 배지 상태를 반환")
     @GetMapping
-    public ResponseEntity<Activity> getUserBadges(AuthUser authUser) {
+    public ResponseEntity<Activity> getUserBadgeStatus(AuthUser authUser) {
         // 1. AuthUser의 userId로 User 엔티티 조회
         User user = userRepository.findById(authUser.getId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));

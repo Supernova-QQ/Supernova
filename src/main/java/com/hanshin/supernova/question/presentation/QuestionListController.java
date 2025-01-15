@@ -29,14 +29,14 @@ public class QuestionListController {
 
     @Operation(summary = "일반 게시판을 제외하고 전체 커뮤니티 최신 질문 N개 목록")
     @GetMapping(path = "/N-latest-questions")
-    public ResponseEntity<?> nLatestQuestions() {
+    public ResponseEntity<?> getNLatestQuestions() {
         List<QuestionInfoResponse> responses = questionListService.getNLatestQuestionsByDesc(5);
         return ResponseDto.ok(responses);
     }
 
     @Operation(summary = "일반 게시판 최신 질문 4개 목록")
     @GetMapping(path = "/N-latest-questions-from-general")
-    public ResponseEntity<?> nLatestQuestionsFromGeneralCommunity() {
+    public ResponseEntity<?> getNLatestQuestionsFromGeneralCommunity() {
         List<QuestionInfoResponse> responses = questionListService.getNLatestQuestionsFromGeneralCommunityByDesc(5);
         return ResponseDto.ok(responses);
     }
@@ -54,9 +54,9 @@ public class QuestionListController {
         return ResponseDto.ok(response);
     }
 
-    @Operation(summary = "전체 질문 목록 오래된 순으로 정렬")
+    @Operation(summary = "커뮤니티 별 전체 질문 목록 오래된 순으로 정렬")
     @GetMapping(path = "/{c_id}/all-old-questions")
-    public ResponseEntity<?> allOldQuestions(
+    public ResponseEntity<?> allOldQuestionsByCommunity(
             @Parameter(description = "커뮤니티 고유 번호")
             @PathVariable("c_id") Long cId,
             @Parameter(description = "한 페이지의 데이터 개수")
@@ -69,7 +69,7 @@ public class QuestionListController {
 
     @Operation(summary = "답변을 기다리는 질문 목록 최신 순으로 정렬")
     @GetMapping(path = "/{c_id}/unanswered-latest-questions")
-    public ResponseEntity<?> unansweredLatestQuestions(
+    public ResponseEntity<?> getUnansweredLatestQuestions(
             @Parameter(description = "커뮤니티 고유 번호")
             @PathVariable("c_id") Long cId,
             @Parameter(description = "한 페이지의 데이터 개수")
@@ -82,7 +82,7 @@ public class QuestionListController {
 
     @Operation(summary = "답변을 기다리는 질문 목록 오래된 순으로 정렬")
     @GetMapping(path = "/{c_id}/unanswered-old-questions")
-    public ResponseEntity<?> unansweredOldQuestions(
+    public ResponseEntity<?> getUnansweredOldQuestions(
             @Parameter(description = "커뮤니티 고유 번호")
             @PathVariable("c_id") Long cId,
             @Parameter(description = "한 페이지의 데이터 개수")
@@ -95,7 +95,7 @@ public class QuestionListController {
 
     @Operation(summary = "답변을 기다리는 최신 4개 질문 조회")
     @GetMapping(path = "/{c_id}/unanswered-latest-4-questions")
-    public ResponseEntity<?> unansweredLatest4Questions(
+    public ResponseEntity<?> getUnansweredLatest4Questions(
             @Parameter(description = "커뮤니티 고유 번호")
             @PathVariable("c_id") Long cId
     ) {
