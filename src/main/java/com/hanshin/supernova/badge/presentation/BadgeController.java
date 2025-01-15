@@ -6,6 +6,8 @@ import com.hanshin.supernova.user.domain.Activity;
 import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.user.application.UserService;
 import com.hanshin.supernova.user.infrastructure.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +26,9 @@ public class BadgeController {
     private final BadgeService badgeService;
     private final UserRepository userRepository;
 
-    /**
-     * 사용자의 배지 상태를 반환하는 엔드포인트
-     * @param authUser JwtFilter 및 UserArgumentResolver로 주입된 AuthUser
-     * @return 사용자의 배지 상태
-     */
+    @Operation(summary = "사용자의 배지 상태를 반환")
     @GetMapping
-    public ResponseEntity<Activity> getUserBadges(AuthUser authUser) {
+    public ResponseEntity<Activity> getUserBadgeStatus(AuthUser authUser) {
         // 1. AuthUser의 userId로 User 엔티티 조회
         User user = userRepository.findById(authUser.getId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));

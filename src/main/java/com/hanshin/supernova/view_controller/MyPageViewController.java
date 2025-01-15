@@ -21,11 +21,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MyPageViewController {
 
-    private final QuestionService questionService;
-    private final AnswerService answerService;
-
     @GetMapping
     public String getMyPage() {
         return "my/my"; // my.html을 렌더링
     }
+
+    @GetMapping("/profile")
+    public String getMyProfile() {return "my/profile";} // profile.html을 렌더링
+
+    @GetMapping("/community")
+    public String manageMyCommunity() {return "my/community_management";} // community_management.html을 렌더링
+
+    @GetMapping("/change-password")
+    public String changePassword() {return "my/change_password";} // change_password.html을 렌더링
+
+    @GetMapping("/change-nickname")
+    public String changeNickname() {return "my/change_nickname";} // change_password.html을 렌더링
 }

@@ -1,23 +1,20 @@
 package com.hanshin.supernova.redis.community_stat.interceptor;
 
-import static com.hanshin.supernova.auth.AuthConstants.ACCESS_TOKEN_HEADER_KEY;
-
-import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.community.infrastructure.CommunityRepository;
 import com.hanshin.supernova.exception.community.CommunityInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
-import com.hanshin.supernova.security.application.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.time.LocalDate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+
+import java.time.LocalDate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 방문자 정보 저장
@@ -32,11 +29,6 @@ public class SingleVisitInterceptor implements HandlerInterceptor {
     private final RedisTemplate<String, String> redisTemplate;
     private final CommunityRepository communityRepository;
 
-    // TODO 만약 예원이가 한 내용 병합될 경우, TokenService -> SecurityTokenService
-//    private final TokenService tokenService;
-//    private final AuthUserResolver authUserResolver;
-    private final JwtService jwtService;
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
             Object handler) throws Exception {
@@ -48,22 +40,12 @@ public class SingleVisitInterceptor implements HandlerInterceptor {
             throw new CommunityInvalidException(ErrorType.COMMUNITY_NOT_FOUND_ERROR);
         }
 
-        // 토큰에서 AuthUser 정보 추출
-        String accessToken = request.getHeader(ACCESS_TOKEN_HEADER_KEY);
-        AuthUser authUser = null;
-        if (accessToken != null && !accessToken.isEmpty()) {
-//            AuthToken token = new AuthToken(accessToken);
-            try {
-//                authUser = tokenService.getAuthUser(token);
-                authUser = jwtService.getAuthUserFromToken(accessToken);
-            } catch (Exception e) {
-                log.warn("Failed to get AuthUser from token", e);
-            }
-        }
+        String visitorIdentifier = request.getRemoteAddr();
 
-        // 인증된 사용자가 없으면 IP 주소 사용
-        String visitorIdentifier =
-                (authUser != null) ? authUser.getId().toString() : request.getRemoteAddr();
+        // IPv6 주소 처리: IPv6 주소의 ':' 를 '_'로 대체하여 Redis 키 구분자와 충돌 방지
+        if (visitorIdentifier.contains(":")) {
+            visitorIdentifier = visitorIdentifier.replace(":", "_");
+        }
 
         String userAgent = request.getHeader("User-Agent");
         String today = LocalDate.now().toString();
@@ -71,10 +53,10 @@ public class SingleVisitInterceptor implements HandlerInterceptor {
 
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 
-        // redis에 방문 정보 저장
-        if (!valueOperations.getOperations().hasKey(key)) {
+        // redis 에 방문 정보 저장
+        if (Boolean.FALSE.equals(valueOperations.getOperations().hasKey(key))) {
             valueOperations.set(key, userAgent);
-            log.info("New visit recorded: communityId={}, visitorIdentifier={}", communityId, visitorIdentifier);
+            log.debug("New Community visit recorded: communityId={}, visitorIdentifier={}", communityId, visitorIdentifier);
         }
 
         return true;

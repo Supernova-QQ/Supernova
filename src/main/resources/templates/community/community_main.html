@@ -35,6 +35,7 @@
             margin: 0 auto;
             padding: 20px 80px;
             gap: 20px;
+          width: 70%;
         }
 
         .left-column, .middle-column, .right-column {
@@ -161,8 +162,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
-      padding-top: 30px;
+      margin-bottom: 20px;
     }
 
     .section-header h3 {
@@ -184,7 +184,6 @@
       background-color: #007bff;
       color: white;
     }
-
   </style>
 </head>
 
@@ -254,8 +253,6 @@
         fetchPopularAnswer();
     });
 
-    // const url = `http://localhost:8080/api/main`;
-    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
     const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.MAIN;
 
   /* 커뮤니티 */
@@ -268,8 +265,6 @@
     })
     .then(response => response.json())
     .then(data => {
-      console.log('Received data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
                 if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularCommunities(data.data);
                 } else {
@@ -288,7 +283,6 @@
             const card = document.createElement('div');
             card.className = 'community-card';
             card.innerHTML = `
-<!--        <span class="star">★</span>-->
     <img class="community-img" src="../../static/images/star.png" alt="커뮤니티">
     <div class="community-info">
         <p>${community.name}</p>
@@ -318,8 +312,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received question data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
                 if (data.data && Array.isArray(data.data)) {  // 데이터 구조를 확인하여 data.data 가 존재하고 배열인지 확인
                     displayPopularQuestions(data.data);
                 } else {

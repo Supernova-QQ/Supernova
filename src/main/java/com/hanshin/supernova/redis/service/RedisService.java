@@ -1,6 +1,5 @@
 package com.hanshin.supernova.redis.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -8,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
 @Service
 public class RedisService<V> {
 
@@ -25,7 +23,6 @@ public class RedisService<V> {
 
     public V getValue(String key) {
         V value =  jwtRedisTemplate.opsForValue().get(key);
-        log.info("Redis에서 데이터 조회. 키: {}, 값: {}", key, value);
         return value;
     }
 

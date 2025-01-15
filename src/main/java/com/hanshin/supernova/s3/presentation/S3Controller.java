@@ -6,6 +6,8 @@ import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.s3.S3InvalidException;
 import com.hanshin.supernova.s3.application.S3Uploader;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,8 @@ public class S3Controller {
 
     private final S3Uploader s3Uploader;
 
+    @Operation(summary = "이미지 업로드", description = "S3를 이용한 이미지 업로드 전용 api")
+    @ApiResponse(responseCode = "200", description = "이미지 업로드 성공, 이미지 url 반환")
     @PostMapping
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile image) {
         try {
@@ -32,7 +36,7 @@ public class S3Controller {
             if (fileUrl.isEmpty()) {
                 throw new S3InvalidException(ErrorType.EMPTY_IMAGE_ERROR);
             }
-            log.info("Successfully uploaded image. URL: {}", fileUrl);
+            log.debug("Successfully uploaded image. URL: {}", fileUrl);
             return ResponseDto.ok(fileUrl);
         } catch (Exception e) {
             log.error("Failed to upload image", e);

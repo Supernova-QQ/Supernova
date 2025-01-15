@@ -11,10 +11,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 일정 시간에 한 번씩 db 에 방문자 정보 저장.
- * 현재 1시간 단위로 설정되어 있다.
+ * 현재 3초 단위로 설정되어 있다.
  * 로그인 정보를 기반으로 스케줄링 작업 진행
  */
 @Slf4j
@@ -25,8 +26,8 @@ public class VisitorScheduler {
     private final RedisTemplate<String, String> redisTemplate;
     private final CommunityStatsRepository communityStatsRepository;
 
-//    @Scheduled(initialDelay = 3600000, fixedDelay = 3600000)
-    @Scheduled(initialDelay = 1000, fixedDelay = 300000)
+    @Transactional
+    @Scheduled(initialDelay = 3000, fixedDelay = 3000)    // 3초 지연, 3초 주기
     public void updateVisitorData() {
         Set<String> keys = redisTemplate.keys("community:*:visit:*:*");
 
@@ -65,7 +66,7 @@ public class VisitorScheduler {
                             .build();
 
                     communityStatsRepository.save(visitor);
-                    log.info("Saved new visitor: communityId={}, visitorIdentifier={}, date={}",
+                    log.debug("Saved new Community visitor: communityId={}, visitorIdentifier={}, date={}",
                             communityId, visitorIdentifier, date);
                 }
 

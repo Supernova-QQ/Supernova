@@ -14,6 +14,7 @@ import com.hanshin.supernova.user.domain.Activity;
 import com.hanshin.supernova.user.domain.Authority;
 import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.user.dto.request.UserRegisterRequest;
+import com.hanshin.supernova.user.dto.response.ChangeNicknameResponse;
 import com.hanshin.supernova.user.dto.response.ChangePasswordResponse;
 import com.hanshin.supernova.user.dto.response.ResetPasswordResponse;
 import com.hanshin.supernova.user.dto.response.UserRegisterResponse;
@@ -21,6 +22,7 @@ import com.hanshin.supernova.user.infrastructure.UserRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 //import jakarta.persistence.PersistenceContext;
 
 import java.util.List;
+import java.util.Optional;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -232,8 +235,35 @@ public class UserServiceImpl implements UserService {
     }
 
     public String getNicknameById(Long userId) {
-        return userRepository.findById(userId)
-                .map(User::getNickname) // User 객체의 getNickname 호출
-                .orElseThrow(() -> new UserInvalidException(ErrorType.USER_NOT_FOUND_ERROR)); // 유저가 없으면 예외 발생
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserInvalidException(ErrorType.USER_NOT_FOUND_ERROR));
+        return user.getNickname();
     }
+
+    @Override
+    public ChangeNicknameResponse changeNickname(Long userId, String newNickname) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AuthInvalidException(ErrorType.USER_NOT_FOUND_ERROR));
+
+        log.info("newNickname:{}", newNickname);
+        // 닉네임 업데이트
+        user.setNickname(newNickname);
+        userRepository.save(user);
+
+        return new ChangeNicknameResponse("닉네임이 성공적으로 변경되었습니다.", newNickname);
+
+    }
+
+//    public boolean updateUserName(Long id, String newName) {
+//        Optional<User> userOptional = userRepository.findById(id);
+//        log.info("ServiceImpl newName: {}", newName);
+//
+//        if (userOptional.isPresent()) {
+//            User user = userOptional.get();
+//            user.setUsername(newName); // 이름 업데이트
+//            userRepository.save(user); // 변경사항 저장
+//            return true;
+//        }
+//        return false; // 회원을 찾지 못한 경우
+//    }
 }

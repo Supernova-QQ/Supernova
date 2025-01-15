@@ -42,13 +42,24 @@
         /* 왼쪽 섹션 */
         .left-column {
             width: 30%;
-        }
-
-        .community-list {
             background-color: white;
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .community-list {
+            overflow-y: auto;
+            height: 556px;
+            flex-grow: 1;
+            scrollbar-width: none; /* Firefox에서 스크롤바 숨김 */
+            -ms-overflow-style: none; /* IE/Edge에서 스크롤바 숨김 */
+        }
+
+        .community-list::-webkit-scrollbar {
+            display: none; /* Chrome, Safari에서 스크롤바 숨김 */
         }
 
         .community-header {
@@ -93,7 +104,9 @@
 
         .question-list, .answer-list {
             flex: 1;
-            overflow-y: auto;
+            height: 0;
+            display: flex;
+            flex-direction: column;
             background-color: white;
             border-radius: 8px;
             padding: 20px;
@@ -104,9 +117,21 @@
             margin-bottom: 20px;
         }
 
+        .item-list {
+            flex: 1;
+            overflow-y: auto;
+            scrollbar-width: none; /* Firefox에서 스크롤바 숨김 */
+            -ms-overflow-style: none; /* IE/Edge에서 스크롤바 숨김 */
+        }
+
+        .item-list::-webkit-scrollbar {
+            display: none; /* Chrome, Safari에서 스크롤바 숨김 */
+        }
+
         .item-list h3 {
             font-size: 16px;
-            margin-bottom: 10px;
+            margin-bottom: 0;
+            margin-top: 4px;
         }
 
         .item {
@@ -140,7 +165,10 @@
             padding: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             text-align: center;
-
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
         }
 
@@ -155,7 +183,9 @@
         .username {
             font-size: 25px;
             font-weight: bold;
-            margin: 10px 0;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            margin-right: auto;
             text-align: left;
         }
 
@@ -164,6 +194,7 @@
             text-align: left;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 87%;
         }
 
         .badge-section h4 {
@@ -206,6 +237,20 @@
             height: 35px;
             border-radius: 50%;
         }
+
+        .setting-list {
+            margin-top: 20px;
+            flex: 1;
+            gap: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .setting-list a{
+            font-size: large;
+            font-weight: 700;
+        }
     </style>
 </head>
 
@@ -217,10 +262,10 @@
     <div class="container">
         <!-- 왼쪽 섹션: 내가 속한 커뮤니티 -->
         <div class="left-column">
+            <h3 class="community-header">
+                내가 속한 커뮤니티
+            </h3>
             <div class="community-list">
-                <h3 class="community-header">
-                    내가 속한 커뮤니티
-                </h3>
                 <!-- 커뮤니티 카드가 여기에 동적으로 추가될 예정 -->
             </div>
         </div>
@@ -253,6 +298,10 @@
                 <div class="badge-list" id="badge-list">
                     <!-- 배지가 여기에 동적으로 추가될 예정 -->
                 </div>
+            </div>
+            <div class="setting-list">
+                <a th:href="@{/my/profile}">내프로필</a>
+                <a th:href="@{/my/community}">커뮤니티</a>
             </div>
         </div>
     </div>
@@ -325,7 +374,7 @@
             // HTML 구조를 동적으로 생성
             item.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                <span style="flex-grow: 1;"><h3>${question.title}</h3></span>
+                <div style="flex-grow: 1; display: inline-block"><h3>${question.title}</h3></div>
                 <img src="${question.imgUrl}" alt="Community Image" class="item-icon">
             <div>
             `;

@@ -23,13 +23,13 @@ public class TaggingScheduler {
     private final RedisTemplate<String, String> redisTemplate;
     private final HashtagStatsRepository hashtagStatsRepository;
 
-    @Scheduled(initialDelay = 86400000, fixedRate = 86400000)
-//    @Scheduled(initialDelay = 10000, fixedRate = 10000)
+    @Scheduled(initialDelay = 3000, fixedDelay = 3000)    // 3초 지연, 3초 주기
     public void updateTaggingData() {
         Set<String> keys = redisTemplate.keys("hashtag:*:tagging:*:*");
 
         for (String key : keys) {
             try {
+
                 String[] parts = key.split(":");
                 if (parts.length != 5) {
                     log.warn("Invalid key format: {}", key);
@@ -60,7 +60,7 @@ public class TaggingScheduler {
                         .build();
 
                 hashtagStatsRepository.save(tagger);
-                log.info("Saved new tagger: hashtagId={}, taggerIdentifier={}, date={}", hashtagId,
+                log.debug("Saved new tagger: hashtagId={}, taggerIdentifier={}, date={}", hashtagId,
                         taggerIdentifier, date);
 
                 redisTemplate.delete(key);

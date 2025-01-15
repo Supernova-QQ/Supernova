@@ -3,9 +3,9 @@ package com.hanshin.supernova.hashtag.application;
 import static com.hanshin.supernova.hashtag.HashtagConstants.QUESTION_HASHTAG_MAX_SIZE;
 
 import com.hanshin.supernova.auth.model.AuthUser;
+import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.hashtag.HashtagInvalidException;
-import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.hashtag.domain.Hashtag;
 import com.hanshin.supernova.hashtag.domain.QuestionHashtag;
 import com.hanshin.supernova.hashtag.dto.request.HashtagRequest;
@@ -13,7 +13,6 @@ import com.hanshin.supernova.hashtag.dto.response.HashtagSaveResponse;
 import com.hanshin.supernova.hashtag.infrastructure.HashtagRepository;
 import com.hanshin.supernova.hashtag.infrastructure.QuestionHashtagRepository;
 import com.hanshin.supernova.question.domain.Question;
-import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -28,13 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class HashtagService {
+public class HashtagService extends AbstractValidateService {
 
     private final HashtagRepository hashtagRepository;
     private final QuestionHashtagRepository questionHashtagRepository;
     private final HttpServletRequest request;
     private final RedisTemplate<String, String> redisTemplate;
-    private final QuestionRepository questionRepository;
 
     @Transactional
     public HashtagSaveResponse saveQuestionHashtag(Long qId, HashtagRequest request,
@@ -97,6 +95,12 @@ public class HashtagService {
     private void recordTaggingData(Long hashtagId, AuthUser authUser) {
         String taggerIdentifier =
                 (authUser != null) ? authUser.getId().toString() : request.getRemoteAddr();
+
+        // IPv6 주소 처리: IPv6 주소의 ':' 를 '_'로 대체하여 Redis 키 구분자와 충돌 방지
+        if (taggerIdentifier.contains(":")) {
+            taggerIdentifier = taggerIdentifier.replace(":", "_");
+        }
+
         String userAgent = request.getHeader("User-Agent");
         String today = LocalDate.now().toString();
         String key = "hashtag:" + hashtagId + ":tagging:" + taggerIdentifier + ":" + today;
@@ -105,7 +109,7 @@ public class HashtagService {
 
         // redis 에 해시태그 사용 정보 저장
         valueOperations.set(key, userAgent);
-        log.info("New Tagging data for hashtag recorded: hashtagId={}, taggerIdentifier={}",
+        log.debug("New Hashtag using recorded: hashtagId={}, taggerIdentifier={}",
                 hashtagId, taggerIdentifier);
     }
 
@@ -133,11 +137,5 @@ public class HashtagService {
         );
 
         return findQuestions;
-    }
-
-    private Question getQuestionOrThrowIfNotExist(Long questionId) {
-        return questionRepository.findById(questionId).orElseThrow(
-                () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
-        );
     }
 }

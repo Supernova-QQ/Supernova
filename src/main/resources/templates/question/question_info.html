@@ -274,6 +274,11 @@
             margin-right: 20px;
         }
 
+        .remaining-count {
+            font-size: 12px;
+            color: #666;
+        }
+
         #regenerationBtn {
             min-width: 120px;
             width: 120px;
@@ -285,9 +290,9 @@
             cursor: pointer;
         }
 
-        .remaining-count {
-            font-size: 12px;
-            color: #666;
+        #regenerationBtn:hover{
+            background-color: #0056b3;
+            color: white;
         }
 
         /* 답변 확인하기 */
@@ -486,20 +491,10 @@
             color: white;
         }
 
-        /*.edit-btn {*/
-        /*  color: #6c757d;*/
-        /*  border-color: #6c757d;*/
-        /*}*/
-
         .delete-btn {
             color: #dc3545;
             border-color: #dc3545;
         }
-
-        /*.edit-btn:hover {*/
-        /*  background-color: #6c757d;*/
-        /*  color: white;*/
-        /*}*/
 
         .delete-btn:hover {
             background-color: #dc3545;
@@ -620,8 +615,6 @@
         .bookmark-btn:hover .bookmark-icon {
             transform: scale(1.1);
         }
-
-
     </style>
 </head>
 <body>
@@ -646,15 +639,12 @@
 
             <!-- 수정/삭제 버튼 추가 -->
             <div class="question-actions">
-                <!--      <button id="edit-button" style="display: none;">수정</button>-->
-                <!--      <button id="delete-button" style="display: none;">삭제</button>-->
                 <button id="edit-button">수정</button>
                 <button id="delete-button">삭제</button>
             </div>
 
             <!-- 오른쪽 섹션 (커뮤니티 정보) -->
             <div id="community-info">
-                <!--      <img src="https://via.placeholder.com/20" alt="커뮤니티 아이콘">-->
                 <span id="community-name">커뮤니티 이름</span>
             </div>
         </div>
@@ -676,11 +666,6 @@
                 <img th:src="@{/images/like.png}" alt="좋아요 아이콘">
                 <span class="like-count">좋아요 0</span>
             </button>
-            <!--        <div class="comments">-->
-            <!--&lt;!&ndash;                  <img src="../../static/images/comment.png" alt="댓글 아이콘">&ndash;&gt;-->
-            <!--&lt;!&ndash;            <img th:src="@{/images/comment.png}" alt="댓글 아이콘">&ndash;&gt;-->
-            <!--            댓글 ?-->
-            <!--        </div>-->
             <button id="question-bookmark-button" data-target-id="4" class="bookmark-button">
                 <img th:src="@{/images/no-bookmark.png}" alt="북마크 아이콘"> 북마크
             </button>
@@ -737,7 +722,6 @@
 <!-- 무엇이든 물어보세요 위젯 -->
 <div class="chat-widget">
     <img th:src="@{/images/chatbotQQ.png}" alt="무엇이든 물어보세요 이미지">
-    <!--  <img src="../../static/images/chatbotQQ.png" alt="무엇이든 물어보세요 이미지">-->
     <p>무엇이든 물어보세요!</p>
 </div>
 
@@ -754,7 +738,6 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         questionId = [[${questionId}]];
-        console.log('Initializing with question ID:', questionId);
 
         fetchQuestionInfo(questionId);
         fetchHashtagInfo(questionId);
@@ -787,24 +770,48 @@
         });
     })
 
-    // const url = `http://localhost:8080/api/questions`;
-    // const token = 'eyJhbGciOiJIUzI1NiJ9.eyJuaWNrbmFtZSI6IuydtOyaqeyekEEiLCJ1aWQiOjJ9.oZzB9H5K81iaQ1qfeA95MfQLMGEpzqxKqWks21qcOR0';
     const url = CONFIG.API.BASE_URL + CONFIG.API.ENDPOINTS.QUESTIONS;
     const baseURL = CONFIG.API.BASE_URL;
-    // const baseURL = CONFIG.API.BASE_URL;
 
     // 페이지 로드 시와 재생성 버튼 클릭 시 남은 횟수를 조회하는 함수
-    async function fetchRemainingCount() {
+    async function fetchRemainingCount(questionId) {
+        const remainingCountElement = document.getElementById('remaining-count');
+        const regenerationBtn = document.getElementById('regenerationBtn');
         try {
-            const response = await fetchWithAuth(baseURL + '/api/rate-limit/ai-answers', {
+            const response = await fetchWithAuth(baseURL + `/api/rate-limit/ai-answers/questions/${questionId}`, {
                 headers: {
                 }
             });
-            const data = await response.json();
 
-            // 남은 횟수 업데이트
-            const remainingCountElement = document.getElementById('remaining-count');
-            remainingCountElement.textContent = `남은 횟수: ${data.remainingGenerateCount}회`;
+            switch (response.status) {
+                case 404:
+                    remainingCountElement.style.display = 'none';
+                    regenerationBtn.style.display = 'none';
+                    return;
+
+                case 403:
+                    remainingCountElement.style.display = 'none';
+                    regenerationBtn.style.display = 'none';
+                    return;
+
+                case 200:
+                    const data = await response.json();
+                    if (data.remainingGenerateCount !== undefined) {
+                        remainingCountElement.style.display = 'inline';
+                        remainingCountElement.textContent = `남은 횟수: ${data.remainingGenerateCount}회`;
+                        regenerationBtn.style.display = 'inline';
+                    } else {
+                        remainingCountElement.style.display = 'none';
+                        regenerationBtn.style.display = 'none';
+                    }
+                    return;
+
+                default:
+                    console.error(`예상치 못한 응답 상태: ${response.status}`);
+                    remainingCountElement.style.display = 'none';
+                    regenerationBtn.style.display = 'none';
+                    return;
+            }
         } catch (error) {
             console.error('Error fetching remaining count:', error);
             const remainingCountElement = document.getElementById('remaining-count');
@@ -812,7 +819,7 @@
         }
     }
 
-    // 해시태그 정보
+  // 해시태그 정보
     function fetchHashtagInfo(questionId) {
         fetchWithAuth(url + `/${questionId}/hashtags`, {
             method: 'GET',
@@ -822,8 +829,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received hashtag data:', JSON.stringify(data, null, 2));
-
                 if (data.data) {
                     displayHashtagsWithStyle(data.data);
                 } else {
@@ -836,10 +841,6 @@
     function displayHashtagsWithStyle(hashtags) {
         const container = document.getElementById('question-tags');
         container.innerHTML = '';
-
-        // container.innerHTML = hashtags
-        // .map(tag => `<span class="hashtag">#${tag}</span>`)
-        // .join(' '); // 띄어쓰기로 구분
 
         hashtags.forEach(tag => {
             const hashtagSpan = document.createElement('span');
@@ -869,8 +870,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received question data:', JSON.stringify(data, null, 2));
-
                 if (data.data) {
                     displayQuestion(data.data);
                 } else {
@@ -881,9 +880,6 @@
     }
 
     function displayQuestion(questionInfo) {
-
-        console.log("question info = ", questionInfo);
-
         // 질문자 정보 업데이트
         document.querySelector('.profile-info').textContent = questionInfo.questionerName;
 
@@ -902,7 +898,6 @@
         }
 
         // 질문 내용 업데이트
-        // document.querySelector('.question-content p').textContent = questionInfo.content;
         const contentElement = document.querySelector('.question-content p');
         contentElement.style.whiteSpace = 'pre-wrap';
         contentElement.textContent = questionInfo.content;
@@ -931,13 +926,11 @@
 
         // 작성 시간 업데이트
         const createdAtElement = document.querySelector('.question-header-left div:last-child');
-        createdAtElement.innerHTML = `${formatDate(questionInfo.createdAt)}<br>조회 수 ${questionInfo.viewCnt - 1}`;
+        createdAtElement.innerHTML = `${formatDate(questionInfo.createdAt)}<br>조회 수 ${questionInfo.viewCnt}`;
 
         // 스타일 추가
         createdAtElement.style.fontSize = '14px';
         createdAtElement.style.color = '#888';
-
-        // · 댓글 수 ?
 
         // 좋아요 버튼 업데이트
         const likeButton = document.getElementById('like-button');
@@ -958,13 +951,6 @@
             newLikeButton.classList.add('active');
         }
 
-//         // 댓글 수 업데이트
-//         document.querySelector('.comments').innerHTML = `
-//             <img src="../../static/images/comment.png" alt="댓글 아이콘">
-// <!--     <img th:src="@{/images/comment.png}" width="10px" alt="댓글 아이콘">-->
-// <!--     댓글 ??-->
-//     `;
-
         // 해결 여부에 따른 스타일 변경 (옵션)
         if (questionInfo.isResolved) {
             document.querySelector('.question-title').classList.add('resolved');
@@ -980,17 +966,6 @@
         const editButton = document.getElementById('edit-button');
         const deleteButton = document.getElementById('delete-button');
 
-        // 현재 사용자가 작성자인 경우에만 버튼 표시
-        // if (questionInfo.isAuthor) {
-        //   editButton.style.display = 'block';
-        //   deleteButton.style.display = 'block';
-
-        // const currentPath = window.location.pathname;
-        // const questionMatch = currentPath.match(/\/questions\/info\/(\d+)/);
-
-        // if (questionMatch) {
-        //   const questionId = questionMatch[1];
-
         // 수정 버튼 클릭 이벤트
         editButton.addEventListener('click', () => {
             window.location.href = `/questions/edit/${questionId}?communityId=${communityId}`;
@@ -1002,8 +977,6 @@
                 deleteQuestion(questionId);
             }
         });
-        // }
-        // }
     }
 
     // 질문 삭제 함수
@@ -1034,8 +1007,6 @@
     async function handleLikeClick(event) {
         const button = event.currentTarget;
 
-        console.log('Click handler activated for question:', questionId); // 디버깅용
-
         if (!questionId) {
             console.error('Question ID not found');
             return;
@@ -1045,7 +1016,6 @@
             button.disabled = true; // 중복 클릭 방지
 
             const response = await recommendQuestion(questionId);
-            console.log('Received question recommend data:', JSON.stringify(response, null, 2));
 
             if (response.data) {
                 // 버튼 상태 토글
@@ -1081,7 +1051,6 @@
         }
 
         const result = await response.json();
-        console.log('Recommendation response:', result); // 디버깅용
         return result;
     }
 
@@ -1095,12 +1064,6 @@
 
     // 답변 등록
     function submitAnswer(questionId, selectedTag, answerText, sourceText) {
-        console.log('Submitting answer:', {
-            answer: answerText,
-            tag: selectedTag,
-            source: sourceText
-        });
-
         const jsonData = {
             answer: answerText,
             tag: selectedTag,
@@ -1116,8 +1079,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received answer data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
                 // API 호출 후 성공하면 답변 목록을 새로고침
                 if (data.data) {
                     fetchComments(questionId);
@@ -1131,28 +1092,6 @@
             });
     }
 
-
-  // AI 답변
-  // function fetchAiComment(questionId) {
-  //   fetch(url + `/${questionId}/ai-answers`, {
-  //     method: 'GET',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'X-QQ-AUTH-TOKEN': token
-  //     }
-  //   })
-  //   .then(response => response.json())
-  //   .then(data => {
-  //     console.log('Received AI answers data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-  //
-  //     if (data.data) {
-  //       displayAiComment(data.data);
-  //     } else {
-  //       console.error('Error loading answers:', data);
-  //     }
-  //   })
-  //   .catch(error => console.error('Error:', error));
-  // }
   function fetchAiComment(questionId) {
     fetchWithAuth(url + `/${questionId}/ai-answers`, {
       method: 'GET',
@@ -1162,8 +1101,6 @@
     })
     .then(response => response.json())
     .then(data => {
-      console.log('Received AI answers data:', JSON.stringify(data, null, 2));
-
       // AI 답변 컨테이너 가져오기
       const aiAnswerContainer = document.querySelector('.ai-answer-container');
 
@@ -1172,11 +1109,10 @@
         aiAnswerContainer.style.display = 'flex';  // 컨테이너 보이기
         displayAiComment(data.data);
         // 남은 횟수 조회
-        fetchRemainingCount();
+        fetchRemainingCount(questionId);
       } else {
         // AI 답변이 없는 경우
         aiAnswerContainer.style.display = 'none';  // 컨테이너 숨기기
-        console.log('No AI answer available');
       }
     })
     .catch(error => {
@@ -1251,8 +1187,6 @@
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Received answers data:', JSON.stringify(data, null, 2)); // 데이터 구조를 자세히 로그에 출력
-
                 if (data.data) {
                     displayAnswers(data.data);
                 } else {
@@ -1451,10 +1385,7 @@
             });
 
             const data = await response.json();
-            console.log('Received answer recommend data:', JSON.stringify(data, null, 2));
-
             if (data.data) {
-                console.log("답변 추천 처리 완료!");
                 // 답변 목록 새로고침
                 fetchComments(questionId);
             } else {
@@ -1482,8 +1413,6 @@
             });
 
             const data = await response.json();
-            console.log('Received answer accept data:', JSON.stringify(data, null, 2));
-
             if (data.data) {
                 // 답변 목록 새로고침
                 fetchComments(questionId);
@@ -1514,8 +1443,6 @@
             });
 
             const data = await response.json();
-            console.log('Received answer delete data:', JSON.stringify(data, null, 2));
-
             if (data.data) {
                 // 답변 목록 새로고침
                 fetchComments(questionId);

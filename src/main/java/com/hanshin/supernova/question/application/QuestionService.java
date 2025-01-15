@@ -11,17 +11,14 @@ import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.domain.QuestionRecommendation;
-import com.hanshin.supernova.question.domain.QuestionView;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
 import com.hanshin.supernova.question.dto.response.CommunityInfoResponse;
 import com.hanshin.supernova.question.dto.response.QuestionResponse;
 import com.hanshin.supernova.question.dto.response.QuestionSaveResponse;
 import com.hanshin.supernova.question.infrastructure.QuestionRecommendationRepository;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
-import com.hanshin.supernova.question.infrastructure.QuestionViewRepository;
 import com.hanshin.supernova.user.domain.User;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,13 +26,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class QuestionService extends AbstractValidateService {
 
     private final QuestionRepository questionRepository;
-    private final QuestionViewRepository questionViewRepository;
     private final CommunityMemberRepository communityMemberRepository;
     private final QuestionRecommendationRepository questionRecommendationRepository;
 
@@ -73,27 +68,10 @@ public class QuestionService extends AbstractValidateService {
     /**
      * 질문 조회
      */
-    @Transactional
-    public QuestionResponse getQuestion(AuthUser user, Long qId) {
-
-        // 조회를 시도하는 회원의 중복 체크 및 조회수 증가
+    @Transactional(readOnly = true) //
+    public QuestionResponse getQuestion(Long qId) {
 
         Question findQuestion = getQuestionById(qId);
-
-        User findUser = getUserOrThrowIfNotExist(user.getId());
-        Long viewer_id = findUser.getId();
-
-        if (!questionViewRepository.existsByViewerIdAndQuestionId(viewer_id, qId)) {
-            questionViewRepository.save(
-                    QuestionView.builder()
-                            .viewedAt(LocalDate.now())
-                            .questionId(qId)
-                            .viewerId(viewer_id)
-                            .build());
-            findQuestion.updateViewCnt();
-        } else {
-            questionViewRepository.findByViewerIdAndQuestionId(viewer_id, qId).updateViewedAt();
-        }
 
         return getQuestionResponse(findQuestion);
     }
@@ -108,12 +86,20 @@ public class QuestionService extends AbstractValidateService {
 
         Question findQuestion = getQuestionById(qId);
 
+        Community originalCommunity = getCommunityOrThrowIfNotExist(findQuestion.getCommId());
+
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
-        validateSameQuestionerById(findQuestion, findUser.getId());
+        verifySameUser(findUser.getId(), findQuestion.getQuestionerId());
 
         findQuestion.updateQuestion(request.getTitle(), request.getContent(), request.getImgUrl(),
                 findCommunity.getId());
+
+        // 질문 게시판 이동 시 각 커뮤니티에서 질문 수 증감
+        if (!originalCommunity.getId().equals(request.getCommId())) {
+            originalCommunity.getCommCounter().decreaseQuestionCnt();
+            findCommunity.getCommCounter().increaseQuestionCnt();
+        }
 
         // TODO ContentWord update logic
 
@@ -134,10 +120,7 @@ public class QuestionService extends AbstractValidateService {
 
         User findUser = getUserOrThrowIfNotExist(user.getId());
 
-        log.info("questioner ID = {}", findQuestion.getQuestionerId());
-        log.info("user ID = {}", findUser.getId());
-
-        validateSameQuestionerById(findQuestion, findUser.getId());
+        verifySameUser(findUser.getId(), findQuestion.getQuestionerId());
 
         Community findCommunity = getCommunityOrThrowIfNotExist(
                 findQuestion.getCommId());
@@ -197,12 +180,6 @@ public class QuestionService extends AbstractValidateService {
         return communityInfoResponses;
     }
 
-
-    private static void validateSameQuestionerById(Question findQuestion, Long user_id) {
-        if (!findQuestion.getQuestionerId().equals(user_id)) {
-            throw new AuthInvalidException(ErrorType.NON_IDENTICAL_USER_ERROR);
-        }
-    }
 
     private Question getQuestionById(Long q_Id) {
         return questionRepository.findById(q_Id).orElseThrow(

@@ -13,13 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface QuestionViewRepository extends JpaRepository<QuestionView, Long> {
 
-    boolean existsByViewerIdAndQuestionId(Long viewerId, Long questionId);
-
-    QuestionView findByViewerIdAndQuestionId(Long viewerId, Long questionId);
-
-    @Query("SELECT qv.questionId, COUNT(DISTINCT qv.viewerId) AS viewCnt "
+    @Query("SELECT qv.questionId, COUNT(DISTINCT qv.visitorIdentifier) AS viewCnt "
             + "FROM QuestionView qv "
             + "WHERE qv.viewedAt BETWEEN :startDate AND :endDate "
+            + "AND qv.commId > 1"
             + "GROUP BY qv.questionId "
             + "ORDER BY viewCnt DESC "
             + "LIMIT :N")
@@ -27,4 +24,7 @@ public interface QuestionViewRepository extends JpaRepository<QuestionView, Long
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
             @Param("N") Integer limitNumber);
+
+    boolean existsByVisitorIdentifierAndViewedAtAndQuestionId(String visitorIdentifier, LocalDate date,
+            Long questionId);
 }
