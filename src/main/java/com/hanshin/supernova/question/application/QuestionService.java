@@ -1,7 +1,6 @@
 package com.hanshin.supernova.question.application;
 
 import com.hanshin.supernova.auth.model.AuthUser;
-import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.community.domain.Community;
 import com.hanshin.supernova.community.domain.CommunityMember;
@@ -18,6 +17,9 @@ import com.hanshin.supernova.question.dto.response.QuestionSaveResponse;
 import com.hanshin.supernova.question.infrastructure.QuestionRecommendationRepository;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.user.domain.User;
+import com.hanshin.supernova.validation.AuthenticationUtils;
+import com.hanshin.supernova.validation.CommunityValidator;
+import com.hanshin.supernova.validation.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +30,10 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class QuestionService extends AbstractValidateService {
+public class QuestionService {
+
+    private final CommunityValidator communityValidator;
+    private final UserValidator userValidator;
 
     private final QuestionRepository questionRepository;
     private final CommunityMemberRepository communityMemberRepository;
@@ -40,8 +45,8 @@ public class QuestionService extends AbstractValidateService {
     @Transactional
     public QuestionSaveResponse createQuestion(AuthUser user,
             QuestionRequest request) {
-        Community findCommunity = getCommunityOrThrowIfNotExist(request.getCommId());
-        User findUser = getUserOrThrowIfNotExist(user.getId());
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(request.getCommId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
 
         Question question = Question.builder()
                 .title(request.getTitle())
@@ -82,15 +87,15 @@ public class QuestionService extends AbstractValidateService {
     @Transactional
     public QuestionSaveResponse editQuestion(AuthUser user, Long qId, QuestionRequest request) {
 
-        Community findCommunity = getCommunityOrThrowIfNotExist(request.getCommId());
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(request.getCommId());
 
         Question findQuestion = getQuestionById(qId);
 
-        Community originalCommunity = getCommunityOrThrowIfNotExist(findQuestion.getCommId());
+        Community originalCommunity = communityValidator.getCommunityOrThrowIfNotExist(findQuestion.getCommId());
 
-        User findUser = getUserOrThrowIfNotExist(user.getId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
 
-        verifySameUser(findUser.getId(), findQuestion.getQuestionerId());
+        AuthenticationUtils.verifySameUser(findUser.getId(), findQuestion.getQuestionerId());
 
         findQuestion.updateQuestion(request.getTitle(), request.getContent(), request.getImgUrl(),
                 findCommunity.getId());
@@ -118,11 +123,11 @@ public class QuestionService extends AbstractValidateService {
 
         Question findQuestion = getQuestionById(qId);
 
-        User findUser = getUserOrThrowIfNotExist(user.getId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
 
-        verifySameUser(findUser.getId(), findQuestion.getQuestionerId());
+        AuthenticationUtils.verifySameUser(findUser.getId(), findQuestion.getQuestionerId());
 
-        Community findCommunity = getCommunityOrThrowIfNotExist(
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(
                 findQuestion.getCommId());
 
         questionRepository.deleteById(qId);
@@ -135,7 +140,7 @@ public class QuestionService extends AbstractValidateService {
     @Transactional
     public QuestionResponse updateQuestionRecommendation(AuthUser user, Long qId) {
         Question findQuestion = getQuestionById(qId);
-        User findUser = getUserOrThrowIfNotExist(user.getId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
         // 자신의 질문은 추천하지 못하도록 예외처리
         if (findQuestion.getQuestionerId().equals(findUser.getId())) {
             throw new AuthInvalidException(ErrorType.WRITER_CANNOT_RECOMMEND_ERROR);
@@ -164,7 +169,7 @@ public class QuestionService extends AbstractValidateService {
      */
     @Transactional(readOnly = true)
     public List<CommunityInfoResponse> getMyCommunities(AuthUser user) {
-        User findUser = getUserOrThrowIfNotExist(user.getId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
 
         List<CommunityInfoResponse> communityInfoResponses = new ArrayList<>();
 
@@ -188,8 +193,8 @@ public class QuestionService extends AbstractValidateService {
     }
 
     private QuestionResponse getQuestionResponse(Question findQuestion) {
-        User findUser = getUserOrThrowIfNotExist(findQuestion.getQuestionerId());
-        Community findCommunity = getCommunityOrThrowIfNotExist(findQuestion.getCommId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(findQuestion.getQuestionerId());
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(findQuestion.getCommId());
         return QuestionResponse.toResponse(
                 findQuestion.getTitle(),
                 findQuestion.getContent(),

@@ -1,7 +1,6 @@
 package com.hanshin.supernova.notice.application;
 
 import com.hanshin.supernova.auth.model.AuthUser;
-import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.notice.NoticeInvalidException;
@@ -10,6 +9,8 @@ import com.hanshin.supernova.notice.dto.request.NoticeRequest;
 import com.hanshin.supernova.notice.dto.response.NoticeResponse;
 import com.hanshin.supernova.notice.infrastructure.NoticeRepository;
 import com.hanshin.supernova.user.domain.User;
+import com.hanshin.supernova.validation.AuthenticationUtils;
+import com.hanshin.supernova.validation.UserValidator;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class NoticeService extends AbstractValidateService {
+public class NoticeService {
+
+    private final UserValidator userValidator;
 
     private final NoticeRepository noticeRepository;
 
@@ -27,8 +30,8 @@ public class NoticeService extends AbstractValidateService {
      */
     @Transactional
     public NoticeResponse createNotice(AuthUser user, NoticeRequest request) {
-        User findUser = getUserOrThrowIfNotExist(user.getId());
-        verifyAdmin(findUser);
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
+        AuthenticationUtils.verifyAdmin(findUser);
         Notice notice = buildNotice(request);
         Notice savedNotice = noticeRepository.save(notice);
         return getNoticeResponse(savedNotice);
@@ -48,8 +51,8 @@ public class NoticeService extends AbstractValidateService {
      */
     @Transactional
     public NoticeResponse updateNotice(AuthUser user, Long noticeId, NoticeRequest request) {
-        User findUser = getUserOrThrowIfNotExist(user.getId());
-        verifyAdmin(findUser);
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
+        AuthenticationUtils.verifyAdmin(findUser);
         Notice findNotice = getNoticeOrThrowsIfNoticeNotExist(noticeId);
         findNotice.update(request.getTitle(), request.getContent(), request.isPinned());
         return getNoticeResponse(findNotice);
@@ -60,8 +63,8 @@ public class NoticeService extends AbstractValidateService {
      */
     @Transactional
     public SuccessResponse deleteNotice(AuthUser user, Long noticeId) {
-        User findUser = getUserOrThrowIfNotExist(user.getId());
-        verifyAdmin(findUser);
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
+        AuthenticationUtils.verifyAdmin(findUser);
         Notice findNotice = getNoticeOrThrowsIfNoticeNotExist(noticeId);
         noticeRepository.deleteById(findNotice.getId());
         return new SuccessResponse("공지사항 삭제를 성공했습니다.");
