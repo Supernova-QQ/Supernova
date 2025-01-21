@@ -8,7 +8,6 @@ import com.hanshin.supernova.ai_comment.dto.response.AiAnswerResponse;
 import com.hanshin.supernova.answer.dto.response.AiCommentResponse;
 import com.hanshin.supernova.answer.infrastructure.AiCommentRepository;
 import com.hanshin.supernova.auth.model.AuthUser;
-import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.hashtag.application.HashtagService;
 import com.hanshin.supernova.hashtag.dto.request.HashtagRequest;
 import com.hanshin.supernova.news.application.NewsService;
@@ -18,6 +17,7 @@ import com.hanshin.supernova.question.application.QuestionService;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
 import com.hanshin.supernova.question.dto.response.QuestionSaveResponse;
+import com.hanshin.supernova.validation.QuestionValidator;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class QuestionOrchestrator extends AbstractValidateService {
+public class QuestionOrchestrator {
+    private final QuestionValidator questionValidator;
 
     private final QuestionService questionService;
     private final HashtagService hashtagService;
@@ -43,7 +44,7 @@ public class QuestionOrchestrator extends AbstractValidateService {
 
         // 질문 등록
         QuestionSaveResponse questionSaveResponse = questionService.createQuestion(user, request);
-        Question savedQuestion = getQuestionOrThrowIfNotExist(questionSaveResponse.getQuestionId());
+        Question savedQuestion = questionValidator.getQuestionOrThrowIfNotExist(questionSaveResponse.getQuestionId());
 
         // 해시태그 등록
         HashtagRequest hashtagRequest = new HashtagRequest();
@@ -65,7 +66,7 @@ public class QuestionOrchestrator extends AbstractValidateService {
         // 질문 수정
         QuestionSaveResponse questionUpdateResponse = questionService.editQuestion(user, questionId,
                 request);
-        Question savedQuestion = getQuestionOrThrowIfNotExist(
+        Question savedQuestion = questionValidator.getQuestionOrThrowIfNotExist(
                 questionUpdateResponse.getQuestionId());
 
         // 해시태그 등록(수정)
@@ -140,7 +141,7 @@ public class QuestionOrchestrator extends AbstractValidateService {
     }
 
     private AiAnswerResponse getRegenerationResponse(AuthUser user, Long questionId) {
-        Question findQuestion = getQuestionOrThrowIfNotExist(questionId);
+        Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(questionId);
         AiComment findAiComment = aiCommentRepository.findByQuestionId(findQuestion.getId())
                 .orElse(null);
 

@@ -3,7 +3,6 @@ package com.hanshin.supernova.community.application;
 import static com.hanshin.supernova.exception.dto.ErrorType.ONLY_ADMIN_AUTHORITY_ERROR;
 
 import com.hanshin.supernova.auth.model.AuthUser;
-import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.community.domain.Autority;
 import com.hanshin.supernova.community.domain.CommCounter;
@@ -17,6 +16,8 @@ import com.hanshin.supernova.community.infrastructure.CommunityRepository;
 import com.hanshin.supernova.exception.community.CommunityInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.user.domain.User;
+import com.hanshin.supernova.validation.CommunityValidator;
+import com.hanshin.supernova.validation.UserValidator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CommunityService extends AbstractValidateService {
+public class CommunityService {
+    private final CommunityValidator communityValidator;
+    private final UserValidator userValidator;
 
     private final CommunityRepository communityRepository;
     private final CommunityMemberRepository communityMemberRepository;
@@ -46,7 +49,7 @@ public class CommunityService extends AbstractValidateService {
 
         // 커뮤니티 저장
         Community community = buildCommunity(
-                request, getUserOrThrowIfNotExist(user.getId()).getId());
+                request, userValidator.getUserOrThrowIfNotExist(user.getId()).getId());
         Community savedCommunity = communityRepository.save(community);
 
         // 커뮤니티 생성자 멤버 추가
@@ -74,10 +77,10 @@ public class CommunityService extends AbstractValidateService {
     @Transactional
     public CommunityResponse updateCommunity(AuthUser user, CommunityRequest request, Long cId) {
 
-        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(cId);
 
         // 커뮤니티 생성자 검증
-        isCommunityCreator(findCommunity, getUserOrThrowIfNotExist(user.getId()).getId());
+        isCommunityCreator(findCommunity, userValidator.getUserOrThrowIfNotExist(user.getId()).getId());
 
         communityInfoUpdate(request, findCommunity);
 
@@ -100,9 +103,9 @@ public class CommunityService extends AbstractValidateService {
     @Transactional
     public SuccessResponse dormantCommunity(AuthUser user, Long cId) {
 
-        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(cId);
 
-        isCommunityCreator(findCommunity, getUserOrThrowIfNotExist(user.getId()).getId());
+        isCommunityCreator(findCommunity, userValidator.getUserOrThrowIfNotExist(user.getId()).getId());
 
         findCommunity.changeDormant();
 
@@ -114,7 +117,7 @@ public class CommunityService extends AbstractValidateService {
      */
     @Transactional(readOnly = true)
     public CommunityResponse getCommunityInfo(Long cId) {
-        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(cId);
 
         return CommunityResponse.toResponse(
                 findCommunity.getId(),
@@ -166,10 +169,10 @@ public class CommunityService extends AbstractValidateService {
      */
     @Transactional
     public SuccessResponse joinCommunity(AuthUser user, Long cId) {
-        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(cId);
         // TODO 관리자에게 요청을 보내고, 수락 후 마저 완료되는 비동기 처리 필요
         CommunityMember savedCommunityMember = buildCommunityMember(
-                findCommunity, Autority.USER, getUserOrThrowIfNotExist(user.getId()).getId());
+                findCommunity, Autority.USER, userValidator.getUserOrThrowIfNotExist(user.getId()).getId());
         communityMemberRepository.save(savedCommunityMember);
         findCommunity.getCommCounter().increaseMemberCnt();
 
@@ -181,9 +184,9 @@ public class CommunityService extends AbstractValidateService {
      */
     @Transactional
     public void joinGeneralCommunity(User user) {
-        Community findCommunity = getCommunityOrThrowIfNotExist(1L);
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(1L);
         CommunityMember savedCommunityMember = buildCommunityMember(
-                findCommunity, Autority.USER, getUserOrThrowIfNotExist(user.getId()).getId());
+                findCommunity, Autority.USER, userValidator.getUserOrThrowIfNotExist(user.getId()).getId());
         communityMemberRepository.save(savedCommunityMember);
         findCommunity.getCommCounter().increaseMemberCnt();
     }
@@ -193,9 +196,9 @@ public class CommunityService extends AbstractValidateService {
      */
     @Transactional
     public SuccessResponse leaveCommunity(AuthUser user, Long cId) {
-        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(cId);
         communityMemberRepository.deleteById(
-                getUserOrThrowIfNotExist(user.getId()).getId());
+                userValidator.getUserOrThrowIfNotExist(user.getId()).getId());
         findCommunity.getCommCounter().decreaseMemberCnt();
 
         return new SuccessResponse("탈퇴 성공");

@@ -3,7 +3,6 @@ package com.hanshin.supernova.hashtag.application;
 import static com.hanshin.supernova.hashtag.HashtagConstants.QUESTION_HASHTAG_MAX_SIZE;
 
 import com.hanshin.supernova.auth.model.AuthUser;
-import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.hashtag.HashtagInvalidException;
 import com.hanshin.supernova.hashtag.domain.Hashtag;
@@ -13,6 +12,7 @@ import com.hanshin.supernova.hashtag.dto.response.HashtagSaveResponse;
 import com.hanshin.supernova.hashtag.infrastructure.HashtagRepository;
 import com.hanshin.supernova.hashtag.infrastructure.QuestionHashtagRepository;
 import com.hanshin.supernova.question.domain.Question;
+import com.hanshin.supernova.validation.QuestionValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,7 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class HashtagService extends AbstractValidateService {
+public class HashtagService {
+    private final QuestionValidator questionValidator;
 
     private final HashtagRepository hashtagRepository;
     private final QuestionHashtagRepository questionHashtagRepository;
@@ -133,7 +134,7 @@ public class HashtagService extends AbstractValidateService {
 
         questionHashtags.forEach(
                 questionHashtag -> findQuestions.add(
-                        getQuestionOrThrowIfNotExist(questionHashtag.getQuestionId()))
+                        questionValidator.getQuestionOrThrowIfNotExist(questionHashtag.getQuestionId()))
         );
 
         return findQuestions;

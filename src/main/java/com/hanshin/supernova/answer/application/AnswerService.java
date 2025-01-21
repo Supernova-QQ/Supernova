@@ -7,13 +7,16 @@ import com.hanshin.supernova.answer.dto.response.AnswerResponse;
 import com.hanshin.supernova.answer.infrastructure.AnswerRecommendationRepository;
 import com.hanshin.supernova.answer.infrastructure.AnswerRepository;
 import com.hanshin.supernova.auth.model.AuthUser;
-import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.exception.answer.AnswerInvalidException;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.user.domain.User;
+import com.hanshin.supernova.validation.AnswerValidator;
+import com.hanshin.supernova.validation.AuthenticationUtils;
+import com.hanshin.supernova.validation.QuestionValidator;
+import com.hanshin.supernova.validation.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +29,10 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AnswerService extends AbstractValidateService {
+public class AnswerService {
+    private final QuestionValidator questionValidator;
+    private final UserValidator userValidator;
+    private final AnswerValidator answerValidator;
 
     private final AnswerRepository answerRepository;
     private final AnswerRecommendationRepository answerRecommendationRepository;
@@ -36,9 +42,9 @@ public class AnswerService extends AbstractValidateService {
      */
     @Transactional
     public AnswerResponse createAnswer(AuthUser user, Long qId, AnswerRequest request) {
-        Question findQuestion = getQuestionOrThrowIfNotExist(qId);
+        Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(qId);
 
-        User findUser = getUserOrThrowIfNotExist(user.getId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
 
         Answer answer = buildAnswer(qId, request, findUser.getId());
         Answer savedAnswer = answerRepository.save(answer);
@@ -53,11 +59,11 @@ public class AnswerService extends AbstractValidateService {
      */
     @Transactional(readOnly = true)
     public AnswerResponse getAnswer(AuthUser user, Long qId, Long aId) {
-        getQuestionOrThrowIfNotExist(qId);
+        questionValidator.getQuestionOrThrowIfNotExist(qId);
 
-        Answer findAnswer = getAnswerOrThrowIfNotExist(aId);
+        Answer findAnswer = answerValidator.getAnswerOrThrowIfNotExist(aId);
 
-        User findUser = getUserOrThrowIfNotExist(user.getId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
 
         return getAnswerResponse(findAnswer, findUser);
     }
@@ -67,13 +73,13 @@ public class AnswerService extends AbstractValidateService {
      */
     @Transactional
     public AnswerResponse editAnswer(AuthUser user, Long qId, Long aId, AnswerRequest request) {
-        getQuestionOrThrowIfNotExist(qId);
+        questionValidator.getQuestionOrThrowIfNotExist(qId);
 
-        User findUser = getUserOrThrowIfNotExist(user.getId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
 
-        Answer findAnswer = getAnswerOrThrowIfNotExist(aId);
+        Answer findAnswer = answerValidator.getAnswerOrThrowIfNotExist(aId);
 
-        verifySameUser(findAnswer.getAnswererId(), findUser.getId());
+        AuthenticationUtils.verifySameUser(findAnswer.getAnswererId(), findUser.getId());
 
         // 채택된 답변은 수정이 불가능
         if (findAnswer.isAccepted()) {
@@ -94,13 +100,13 @@ public class AnswerService extends AbstractValidateService {
      */
     @Transactional
     public SuccessResponse deleteAnswer(AuthUser user, Long qId, Long aId) {
-        Question findQuestion = getQuestionOrThrowIfNotExist(qId);
+        Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(qId);
 
-        User findUser = getUserOrThrowIfNotExist(user.getId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
 
-        Answer findAnswer = getAnswerOrThrowIfNotExist(aId);
+        Answer findAnswer = answerValidator.getAnswerOrThrowIfNotExist(aId);
 
-        verifySameUser(findAnswer.getAnswererId(), findUser.getId());
+        AuthenticationUtils.verifySameUser(findAnswer.getAnswererId(), findUser.getId());
 
         // 채택된 답변은 삭제 불가능
         if (findAnswer.isAccepted()) {
@@ -117,13 +123,13 @@ public class AnswerService extends AbstractValidateService {
      * 답변 전체 목록
      */
     public List<AnswerResponse> getAnswerList(Long qId) {
-        getQuestionOrThrowIfNotExist(qId);
+        questionValidator.getQuestionOrThrowIfNotExist(qId);
 
         List<AnswerResponse> answerResponses = new ArrayList<>();
         List<Answer> findAnswers = answerRepository.findAllByQuestionId(qId);
 
         findAnswers.forEach(findAnswer -> {
-            User answerer = getUserOrThrowIfNotExist(findAnswer.getAnswererId());
+            User answerer = userValidator.getUserOrThrowIfNotExist(findAnswer.getAnswererId());
             answerResponses.add(getAnswerResponse(findAnswer, answerer));
         });
 
@@ -136,11 +142,11 @@ public class AnswerService extends AbstractValidateService {
      */
     @Transactional
     public AnswerResponse acceptAnswer(AuthUser user, Long qId, Long aId) {
-        Question findQuestion = getQuestionOrThrowIfNotExist(qId);
+        Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(qId);
 
-        User findUser = getUserOrThrowIfNotExist(user.getId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
 
-        Answer findAnswer = getAnswerOrThrowIfNotExist(aId);
+        Answer findAnswer = answerValidator.getAnswerOrThrowIfNotExist(aId);
 
         // 자신이 등록한 댓글 채택하는 것 방지
         if (findUser.getId().equals(findAnswer.getAnswererId())) {
@@ -162,8 +168,8 @@ public class AnswerService extends AbstractValidateService {
 
     @Transactional
     public AnswerResponse updateAnswerRecommendation(AuthUser user, Long aId) {
-        Answer findAnswer = getAnswerOrThrowIfNotExist(aId);
-        User findUser = getUserOrThrowIfNotExist(user.getId());
+        Answer findAnswer = answerValidator.getAnswerOrThrowIfNotExist(aId);
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
         // 자신의 응답은 추천하지 못하도록 예외처리
         if (findAnswer.getAnswererId().equals(findUser.getId())) {
             throw new AuthInvalidException(ErrorType.WRITER_CANNOT_RECOMMEND_ERROR);

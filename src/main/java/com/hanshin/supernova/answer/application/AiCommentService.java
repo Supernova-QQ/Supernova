@@ -5,7 +5,6 @@ import com.hanshin.supernova.answer.dto.request.AiCommentRequest;
 import com.hanshin.supernova.answer.dto.response.AiCommentResponse;
 import com.hanshin.supernova.answer.infrastructure.AiCommentRepository;
 import com.hanshin.supernova.auth.model.AuthUser;
-import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.exception.answer.AnswerInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.user.UserInvalidException;
@@ -13,13 +12,19 @@ import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.user.domain.Authority;
 import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.user.infrastructure.UserRepository;
+import com.hanshin.supernova.validation.AuthenticationUtils;
+import com.hanshin.supernova.validation.QuestionValidator;
+import com.hanshin.supernova.validation.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class AiCommentService extends AbstractValidateService {
+public class AiCommentService {
+
+    private final QuestionValidator questionValidator;
+    private final UserValidator userValidator;
 
     private final AiCommentRepository aiCommentRepository;
     private final UserRepository userRepository;
@@ -27,32 +32,32 @@ public class AiCommentService extends AbstractValidateService {
     // AI 댓글 등록
     @Transactional
     public void createAiComment(AiCommentRequest request) {
-        getQuestionOrThrowIfNotExist(request.getQuestionId());
+        questionValidator.getQuestionOrThrowIfNotExist(request.getQuestionId());
         buildAndSaveAiComment(request);
     }
 
     // AI 댓글 조회
     @Transactional(readOnly = true)
     public AiCommentResponse getAiComment(Long questionId) {
-        Question findQuestion = getQuestionOrThrowIfNotExist(questionId);
+        Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(questionId);
 
         AiComment findAiComment = getAiCommentOrThrowIfNotExist(findQuestion.getId());
 
-        User systemUser = getUserOrThrowIfNotExist(findAiComment.getUserId());
+        User systemUser = userValidator.getUserOrThrowIfNotExist(findAiComment.getUserId());
         return getAiCommentResponse(findAiComment, systemUser);
     }
 
     // AI 댓글 수정(regeneration)
     public AiCommentResponse updateAiComment(AuthUser user, AiCommentRequest request) {
-        Question findQuestion = getQuestionOrThrowIfNotExist(request.getQuestionId());
+        Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(request.getQuestionId());
 
         AiComment findAiComment = getAiCommentOrThrowIfNotExist(findQuestion.getId());
 
-        verifySameUser(user.getId(), findQuestion.getQuestionerId());
+        AuthenticationUtils.verifySameUser(user.getId(), findQuestion.getQuestionerId());
 
         findAiComment.update(request.getAiAnswer());
 
-        User systemUser = getUserOrThrowIfNotExist(findAiComment.getUserId());
+        User systemUser = userValidator.getUserOrThrowIfNotExist(findAiComment.getUserId());
         return getAiCommentResponse(findAiComment, systemUser);
     }
 
