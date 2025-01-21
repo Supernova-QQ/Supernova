@@ -1,11 +1,11 @@
 package com.hanshin.supernova.search.application;
 
-import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.hashtag.application.HashtagService;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.search.dto.response.SearchResponse;
 import com.hanshin.supernova.search.util.SearchSortType;
+import com.hanshin.supernova.validation.CommunityValidator;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class SearchService extends AbstractValidateService {
+public class SearchService {
+    private final CommunityValidator communityValidator;
 
     private final QuestionRepository questionRepository;
     private final HashtagService hashtagService;
@@ -108,7 +109,7 @@ public class SearchService extends AbstractValidateService {
                 question.getAnswerCnt(),
                 question.getViewCnt(),
                 question.getRecommendationCnt(),
-                getCommunityOrThrowIfNotExist(question.getCommId()).getName(),
+                communityValidator.getCommunityOrThrowIfNotExist(question.getCommId()).getName(),
                 question.getCreatedAt()
         );
     }

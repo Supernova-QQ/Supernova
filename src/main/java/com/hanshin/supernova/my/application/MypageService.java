@@ -11,7 +11,6 @@ import com.hanshin.supernova.exception.community.CommunityInvalidException;
 import com.hanshin.supernova.my.dto.response.AnswerWithQuestionResponse;
 import com.hanshin.supernova.answer.infrastructure.AnswerRepository;
 import com.hanshin.supernova.auth.model.AuthUser;
-import com.hanshin.supernova.community.application.CommunityService;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.my.dto.response.MyCommunityResponse;
@@ -19,7 +18,7 @@ import com.hanshin.supernova.my.dto.response.MyQuestionResponse;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.user.domain.User;
-import com.hanshin.supernova.user.infrastructure.UserRepository;
+import com.hanshin.supernova.validation.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,13 +31,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class MypageService {
+    private final UserValidator userValidator;
 
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
     private final CommunityRepository communityRepository;
     private final CommunityMemberRepository communityMemberRepository;
-    private final CommunityService communityService;
-    private final UserRepository userRepository;
 
     @Transactional
     public AnswerWithQuestionResponse createAnswerWithQId(AuthUser user, Long qId, AnswerRequest request) {
@@ -46,7 +44,7 @@ public class MypageService {
         Question findQuestion = getQuestionById(qId);
 
         // 유저 조회
-        User findUser = getUserOrThrowIfNotExist(user.getId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
 
         // 답변 생성 및 저장
         Answer answer = buildAnswer(qId, request, findUser.getId());
@@ -84,7 +82,7 @@ public class MypageService {
                     String communityImg = getCommunityImageById(question.getCommId());
                     AnswerResponse answerResponse = AnswerResponse.toResponse(
                             answer.getId(),
-                            getUserOrThrowIfNotExist(authUser.getId()).getNickname(),
+                            userValidator.getUserOrThrowIfNotExist(authUser.getId()).getNickname(),
                             answer.getAnswer(),
                             answer.getCreatedAt(),
                             answer.getRecommendationCnt(),
@@ -101,12 +99,6 @@ public class MypageService {
     private Question getQuestionById(Long qId) {
         return questionRepository.findById(qId).orElseThrow(
                 () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
-        );
-    }
-
-    private User getUserOrThrowIfNotExist(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
-                () -> new IllegalStateException("사용자를 찾을 수 없습니다.")
         );
     }
 
