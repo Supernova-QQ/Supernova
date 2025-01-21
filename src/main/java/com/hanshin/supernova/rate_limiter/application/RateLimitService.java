@@ -1,18 +1,19 @@
 package com.hanshin.supernova.rate_limiter.application;
 
 import com.hanshin.supernova.auth.model.AuthUser;
-import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.user.UserInvalidException;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.rate_limiter.dto.RateLimitStatusResponse;
+import com.hanshin.supernova.validation.QuestionValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class RateLimitService extends AbstractValidateService {
+public class RateLimitService {
+    private final QuestionValidator questionValidator;
 
     private final APIRateLimiter apiRateLimiter;
 
@@ -27,7 +28,7 @@ public class RateLimitService extends AbstractValidateService {
     @Transactional(readOnly = true)
     public RateLimitStatusResponse getQuestionRateLimitStatus(AuthUser user, Long questionId) {
 
-        Question findQuestion = getQuestionOrThrowIfNotExist(questionId);
+        Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(questionId);
 
         if (!user.getId().equals(findQuestion.getQuestionerId())) {
             throw new UserInvalidException(ErrorType.NON_IDENTICAL_USER_ERROR);

@@ -1,7 +1,6 @@
 package com.hanshin.supernova.news.application;
 
 import com.hanshin.supernova.auth.model.AuthUser;
-import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.exception.dto.ErrorType;
 import com.hanshin.supernova.exception.news.NewsInvalidException;
@@ -13,6 +12,8 @@ import com.hanshin.supernova.news.infrastructure.NewsRepository;
 import com.hanshin.supernova.user.domain.Authority;
 import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.user.infrastructure.UserRepository;
+import com.hanshin.supernova.validation.AuthenticationUtils;
+import com.hanshin.supernova.validation.UserValidator;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,14 +26,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NewsService extends AbstractValidateService {
+public class NewsService {
+    private final UserValidator userValidator;
 
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
 
     @Transactional
     public NewsResponse createNews(NewsRequest request) {
-        getUserOrThrowIfNotExist(request.getReceiverId());
+        userValidator.getUserOrThrowIfNotExist(request.getReceiverId());
 
         News savedNews = buildAndSaveNews(request);
 
@@ -68,10 +70,10 @@ public class NewsService extends AbstractValidateService {
     public NewsResponse updateNews(AuthUser user, Long newsId, NewsRequest request) {
         News findNews = getNewsOrThrowIfNotExist(newsId);
 
-        User findUser = getUserOrThrowIfNotExist(user.getId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
 
         // 관리자 권한 검증
-        verifyAdmin(findUser);
+        AuthenticationUtils.verifyAdmin(findUser);
 
         findNews.update(request.getTitle(), request.getContent(), request.getType(),
                 request.isHasRelatedContent(), request.getRelatedContentId());
@@ -85,9 +87,9 @@ public class NewsService extends AbstractValidateService {
 
     @Transactional
     public SuccessResponse deleteNews(AuthUser user, Long newsId) {
-        User findUser = getUserOrThrowIfNotExist(user.getId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
 
-        verifyAdmin(findUser);
+        AuthenticationUtils.verifyAdmin(findUser);
 
         newsRepository.deleteById(newsId);
 

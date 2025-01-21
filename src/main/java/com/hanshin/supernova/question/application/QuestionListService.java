@@ -1,11 +1,12 @@
 package com.hanshin.supernova.question.application;
 
-import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.community.domain.Community;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.dto.response.QuestionInfoResponse;
 import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.user.domain.User;
+import com.hanshin.supernova.validation.CommunityValidator;
+import com.hanshin.supernova.validation.UserValidator;
 import java.util.LinkedList;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,10 +17,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class QuestionListService extends AbstractValidateService {
+public class QuestionListService {
+
+    private final CommunityValidator communityValidator;
+    private final UserValidator userValidator;
 
     private final QuestionRepository questionRepository;
-
 
     public List<QuestionInfoResponse> getNLatestQuestionsByDesc(int limit) {
 
@@ -41,7 +44,7 @@ public class QuestionListService extends AbstractValidateService {
      * 답변이 채택되지 않은 질문 목록 - 최신 순
      */
     public Page<QuestionInfoResponse> getUnAnsweredQuestionsByDesc(Long cId, Pageable pageable) {
-        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(cId);
 
         Page<Question> findUnAnsweredQuestions = questionRepository.findAllByCommIdAndIsResolvedOrderByCreatedAtDesc(
                 findCommunity.getId(), false, pageable);
@@ -53,7 +56,7 @@ public class QuestionListService extends AbstractValidateService {
      * 답변이 채택되지 않은 질문 N개 목록 - 최신 순
      */
     public List<QuestionInfoResponse> getUnAnswered4QuestionsByDesc(Long cId, int n) {
-        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(cId);
 
         Pageable pageable = PageRequest.of(0, n);
         List<Question> findUnAnsweredQuestions = questionRepository.findByIsResolvedOrderByCreatedAtDesc(findCommunity.getId(),false, pageable);
@@ -66,7 +69,7 @@ public class QuestionListService extends AbstractValidateService {
      * 답변이 채택되지 않은 질문 목록 - 오래된 순
      */
     public Page<QuestionInfoResponse> getUnAnsweredQuestionsByAsc(Long cId, Pageable pageable) {
-        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(cId);
 
         Page<Question> findUnAnsweredQuestions = questionRepository.findAllByCommIdAndIsResolvedOrderByCreatedAtAsc(
                 findCommunity.getId(), false, pageable);
@@ -78,7 +81,7 @@ public class QuestionListService extends AbstractValidateService {
      * 커뮤니티별 전체 질문 - 최신 순
      */
     public Page<QuestionInfoResponse> getAllQuestionsByDesc(Long cId, Pageable pageable) {
-        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(cId);
 
         Page<Question> findAllQuestions = questionRepository.findAllByCommIdOrderByCreatedAtDesc(
                 findCommunity.getId(), pageable);
@@ -90,7 +93,7 @@ public class QuestionListService extends AbstractValidateService {
      * 커뮤니티별 전체 질문 - 오래된 순
      */
     public Page<QuestionInfoResponse> getAllQuestionsByAsc(Long cId, Pageable pageable) {
-        Community findCommunity = getCommunityOrThrowIfNotExist(cId);
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(cId);
 
         Page<Question> findAllQuestions = questionRepository.findAllByCommIdOrderByCreatedAtAsc(
                 findCommunity.getId(), pageable);
@@ -100,7 +103,7 @@ public class QuestionListService extends AbstractValidateService {
 
 
     private QuestionInfoResponse convertToQuestionInfoResponse(Question question) {
-        User findUser = getUserOrThrowIfNotExist(question.getQuestionerId());
+        User findUser = userValidator.getUserOrThrowIfNotExist(question.getQuestionerId());
         return new QuestionInfoResponse(
                 question.getId(),
                 question.getTitle(),

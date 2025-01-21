@@ -1,10 +1,11 @@
 package com.hanshin.supernova.redis.question_visit.scheduler;
 
-import com.hanshin.supernova.common.application.AbstractValidateService;
 import com.hanshin.supernova.community.domain.Community;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.domain.QuestionView;
 import com.hanshin.supernova.question.infrastructure.QuestionViewRepository;
+import com.hanshin.supernova.validation.CommunityValidator;
+import com.hanshin.supernova.validation.QuestionValidator;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Set;
@@ -19,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class QuestionVisitScheduler extends AbstractValidateService {
+public class QuestionVisitScheduler {
+    private final CommunityValidator communityValidator;
+    private final QuestionValidator questionValidator;
 
     private final RedisTemplate<String, String> redisTemplate;
     private final QuestionViewRepository questionViewRepository;
@@ -52,8 +55,8 @@ public class QuestionVisitScheduler extends AbstractValidateService {
                 ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
                 String userAgent = valueOperations.get(key);
 
-                Question findQuestion = getQuestionOrThrowIfNotExist(questionId);
-                Community findCommunity = getCommunityOrThrowIfNotExist(findQuestion.getCommId());
+                Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(questionId);
+                Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(findQuestion.getCommId());
 
                 if (!questionViewRepository.existsByVisitorIdentifierAndViewedAtAndQuestionId(
                         visitorIdentifier, date, questionId)
