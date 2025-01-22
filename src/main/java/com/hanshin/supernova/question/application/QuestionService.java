@@ -20,6 +20,7 @@ import com.hanshin.supernova.validation.AuthenticationUtils;
 import com.hanshin.supernova.validation.CommunityValidator;
 import com.hanshin.supernova.validation.QuestionValidator;
 import com.hanshin.supernova.validation.UserValidator;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,10 +45,11 @@ public class QuestionService {
      * 질문 등록
      */
     @Transactional
-    public QuestionSaveResponse createQuestion(AuthUser user,
-            QuestionRequest request) {
-        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(request.getCommId());
+    public QuestionSaveResponse createQuestion(AuthUser user, QuestionRequest request) {
+
         User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
+
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(request.getCommId());
 
         Question question = Question.builder()
                 .title(request.getTitle())
@@ -88,15 +90,15 @@ public class QuestionService {
     @Transactional
     public QuestionSaveResponse editQuestion(AuthUser user, Long qId, QuestionRequest request) {
 
-        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(request.getCommId());
-
         Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(qId);
-
-        Community originalCommunity = communityValidator.getCommunityOrThrowIfNotExist(findQuestion.getCommId());
 
         User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
 
         AuthenticationUtils.verifySameUser(findUser.getId(), findQuestion.getQuestionerId());
+
+        Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(request.getCommId());
+
+        Community originalCommunity = communityValidator.getCommunityOrThrowIfNotExist(findQuestion.getCommId());
 
         findQuestion.updateQuestion(request.getTitle(), request.getContent(), request.getImgUrl(),
                 findCommunity.getId());
@@ -140,16 +142,20 @@ public class QuestionService {
 
     @Transactional
     public QuestionResponse updateQuestionRecommendation(AuthUser user, Long qId) {
-        Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(qId);
+
         User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
+
+        Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(qId);
+
         // 자신의 질문은 추천하지 못하도록 예외처리
         if (findQuestion.getQuestionerId().equals(findUser.getId())) {
             throw new AuthInvalidException(ErrorType.WRITER_CANNOT_RECOMMEND_ERROR);
         }
+
         // 기존 추천한 이력 유무에 따른 추천수 증감
-        QuestionRecommendation questionRecommendation = questionRecommendationRepository.findByQuestionIdAndRecommenderId(
+        Optional<QuestionRecommendation> questionRecommendation = questionRecommendationRepository.findByQuestionIdAndRecommenderId(
                 findQuestion.getId(), findUser.getId());
-        if (questionRecommendation == null) {
+        if (questionRecommendation.isEmpty()) {
             questionRecommendationRepository.save(QuestionRecommendation.builder()
                     .recommendedAt(LocalDate.now())
                     .questionId(findQuestion.getId())
@@ -158,7 +164,7 @@ public class QuestionService {
 
             findQuestion.increaseRecommendationCnt();
         } else {
-            questionRecommendationRepository.deleteById(questionRecommendation.getId());
+            questionRecommendationRepository.deleteById(questionRecommendation.get().getId());
             findQuestion.decreaseRecommendationCnt();
         }
 
