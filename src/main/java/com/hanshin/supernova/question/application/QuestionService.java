@@ -19,6 +19,7 @@ import com.hanshin.supernova.question.infrastructure.QuestionRepository;
 import com.hanshin.supernova.user.domain.User;
 import com.hanshin.supernova.validation.AuthenticationUtils;
 import com.hanshin.supernova.validation.CommunityValidator;
+import com.hanshin.supernova.validation.QuestionValidator;
 import com.hanshin.supernova.validation.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class QuestionService {
 
+    private final QuestionValidator questionValidator;
     private final CommunityValidator communityValidator;
     private final UserValidator userValidator;
 
@@ -76,7 +78,7 @@ public class QuestionService {
     @Transactional(readOnly = true) //
     public QuestionResponse getQuestion(Long qId) {
 
-        Question findQuestion = getQuestionById(qId);
+        Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(qId);
 
         return getQuestionResponse(findQuestion);
     }
@@ -89,7 +91,7 @@ public class QuestionService {
 
         Community findCommunity = communityValidator.getCommunityOrThrowIfNotExist(request.getCommId());
 
-        Question findQuestion = getQuestionById(qId);
+        Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(qId);
 
         Community originalCommunity = communityValidator.getCommunityOrThrowIfNotExist(findQuestion.getCommId());
 
@@ -121,7 +123,7 @@ public class QuestionService {
     @Transactional
     public SuccessResponse deleteQuestion(AuthUser user, Long qId) {
 
-        Question findQuestion = getQuestionById(qId);
+        Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(qId);
 
         User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
 
@@ -139,7 +141,7 @@ public class QuestionService {
 
     @Transactional
     public QuestionResponse updateQuestionRecommendation(AuthUser user, Long qId) {
-        Question findQuestion = getQuestionById(qId);
+        Question findQuestion = questionValidator.getQuestionOrThrowIfNotExist(qId);
         User findUser = userValidator.getUserOrThrowIfNotExist(user.getId());
         // 자신의 질문은 추천하지 못하도록 예외처리
         if (findQuestion.getQuestionerId().equals(findUser.getId())) {
@@ -185,12 +187,6 @@ public class QuestionService {
         return communityInfoResponses;
     }
 
-
-    private Question getQuestionById(Long q_Id) {
-        return questionRepository.findById(q_Id).orElseThrow(
-                () -> new QuestionInvalidException(ErrorType.QUESTION_NOT_FOUND_ERROR)
-        );
-    }
 
     private QuestionResponse getQuestionResponse(Question findQuestion) {
         User findUser = userValidator.getUserOrThrowIfNotExist(findQuestion.getQuestionerId());
