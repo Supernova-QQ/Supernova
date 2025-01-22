@@ -7,7 +7,6 @@ import com.hanshin.supernova.community.domain.CommunityMember;
 import com.hanshin.supernova.community.infrastructure.CommunityMemberRepository;
 import com.hanshin.supernova.exception.auth.AuthInvalidException;
 import com.hanshin.supernova.exception.dto.ErrorType;
-import com.hanshin.supernova.exception.question.QuestionInvalidException;
 import com.hanshin.supernova.question.domain.Question;
 import com.hanshin.supernova.question.domain.QuestionRecommendation;
 import com.hanshin.supernova.question.dto.request.QuestionRequest;
