@@ -38,17 +38,17 @@ public class JwtService {
     private int refreshTokenExpiration;
 
     @Getter
-    private int accessTokenExpirationMinutes;
+    private Long accessTokenExpirationInMillis;
 
     @Getter
-    private int refreshTokenExpirationMinutes;
+    private Long refreshTokenExpirationInMillis;
 
 
     @PostConstruct
     public void init() {
-        // 초를 분으로 변환
-        this.accessTokenExpirationMinutes = this.accessTokenExpiration / 60;
-        this.refreshTokenExpirationMinutes = this.refreshTokenExpiration / 60;
+        // 초를 밀리초로 변환
+        this.accessTokenExpirationInMillis = this.accessTokenExpiration * 1000L;
+        this.refreshTokenExpirationInMillis = this.refreshTokenExpiration * 1000L;
     }
 
     private SecretKey key;
@@ -111,7 +111,7 @@ public class JwtService {
                 .claim("role", role)
                 .claim("userId", userId)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationMinutes * 1000L))
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationInMillis))
                 .signWith(key)
                 .compact();
     }
@@ -123,7 +123,7 @@ public class JwtService {
                 .claim("role", role)
                 .claim("userId", userId)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMinutes * 1000L))
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpirationInMillis))
                 .signWith(key)
                 .compact();
     }
