@@ -4,7 +4,8 @@ console.log("config script loaded");
 let CONFIG = {
   API: {
     // BASE_URL: 'http://localhost:8080',
-    BASE_URL: 'http://13.124.80.116:8080',
+    // BASE_URL: 'http://13.124.80.116:8080',
+    BASE_URL: 'http://13.124.80.116',
     ENDPOINTS: {
       COMMUNITIES: '/api/communities',
       QUESTIONS: '/api/questions',
