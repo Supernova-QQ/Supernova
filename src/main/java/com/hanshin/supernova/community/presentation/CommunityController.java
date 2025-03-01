@@ -1,16 +1,11 @@
 package com.hanshin.supernova.community.presentation;
 
-import static com.hanshin.supernova.common.CrossOriginConstants.CROSS_ORIGIN_ADDRESS;
-
 import com.hanshin.supernova.auth.model.AuthUser;
 import com.hanshin.supernova.common.dto.SuccessResponse;
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.community.application.CommunityService;
 import com.hanshin.supernova.community.dto.request.CommunityRequest;
 import com.hanshin.supernova.community.dto.response.CommunityInfoResponse;
-import com.hanshin.supernova.my.dto.response.MyCommunityResponse;
-import com.hanshin.supernova.exception.auth.AuthInvalidException;
-import com.hanshin.supernova.exception.dto.ErrorType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -19,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin(origins = CROSS_ORIGIN_ADDRESS)
 @RestController
 @RequestMapping(path = "/api/communities")
 @RequiredArgsConstructor

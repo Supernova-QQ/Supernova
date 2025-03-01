@@ -1,7 +1,5 @@
 package com.hanshin.supernova.question.presentation;
 
-import static com.hanshin.supernova.common.CrossOriginConstants.CROSS_ORIGIN_ADDRESS;
-
 import com.hanshin.supernova.common.model.ResponseDto;
 import com.hanshin.supernova.question.application.QuestionListService;
 import com.hanshin.supernova.question.dto.response.QuestionInfoResponse;
@@ -13,13 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin(origins = CROSS_ORIGIN_ADDRESS)
 @RestController
 @RequestMapping(path = "/api/communities")
 @RequiredArgsConstructor

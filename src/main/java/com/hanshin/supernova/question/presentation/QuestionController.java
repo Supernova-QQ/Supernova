@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.hanshin.supernova.common.CrossOriginConstants.CROSS_ORIGIN_ADDRESS;
-
-@CrossOrigin(origins = CROSS_ORIGIN_ADDRESS)
 @RestController
 @RequestMapping(path = "/api/questions")
 @RequiredArgsConstructor
