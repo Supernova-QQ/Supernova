@@ -47,3 +47,7 @@ logging:
   level:
     org.springframework: DEBUG
     com.zaxxer.hikari: DEBUG
+
+app:
+  cross-origin:
+    address: http://www.sci-question.site

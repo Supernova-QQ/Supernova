@@ -4,6 +4,7 @@ import com.hanshin.supernova.config.resolver.UserArgumentResolver;
 import com.hanshin.supernova.redis.community_stat.interceptor.SingleVisitInterceptor;
 import com.hanshin.supernova.redis.question_visit.interceptor.QuestionVisitInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -18,6 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
+    @Value("${app.cross-origin.address}")
+    private String domainAddress;
     private final UserArgumentResolver userArgumentResolver;
     private final SingleVisitInterceptor singleVisitInterceptor;
     private final QuestionVisitInterceptor questionVisitInterceptor;
@@ -52,7 +55,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:63342")
+                .allowedOrigins(domainAddress)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)
